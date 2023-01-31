@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 // import 'package:get/get.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:keframe/keframe.dart';
 
 import 'menu.dart';
 import 'config.dart';
@@ -37,7 +38,7 @@ class ChapterPageState extends State<ChapterPage> {
 
   buildChapterList() {
     return GridView.count(
-        crossAxisCount: 1, // 一行最多显示3张图片
+        crossAxisCount: 1,
         padding: EdgeInsets.only(top: (1 / 26).sh),
         childAspectRatio: 1 / 0.43,
         //遍历章节列表生成布局

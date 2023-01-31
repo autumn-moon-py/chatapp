@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:keframe/keframe.dart';
 import 'send.dart';
 import "package:get/get.dart";
 import 'package:spring_button/spring_button.dart';
@@ -21,6 +22,7 @@ class ChatPageState extends State<ChatPage> {
   FocusNode userFocusNode = FocusNode(); //输入框焦点控件
   bool isComposing = false; //输入状态
   final ValueNotifier<bool> isChoose = ValueNotifier<bool>(false); //是否有选项,局部刷新
+  String _chatName = "Miko";
 
   //聊天窗口布局
   @override
@@ -40,15 +42,17 @@ class ChatPageState extends State<ChatPage> {
         //聊天窗口内边距
         padding: EdgeInsets.only(top: (1 / 24).sh, bottom: 0.083.sh),
         child: Flexible(
-            child: ListView.builder(
-          controller: _scrollController, //绑定控件
-          scrollDirection: Axis.vertical, //垂直滑动
-          reverse: false, //正序显示
-          shrinkWrap: true, //内容适配
-          physics: BouncingScrollPhysics(), //内容超过一屏 上拉有回弹效果
-          itemBuilder: (_, int index) => messages[index],
-          itemCount: messages.length,
-        )),
+            child: SizeCacheWidget(
+                estimateCount: 15,
+                child: ListView.builder(
+                  controller: _scrollController, //绑定控件
+                  scrollDirection: Axis.vertical, //垂直滑动
+                  reverse: false, //正序显示
+                  shrinkWrap: true, //内容适配
+                  physics: BouncingScrollPhysics(), //内容超过一屏 上拉有回弹效果
+                  itemBuilder: (_, int index) => messages[index],
+                  itemCount: messages.length,
+                ))),
       ),
       //顶部状态栏
       Align(
@@ -59,7 +63,7 @@ class ChatPageState extends State<ChatPage> {
           width: 1.sw,
           height: 0.0625.sh,
           child: Text(
-            chatName,
+            _chatName,
             style: TextStyle(fontSize: 30.sp, color: Colors.white),
             textAlign: TextAlign.center,
           ),
@@ -79,6 +83,7 @@ class ChatPageState extends State<ChatPage> {
       //菜单按钮
       GestureDetector(
           onTap: () {
+            loadMap();
             Get.to(ImagePage());
           },
           child: Container(
@@ -234,16 +239,28 @@ class ChatPageState extends State<ChatPage> {
       isComposing = false;
     }); //没有在输入
     userFocusNode.unfocus(); //丢失输入框焦点
+    //新建消息
     LeftTextMsg message = LeftTextMsg(
       who: 'Miko',
       text: text,
-    ); //发送消息
-    setState(() {
-      messages.add(message);
-    }); //刷新消息列表然后重建UI
+    );
+    if (waitTyping) {
+      _chatName = '对方输入中...';
+      Future.delayed(Duration(seconds: (text.length / 4).ceil()), () {
+        //刷新消息列表然后重建UI
+        setState(() {
+          messages.add(message);
+        });
+      });
+    } else {
+      setState(() {
+        messages.add(message);
+      });
+    }
     //延迟500毫秒自动滚屏
     if (scrolling) {
-      Future.delayed(Duration(milliseconds: 500), () {
+      Future.delayed(Duration(milliseconds: 100), () {
+        _chatName = chatName;
         _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
       });
     }

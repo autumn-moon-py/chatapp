@@ -3,9 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import "package:get/get.dart";
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
-// import 'chat.dart';
-import 'dictionary.dart';
-// import 'trend.dart';
+import 'chat.dart';
 
 void main() => runApp(MyApp());
 
@@ -30,7 +28,7 @@ class ChatScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: DictionaryPage(),
+      body: ChatPage(),
     );
   }
 }

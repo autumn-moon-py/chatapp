@@ -45,7 +45,10 @@ dependencies:
   spring_button: ^2.0.0
   entry: ^0.0.8
   boxy: ^2.0.6+2
-  
+  keframe: ^3.0.0
+  cool_dropdown: ^1.4.2
+  package_info_plus: ^3.0.2
+  shared_preferences: ^2.0.17
 
 
 dev_dependencies:

@@ -4,9 +4,11 @@ import "package:get/get.dart";
 import 'package:animated_floating_buttons/animated_floating_buttons.dart';
 
 import 'chat.dart';
+import 'config.dart';
 import 'dictionary.dart';
 import 'image.dart';
 import 'chapter.dart';
+import 'setting.dart';
 
 buildMenu(String nowPage) {
   Color imageBottonColor = Colors.grey;
@@ -102,7 +104,7 @@ float2() {
   return Container(
     child: FloatingActionButton(
       onPressed: () {
-        // Get.to();
+        Get.to(SettingPage());
       },
       heroTag: "btn2",
       tooltip: '设置',
