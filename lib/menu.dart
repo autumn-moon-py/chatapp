@@ -4,7 +4,6 @@ import "package:get/get.dart";
 import 'package:animated_floating_buttons/animated_floating_buttons.dart';
 
 import 'chat.dart';
-import 'config.dart';
 import 'dictionary.dart';
 import 'image.dart';
 import 'chapter.dart';
@@ -30,59 +29,55 @@ buildMenu(String nowPage) {
           Container(
             color: Colors.black,
             width: 1.sw,
-            height: 60,
+            height: 40,
           ),
-          Padding(
-              padding: EdgeInsets.only(top: 15),
-              child: GestureDetector(
-                onTap: () {
-                  Get.to(ImagePage());
-                },
-                child: Container(
-                  width: (1 / 3).sw,
-                  height: 40,
-                  child: Align(
-                      alignment: Alignment.center,
-                      child: Text('图鉴',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              color: imageBottonColor, fontSize: 20))),
-                ),
-              )),
-          Padding(
-              padding: EdgeInsets.only(top: 15, left: (1 / 3).sw),
-              child: GestureDetector(
-                onTap: () {
-                  Get.to(DictionaryPage());
-                },
-                child: Container(
-                  width: (1 / 3).sw,
-                  height: 40,
-                  child: Align(
-                      alignment: Alignment.center,
-                      child: Text('词典',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              color: dictionaryBottonColor, fontSize: 20))),
-                ),
-              )),
-          Padding(
-              padding: EdgeInsets.only(top: 15, left: 2 * (1 / 3).sw),
-              child: GestureDetector(
-                onTap: () {
-                  Get.to(ChapterPage());
-                },
-                child: Container(
-                  width: (1 / 3).sw,
-                  height: 40,
-                  child: Align(
-                      alignment: Alignment.center,
-                      child: Text('章节',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              color: chapterButtonColor, fontSize: 20))),
-                ),
-              ))
+          Row(children: [
+            GestureDetector(
+              onTap: () {
+                Get.to(ImagePage());
+              },
+              child: Container(
+                width: (1 / 3).sw,
+                height: 40,
+                child: Align(
+                    alignment: Alignment.center,
+                    child: Text('图鉴',
+                        textAlign: TextAlign.center,
+                        style:
+                            TextStyle(color: imageBottonColor, fontSize: 20))),
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                Get.to(DictionaryPage());
+              },
+              child: Container(
+                width: (1 / 3).sw,
+                height: 40,
+                child: Align(
+                    alignment: Alignment.center,
+                    child: Text('词典',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: dictionaryBottonColor, fontSize: 20))),
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                Get.to(ChapterPage());
+              },
+              child: Container(
+                width: (1 / 3).sw,
+                height: 40,
+                child: Align(
+                    alignment: Alignment.center,
+                    child: Text('章节',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: chapterButtonColor, fontSize: 20))),
+              ),
+            )
+          ])
         ],
       ));
 }

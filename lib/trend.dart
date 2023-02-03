@@ -95,16 +95,18 @@ class TrendPageState extends State<TrendPage> {
                     //标题栏
                     color: Colors.black,
                     width: 1.sw,
-                    height: (1 / 24).sh,
+                    height: 35,
                   ),
-                  Align(
-                    alignment: FractionalOffset(0.5, 0),
-                    child: Text('动态',
-                        style: TextStyle(color: Colors.white, fontSize: 20)),
-                  ),
+                  Padding(
+                      padding: EdgeInsets.only(top: 10),
+                      child: Align(
+                        alignment: FractionalOffset(0.5, 0),
+                        child: Text('动态',
+                            style: TextStyle(
+                                color: Colors.white, fontSize: 25.sp)),
+                      )),
                   //返回图标
-                  Icon(Icons.chevron_left,
-                      color: Colors.white, size: (1 / 13.5).sw),
+                  Icon(Icons.chevron_left, color: Colors.white, size: 40),
                 ]))),
         Align(
           alignment: FractionalOffset(0.5, 1),

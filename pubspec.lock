@@ -65,6 +65,14 @@ packages:
       url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
     source: hosted
     version: "1.4.2"
+  cross_file:
+    dependency: transitive
+    description:
+      name: cross_file
+      sha256: b1c29cf742bde4d4d1e1f9e7aafd8c8a4942e45802f6b8bdd124443de5e760d5
+      url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
+    source: hosted
+    version: "0.3.3+3"
   entry:
     dependency: "direct main"
     description:
@@ -118,6 +126,14 @@ packages:
       url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
     source: hosted
     version: "2.0.1"
+  flutter_plugin_android_lifecycle:
+    dependency: transitive
+    description:
+      name: flutter_plugin_android_lifecycle
+      sha256: "60fc7b78455b94e6de2333d2f95196d32cf5c22f4b0b0520a628804cb463503b"
+      url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
+    source: hosted
+    version: "2.0.7"
   flutter_screenutil:
     dependency: "direct main"
     description:
@@ -168,6 +184,14 @@ packages:
       url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
     source: hosted
     version: "4.0.2"
+  image_crop:
+    dependency: "direct main"
+    description:
+      name: image_crop
+      sha256: a580010f9e90b20581ecf5e8f4e9aa838cb935ea1497f9d1b196baa382b84a6d
+      url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
+    source: hosted
+    version: "0.4.1"
   image_gallery_saver:
     dependency: "direct main"
     description:
@@ -176,6 +200,46 @@ packages:
       url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
     source: hosted
     version: "1.7.1"
+  image_picker:
+    dependency: "direct main"
+    description:
+      name: image_picker
+      sha256: f98d76672d309c8b7030c323b3394669e122d52b307d2bbd8d06bd70f5b2aabe
+      url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
+    source: hosted
+    version: "0.8.6+1"
+  image_picker_android:
+    dependency: transitive
+    description:
+      name: image_picker_android
+      sha256: b1cbfec0f5aef427a18eb573f5445af8c9c568626bf3388553e40c263d3f7368
+      url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
+    source: hosted
+    version: "0.8.5+5"
+  image_picker_for_web:
+    dependency: transitive
+    description:
+      name: image_picker_for_web
+      sha256: "7d319fb74955ca46d9bf7011497860e3923bb67feebcf068f489311065863899"
+      url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
+    source: hosted
+    version: "2.1.10"
+  image_picker_ios:
+    dependency: transitive
+    description:
+      name: image_picker_ios
+      sha256: "39c013200046d14c58b71dc4fa3d00e425fc9c699d589136cd3ca018727c0493"
+      url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
+    source: hosted
+    version: "0.8.6+6"
+  image_picker_platform_interface:
+    dependency: transitive
+    description:
+      name: image_picker_platform_interface
+      sha256: "7cef2f28f4f2fef99180f636c3d446b4ccbafd6ba0fad2adc9a80c4040f656b8"
+      url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
+    source: hosted
+    version: "2.6.2"
   js:
     dependency: transitive
     description:

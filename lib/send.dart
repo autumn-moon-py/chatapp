@@ -4,9 +4,11 @@ import 'package:get/get.dart';
 import 'package:keframe/keframe.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:entry/entry.dart';
+import 'dart:convert';
 
 import 'config.dart';
 import 'trend.dart';
+import 'dart:io';
 
 //左消息文本气泡
 class LeftTextMsg extends StatelessWidget {
@@ -14,16 +16,16 @@ class LeftTextMsg extends StatelessWidget {
   final String text; //消息气泡内文本
   final String who; //头像
 
+  toJsonString() {
+    final jsonString = jsonEncode({'位置': '左', 'text': text, 'who': who});
+    return jsonString;
+  }
+
   @override
   Widget build(BuildContext context) {
     return FrameSeparateWidget(
-        placeHolder: Text(
-          "加载中...",
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 20.sp, color: Colors.white),
-        ),
         child: Container(
-            margin: EdgeInsets.symmetric(vertical: (1 / 120).sh), //消息间隔
+            margin: EdgeInsets.only(top: 4, bottom: 4), //消息间隔
             child: Entry.offset(
                 child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start, //垂直顶部对齐
@@ -38,13 +40,13 @@ class LeftTextMsg extends StatelessWidget {
                               right: (1 / 120).sh), //头像和气泡间距
                           child: CircleAvatar(
                               //头像图标
-                              radius: (1 / 20).sw, //头像尺寸
+                              radius: (1 / 23).sw, //头像尺寸
                               backgroundImage:
                                   AssetImage(whoAvater(who)) //加载左边头像
                               ))),
                   // 消息气泡容器
                   Container(
-                      margin: EdgeInsets.only(top: (1 / 120).sh),
+                      margin: EdgeInsets.only(top: 2),
                       constraints:
                           BoxConstraints(maxWidth: (1 / 1.3).sw), //限制容器最大宽度
                       padding: EdgeInsets.only(
@@ -75,6 +77,11 @@ class LeftImgMsg extends StatelessWidget {
   final String img; //图片名称
   final String who; //头像
 
+  toJsonString() {
+    final jsonString = jsonEncode({'位置': '左', 'img': img, 'who': who});
+    return jsonString;
+  }
+
   buildImageView(imageName) {
     return Container(
         child: Stack(children: [
@@ -103,13 +110,8 @@ class LeftImgMsg extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FrameSeparateWidget(
-        placeHolder: Text(
-          "加载中...",
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 20.sp, color: Colors.white),
-        ),
         child: Container(
-            margin: EdgeInsets.symmetric(vertical: (1 / 120).sh), //消息间隔
+            margin: EdgeInsets.only(top: 5), //消息间隔
             child: Entry.offset(
                 child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start, //垂直顶部对齐
@@ -151,20 +153,19 @@ class LeftImgMsg extends StatelessWidget {
 
 //右消息气泡
 class RightMsg extends StatelessWidget {
+  final String text; //消息气泡内文本
   RightMsg({required this.text});
 
-  final String text; //消息气泡内文本
+  toJsonString() {
+    final jsonString = jsonEncode({'位置': '右', 'text': text});
+    return jsonString;
+  }
 
   @override
   Widget build(BuildContext context) {
     return FrameSeparateWidget(
-        placeHolder: Text(
-          "加载中...",
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 20.sp, color: Colors.white),
-        ),
         child: Container(
-            margin: EdgeInsets.symmetric(vertical: (1 / 120).sh), //消息间隔
+            margin: EdgeInsets.only(top: 5), //消息间隔
             child: Entry.offset(
                 child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start, //垂直顶部对齐
@@ -193,15 +194,19 @@ class RightMsg extends StatelessWidget {
                         style: TextStyle(
                             fontSize: 20.sp, color: Colors.white), //文本样式
                       )),
-                  Container(
-                      //头像容器
-                      margin: EdgeInsets.only(
-                          right: (1 / 120).sh, left: (1 / 120).sh), //头像和气泡间距
-                      child: CircleAvatar(
-                          //头像图标
-                          radius: (1 / 20).sw, //头像尺寸
-                          backgroundImage: playerhead //加载右边头像
-                          )),
+                  GestureDetector(
+                      onTap: () {},
+                      child: Container(
+                          //头像容器
+                          margin: EdgeInsets.only(
+                              right: (1 / 120).sh,
+                              left: (1 / 120).sh), //头像和气泡间距
+                          child: CircleAvatar(
+                              //头像图标
+                              radius: (1 / 20).sw, //头像尺寸
+                              backgroundColor: Color.fromRGBO(0, 0, 0, 1),
+                              child: playerAvater() //加载右边头像
+                              ))),
                 ]))));
   }
 }
@@ -211,16 +216,16 @@ class MiddleMsg extends StatelessWidget {
   MiddleMsg({required this.text});
   final String text; //消息气泡内文本
 
+  toJsonString() {
+    final jsonString = jsonEncode({'位置': '中', 'text': text});
+    return jsonString;
+  }
+
   @override
   Widget build(BuildContext context) {
     return FrameSeparateWidget(
-        placeHolder: Text(
-          "加载中...",
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 20.sp, color: Colors.white),
-        ),
         child: Container(
-            margin: EdgeInsets.symmetric(vertical: (1 / 120).sh), //消息间隔
+            margin: EdgeInsets.only(top: 5), //消息间隔
             child: Entry.offset(
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.center, //水平居中对齐
@@ -260,4 +265,16 @@ whoAvater(String name) {
   if (name == 'Lily') {
     return "assets/icon/Lily.png";
   }
+}
+
+Widget playerAvater() {
+  if (playerAvatarSet != "默认") {
+    try {
+      return Image.file(File(playerAvatarSet));
+    } catch (error) {
+      playerAvatarSet = '默认';
+      return Image.asset('assets/icon/未知用户.png');
+    }
+  }
+  return Image.asset('assets/icon/未知用户.png');
 }

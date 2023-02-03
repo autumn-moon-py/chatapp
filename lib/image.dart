@@ -34,9 +34,9 @@ class ImagePageState extends State<ImagePage> {
           ),
           //图鉴布局列表
           Padding(
-              padding: EdgeInsets.only(top: (1 / 48).sh),
+              padding: EdgeInsets.only(top: 10),
               child: SizeCacheWidget(
-                  estimateCount: 15,
+                  estimateCount: 20,
                   child: RefreshIndicator(
                       onRefresh: () async {
                         setState(() {

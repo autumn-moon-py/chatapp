@@ -1,24 +1,28 @@
 import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'send.dart';
+import 'trend.dart';
 
 SharedPreferences? local; //本地存储数据
 bool isNewImage = false; //AI图鉴
 bool scrolling = true; //自动滚屏
-bool waitTyping = true; //打字时间
+bool waitTyping = false; //打字时间
 bool waitOffline = true; //是否等待下线
 int nowMikoAvater = 1; //miko当前头像
-AssetImage playerhead = AssetImage('assets/icon/未知用户.png'); //玩家头像
-String choose_one = ''; //选项一
-String choose_two = ''; //选项二
-List messages = []; //消息列表
-List trends = []; //动态列表
+String playerAvatarSet = '默认'; //玩家头像
+int playerNowAvater = 0;
+String choose_one = '1'; //选项一
+String choose_two = '2'; //选项二
+List messages = []; //消息容器列表
+List<String> messagesInfo = []; //消息信息列表
+List trends = []; //动态容器列表
+List<String> trendsInfo = []; //动态信息列表
 String chatName = "Miko"; //聊天对象名称
 List imageList = isNewImage ? imageList2 : imageList1; //图鉴列表
 //Miko头像更换
-const List dropdownList = [
+List mikoDropdownList = [
   {'label': '头像1', 'value': 1},
   {'label': '头像2', 'value': 2},
   {'label': '头像3', 'value': 3},
@@ -27,6 +31,10 @@ const List dropdownList = [
   {'label': '头像6', 'value': 6},
   {'label': '头像7', 'value': 7},
   {'label': '头像8', 'value': 8}
+];
+List playerDropdownList = [
+  {'label': '默认头像', 'value': 0},
+  {'label': '上传图片', 'value': 1}
 ];
 //旧图鉴
 const List imageList1 = [
@@ -160,7 +168,7 @@ Map imageMap = {
   'E3-02': false,
   'E3-03': false,
   'S1-01-n': false,
-  'S1-01': true,
+  'S1-01': false,
   'S1-02': false,
   'S1-03': false,
   'S1-04': false,
@@ -362,7 +370,7 @@ const List dictionaryList = [
 Map dictionaryMap = {
   '软件': [
     '第一章',
-    'true',
+    'false',
     '这里特指异次元通讯，是睿果工作室出品的一款手机app，用于即时通讯，经大量用户反馈，相连接的用户之间似乎存在着某种未知的羁绊，原理不明'
   ],
   '西武百货': [
@@ -845,6 +853,20 @@ save() async {
   await local?.setInt('nowMikoAvater', nowMikoAvater);
   await local?.setBool('waitTyping', waitTyping);
   await local?.setBool('waitOffline', waitOffline);
+  await local?.setString('playerAvatarSet', playerAvatarSet);
+  await local?.setInt('playerNowAvater', playerNowAvater);
+}
+
+//读取数据
+load() async {
+  local = await SharedPreferences.getInstance();
+  isNewImage = local?.getBool('isNewImage') ?? false;
+  scrolling = local?.getBool('scrolling') ?? true;
+  nowMikoAvater = local?.getInt('nowMikoAvater') ?? 1;
+  waitTyping = local?.getBool('waitTyping') ?? true;
+  waitOffline = local?.getBool('waitOffline') ?? true;
+  playerAvatarSet = local?.getString('playerAvatarSet') ?? '默认';
+  playerNowAvater = local?.getInt('playerNowAvater') ?? 0;
 }
 
 //检查权限
@@ -917,4 +939,86 @@ loadMap() async {
       dictionaryMap = jsonDecode(dictionaryMapJson);
     }
   }
+}
+
+//保存历史消息和动态
+saveChat() async {
+  local = await SharedPreferences.getInstance();
+  local?.setStringList('messagesInfo', messagesInfo);
+  local?.setStringList('trendsInfo', trendsInfo);
+}
+
+//读取动态
+loadtrend() async {
+  local = await SharedPreferences.getInstance();
+  trendsInfo = await local?.getStringList('trendsInfo') ?? [];
+  Map _trendsInfo = {};
+  if (trendsInfo != []) {
+    for (int i = 0; i < trendsInfo.length; i++) {
+      _trendsInfo[i] = fromJsonString(trendsInfo[i]);
+    }
+    if (trends.length < _trendsInfo.length) {
+      for (int i = 0; i < _trendsInfo.length;) {
+        Trend trend = Trend(
+            trendText: _trendsInfo[i]['trendText'],
+            trendImg: _trendsInfo[i]['trendImg']);
+        trends.add(trend);
+      }
+    }
+  }
+}
+
+//读取历史消息
+loadMessage() async {
+  local = await SharedPreferences.getInstance();
+  messagesInfo = await local?.getStringList('messagesInfo') ?? [];
+  Map _messagesInfo = {};
+  int num = 0;
+  if (messagesInfo != []) {
+    for (int i = 0; i < messagesInfo.length; i++) {
+      _messagesInfo[i] = fromJsonString(messagesInfo[i]);
+    }
+    if (_messagesInfo.length >= 60) {
+      num = _messagesInfo.length - 60;
+    }
+    if (messages.length < _messagesInfo.length) {
+      for (int i = num; i < messagesInfo.length;) {
+        Map messageMap = _messagesInfo[i];
+        if (messageMap['位置'] == '左') {
+          try {
+            String text = messageMap['text'];
+            LeftTextMsg message = LeftTextMsg(
+              who: messageMap['who'],
+              text: text,
+            );
+            messages.add(message);
+            i++;
+          } catch (err) {
+            String img = messageMap['img'];
+            LeftImgMsg message = LeftImgMsg(
+              who: messageMap['who'],
+              img: img,
+            );
+            messages.add(message);
+            i++;
+          }
+        }
+        if (messageMap['位置'] == '中') {
+          MiddleMsg message = MiddleMsg(text: messageMap['text']);
+          messages.add(message);
+          i++;
+        }
+        if (messageMap['位置'] == '右') {
+          RightMsg message = RightMsg(text: messageMap['text']);
+          messages.add(message);
+          i++;
+        }
+      }
+    }
+  }
+}
+
+fromJsonString(String jsonString) {
+  final Info = jsonDecode(jsonString);
+  return Info;
 }

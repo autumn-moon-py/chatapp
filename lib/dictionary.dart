@@ -30,8 +30,7 @@ class DictionaryPageState extends State<DictionaryPage> {
           ),
           //图鉴布局列表
           Padding(
-              padding: EdgeInsets.only(top: (1 / 32).sh),
-              child: buildDictionaryList()),
+              padding: EdgeInsets.only(top: 10), child: buildDictionaryList()),
           buildMenu("词典") //菜单栏
         ]));
   }
@@ -39,7 +38,7 @@ class DictionaryPageState extends State<DictionaryPage> {
   //词典列表布局
   Widget buildDictionaryList() {
     return SizeCacheWidget(
-        estimateCount: 30,
+        estimateCount: 40,
         child: RefreshIndicator(
             onRefresh: () async {
               setState(() {

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 // import 'package:get/get.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:keframe/keframe.dart';
 
 import 'menu.dart';
 import 'config.dart';
@@ -30,7 +29,7 @@ class ChapterPageState extends State<ChapterPage> {
           ),
           //章节布局列表
           Padding(
-              padding: EdgeInsets.only(top: (1 / 32).sh),
+              padding: EdgeInsets.only(top: 15, bottom: 5),
               child: buildChapterList()),
           buildMenu("章节") //菜单栏
         ]));
