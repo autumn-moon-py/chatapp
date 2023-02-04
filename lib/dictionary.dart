@@ -20,17 +20,17 @@ class DictionaryPageState extends State<DictionaryPage> {
 
   Widget buildDictionaryScreen() {
     return Scaffold(
-        floatingActionButton: floatButton(),
+        floatingActionButton: floatButton('词典'),
         body: Stack(children: [
           //页面背景
           Container(
-            width: 1.sw,
             height: 1.sh,
-            child: Image.asset('assets/images/菜单背景.png'),
+            child: Image.asset('assets/images/菜单背景.png', fit: BoxFit.cover),
           ),
           //图鉴布局列表
           Padding(
-              padding: EdgeInsets.only(top: 10), child: buildDictionaryList()),
+              padding: EdgeInsets.only(top: 10.h),
+              child: buildDictionaryList()),
           buildMenu("词典") //菜单栏
         ]));
   }
@@ -38,7 +38,7 @@ class DictionaryPageState extends State<DictionaryPage> {
   //词典列表布局
   Widget buildDictionaryList() {
     return SizeCacheWidget(
-        estimateCount: 40,
+        estimateCount: 60,
         child: RefreshIndicator(
             onRefresh: () async {
               setState(() {
@@ -47,15 +47,17 @@ class DictionaryPageState extends State<DictionaryPage> {
             },
             child: GridView.count(
                 crossAxisCount: 2, // 一行最多显示
-                childAspectRatio: (1.sw / 10) / (1.sh / 60), //比例
-                padding:
-                    EdgeInsets.only(top: (1 / 19.2).sh, right: (1 / 54).sw),
+                // mainAxisSpacing: 10.h,
+                // childAspectRatio: (1.sw / 8) / (1.sh / 60), //比例
+                childAspectRatio: 1 / 0.28,
+                padding: EdgeInsets.only(top: 38.h, right: 10.w),
                 //     //遍历图鉴列表生成布局
                 children: dictionaryList.map((dictionaryName) {
                   return buildDictionary(dictionaryName);
                 }).toList())));
   }
 
+  //单个词典
   Widget buildDictionary(dictionaryName) {
     List _dtlist = dictionaryMap[dictionaryName];
     String chapter = _dtlist[0]; //词典章节
@@ -81,7 +83,7 @@ class DictionaryPageState extends State<DictionaryPage> {
                       toastPosition: EasyLoadingToastPosition.bottom);
                 },
                 child: Padding(
-                    padding: EdgeInsets.only(left: (1 / 54).sw),
+                    padding: EdgeInsets.only(left: 10.w),
                     child: Image.asset('assets/词典/未解锁词典.png')))
           ])));
     }
@@ -94,61 +96,61 @@ class DictionaryPageState extends State<DictionaryPage> {
           style: TextStyle(fontSize: 20.sp, color: Colors.white),
         ),
         child: Container(
+          padding: EdgeInsets.only(bottom: 20.h),
           child: GestureDetector(
               onTap: () {
                 Get.to(buildDictionaryView(dictionaryName, dictionaryMean));
               },
-              child: Stack(children: [
-                Padding(
-                    //未解锁词典
-                    padding: EdgeInsets.only(left: (1 / 54).sw),
-                    child: Image.asset('assets/词典/未解锁词典.png')),
-                Padding(
-                    //词典名字
-                    padding:
-                        EdgeInsets.only(top: (1 / 60).sh, left: (1 / 9).sw),
-                    child: Text(
-                      dictionaryName,
-                      style: TextStyle(color: Colors.white, fontSize: 25.sp),
-                    )),
-                Padding(
-                  //词典图标
-                  padding:
-                      EdgeInsets.only(top: (1 / 140).sh, left: (1 / 42).sw),
-                  child: Image.asset(
-                    'assets/词典/词典.png',
-                    width: (1 / 12.7).sw,
-                    height: (1 / 12.7).sw,
-                  ),
-                )
-              ])),
+              child: Padding(
+                  padding: EdgeInsets.only(left: 10.w),
+                  child: Container(
+                      color: Color.fromRGBO(0, 0, 0, 0),
+                      child: Row(children: [
+                        Container(
+                            padding: EdgeInsets.only(right: 5.w),
+                            child: Image.asset(
+                              'assets/词典/词典.png',
+                              width: 42.5.r,
+                              height: 42.5.r,
+                            )),
+                        Text(
+                          dictionaryName,
+                          style:
+                              TextStyle(color: Colors.white, fontSize: 25.sp),
+                        ),
+                        Container(
+                            padding: EdgeInsets.only(left: 115.w),
+                            child: Icon(Icons.chevron_right,
+                                color: Colors.white, size: 40.r))
+                      ])))),
         ));
   }
 
+  //词典展示
   buildDictionaryView(dictionaryName, dictionaryMean) {
     return Stack(children: [
       GestureDetector(
           onTap: () => Get.back(),
-          child: Container(width: 1.sw, height: 1.sh, color: Colors.black)),
+          child: Container(width: 540.w, height: 960.h, color: Colors.black)),
       Stack(children: [
         Center(
             child: Container(
                 decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey, width: 1),
+                    border: Border.all(color: Colors.grey, width: 1.w),
                     borderRadius: BorderRadius.circular(9)),
                 child: Image.asset(
                   'assets/词典/词典展示.png',
-                  width: 0.716.sw, //图片宽
-                  height: 0.65.sh, //图片高
+                  width: 386.w, //图片宽
+                  height: 624.h, //图片高
                 ))),
         Padding(
-            padding: EdgeInsets.only(top: (1 / 3.3).sh, left: 0.44.sw),
+            padding: EdgeInsets.only(top: 291.h, left: 237.6.w),
             child: Text(dictionaryName,
                 style: TextStyle(fontSize: 30.sp, color: Colors.white))),
         Padding(
-            padding: EdgeInsets.only(top: (1 / 2.75).sh, left: 0.175.sw),
+            padding: EdgeInsets.only(top: 349.h, left: 94.5.w),
             child: Container(
-                width: 0.65.sw,
+                width: 351.w,
                 child: Text(dictionaryMean,
                     style: TextStyle(fontSize: 25.sp, color: Colors.white))))
       ]),

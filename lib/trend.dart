@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import "package:get/get.dart";
@@ -36,6 +38,8 @@ class TrendPageState extends State<TrendPage> {
     return Scaffold(
         body: Stack(
       children: [
+        Container(
+            color: Color.fromRGBO(25, 25, 25, 1), width: 540.w, height: 960.h),
         ListView(
           children: [
             CustomBoxy(
@@ -45,8 +49,8 @@ class TrendPageState extends State<TrendPage> {
                   id: #header,
                   child: ClipRect(
                       child: Container(
-                          width: 1.sw,
-                          height: 0.5.sh,
+                          width: 540.w,
+                          height: 480.h,
                           child: Image.asset(
                             'assets/images/聊天背景.png',
                             fit: BoxFit.cover,
@@ -55,12 +59,9 @@ class TrendPageState extends State<TrendPage> {
                 BoxyId(
                   id: #content,
                   child: Stack(children: [
-                    Container(
-                        color: Color.fromRGBO(25, 25, 25, 1),
-                        width: 1.sw,
-                        height: 1.sh),
                     Padding(
-                        padding: EdgeInsets.only(left: 10, right: 5),
+                        padding: EdgeInsets.only(
+                            left: 10.w, right: 5.w, bottom: 20.h),
                         child: Flexible(
                           child: ListView.builder(
                             controller: _scrollController, //绑定控件
@@ -77,7 +78,7 @@ class TrendPageState extends State<TrendPage> {
                 BoxyId(
                   id: #avater,
                   child: Image.asset('assets/icon/头像$nowMikoAvater.png',
-                      width: (1 / 9).sw, height: (1 / 9).sw),
+                      width: 60.r, height: 60.r),
                 )
               ],
             ),
@@ -94,11 +95,11 @@ class TrendPageState extends State<TrendPage> {
                   Container(
                     //标题栏
                     color: Colors.black,
-                    width: 1.sw,
-                    height: 35,
+                    width: 540.w,
+                    height: 50.h,
                   ),
                   Padding(
-                      padding: EdgeInsets.only(top: 10),
+                      padding: EdgeInsets.only(top: 15.h),
                       child: Align(
                         alignment: FractionalOffset(0.5, 0),
                         child: Text('动态',
@@ -106,12 +107,12 @@ class TrendPageState extends State<TrendPage> {
                                 color: Colors.white, fontSize: 25.sp)),
                       )),
                   //返回图标
-                  Icon(Icons.chevron_left, color: Colors.white, size: 40),
+                  Icon(Icons.chevron_left, color: Colors.white, size: 50.r),
                 ]))),
         Align(
           alignment: FractionalOffset(0.5, 1),
           child: TextButton(
-            child: Text('发送', style: TextStyle(color: Colors.white)),
+            child: Text('测试发送', style: TextStyle(color: Colors.white)),
             onPressed: () => newTrend("你好", "S1-01"),
           ),
         )
@@ -123,7 +124,8 @@ class TrendPageState extends State<TrendPage> {
     Trend trend = Trend(trendText: trendText, trendImg: trendImg);
     setState(() {
       trends.add(trend);
-      Future.delayed(Duration(milliseconds: 500), () {
+      trendsInfo.add(trend.toJsonString());
+      Future.delayed(Duration(milliseconds: 100), () {
         _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
       });
     });
@@ -135,18 +137,24 @@ class Trend extends StatelessWidget {
   final String trendImg; //动态图鉴
   const Trend({required this.trendText, required this.trendImg});
 
+  toJsonString() {
+    final jsonString =
+        jsonEncode({'trendText': trendText, 'trendImg': trendImg});
+    return jsonString;
+  }
+
   Widget build(BuildContext context) {
     return Stack(
       children: [
         Padding(
-            padding: EdgeInsets.only(top: (1 / 48).sh),
+            padding: EdgeInsets.only(top: 20.h),
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Row(children: [
                 Image.asset('assets/icon/头像$nowMikoAvater.png',
-                    width: (1 / 13.5).sw, height: (1 / 13.5).sw),
+                    width: 55.r, height: 55.r),
                 Padding(
-                    padding: EdgeInsets.only(left: (1 / 54).sw),
+                    padding: EdgeInsets.only(left: 10.w),
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -154,7 +162,7 @@ class Trend extends StatelessWidget {
                               style: TextStyle(
                                   color: Colors.white, fontSize: 25.sp)),
                           Container(
-                              width: 1.sw - (1 / 5.4).sw,
+                              width: 440.w,
                               child: Text(trendText,
                                   softWrap: true,
                                   textAlign: TextAlign.left,
@@ -163,18 +171,15 @@ class Trend extends StatelessWidget {
                         ]))
               ]),
               Padding(
-                  padding: EdgeInsets.only(
-                      top: (1 / 96).sh,
-                      left: (1 / 10.8).sw,
-                      right: (1 / 10.8).sw),
+                  padding: EdgeInsets.only(top: 10.h, left: 50.w, right: 50.w),
                   child: GestureDetector(
                       onTap: () => Get.to(buildImageView(trendImg)),
                       child: ClipRRect(
                           borderRadius: BorderRadius.circular(20),
                           child: ClipRect(
                               child: Container(
-                                  width: 1.sw - (1 / 5.4).sw,
-                                  height: 1.sw - (1 / 5.4).sw,
+                                  width: 440.w,
+                                  height: 440.w,
                                   child: Image.asset(
                                     'assets/images/$trendImg.png',
                                     fit: BoxFit.cover,
@@ -199,12 +204,11 @@ class Trend extends StatelessWidget {
                 Container(
                   //标题栏
                   color: Colors.black,
-                  width: 1.sw,
-                  height: (1 / 24).sh,
+                  width: 540.w,
+                  height: 40.h,
                 ),
                 //返回图标
-                Icon(Icons.chevron_left,
-                    color: Colors.white, size: (1 / 13.5).sw),
+                Icon(Icons.chevron_left, color: Colors.white, size: 50.r),
               ])))
     ]));
   }

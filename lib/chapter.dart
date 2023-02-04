@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-// import 'package:get/get.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 import 'menu.dart';
@@ -19,17 +18,16 @@ class ChapterPageState extends State<ChapterPage> {
 
   Widget buildChapterScreen() {
     return Scaffold(
-        floatingActionButton: floatButton(),
+        floatingActionButton: floatButton('章节'),
         body: Stack(children: [
           //页面背景
           Container(
-            width: 1.sw,
             height: 1.sh,
-            child: Image.asset('assets/images/菜单背景.png'),
+            child: Image.asset('assets/images/菜单背景.png', fit: BoxFit.cover),
           ),
           //章节布局列表
           Padding(
-              padding: EdgeInsets.only(top: 15, bottom: 5),
+              padding: EdgeInsets.only(top: 15.h, bottom: 5.h),
               child: buildChapterList()),
           buildMenu("章节") //菜单栏
         ]));
@@ -38,7 +36,7 @@ class ChapterPageState extends State<ChapterPage> {
   buildChapterList() {
     return GridView.count(
         crossAxisCount: 1,
-        padding: EdgeInsets.only(top: (1 / 26).sh),
+        padding: EdgeInsets.only(top: 27.4.h),
         childAspectRatio: 1 / 0.43,
         //遍历章节列表生成布局
         children: chapterList.map((chapterName) {
@@ -52,6 +50,6 @@ class ChapterPageState extends State<ChapterPage> {
           EasyLoading.showToast(chapterName,
               toastPosition: EasyLoadingToastPosition.bottom);
         },
-        child: Image.asset('assets/chapter/$chapterName.png', width: 1.sw));
+        child: Image.asset('assets/chapter/$chapterName.png', width: 540.w));
   }
 }

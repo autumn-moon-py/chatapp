@@ -24,17 +24,16 @@ class ImagePageState extends State<ImagePage> {
   //图鉴窗口布局
   buildImageScreen() {
     return Scaffold(
-        floatingActionButton: floatButton(),
+        floatingActionButton: floatButton("image"),
         body: Stack(children: [
           //页面背景
           Container(
-            width: 1.sw,
             height: 1.sh,
-            child: Image.asset('assets/images/菜单背景.png'),
+            child: Image.asset('assets/images/菜单背景.png', fit: BoxFit.cover),
           ),
           //图鉴布局列表
           Padding(
-              padding: EdgeInsets.only(top: 10),
+              padding: EdgeInsets.only(top: 10.h),
               child: SizeCacheWidget(
                   estimateCount: 20,
                   child: RefreshIndicator(
@@ -45,8 +44,10 @@ class ImagePageState extends State<ImagePage> {
                       },
                       child: GridView.count(
                           crossAxisCount: 3, // 一行最多显示3张图片
-                          childAspectRatio: (1.sw / 4) / (1.sh / 5.3), //图片比例
-                          padding: EdgeInsets.only(top: (1 / 19.2).sh),
+                          crossAxisSpacing: 10,
+                          childAspectRatio: 1 / 1.6,
+                          padding: EdgeInsets.only(
+                              top: 38.h, left: 10.w, right: 10.w),
                           //遍历图鉴列表生成布局
                           children: imageList.map((imageName) {
                             return buildImage(imageName);
@@ -71,28 +72,27 @@ class ImagePageState extends State<ImagePage> {
           style: TextStyle(fontSize: 20.sp, color: Colors.white),
         ),
         child: Container(
-            padding: EdgeInsets.only(left: (1 / 36).sw, right: (1 / 54).sw),
+            // padding: EdgeInsets.only(bottom: 10.w),
             child: Column(children: [
-              GestureDetector(
-                  //解锁进入查看大图,反之提示未解锁
-                  onTap: () {
-                    if (_imageName != '0') {
-                      Get.to(buildImageView(_imageName));
-                    } else {
-                      EasyLoading.showToast('未解锁',
-                          toastPosition: EasyLoadingToastPosition.bottom);
-                    }
-                  },
-                  child: Image.asset('assets/images/$_imageName.png')),
-              Padding(
-                  //图鉴名字
-                  padding: EdgeInsets.only(top: (1 / 192).sh),
-                  child: Text(
-                    imageName,
-                    style:
-                        TextStyle(fontSize: (1 / 27).sw, color: Colors.white),
-                  )),
-            ])));
+          GestureDetector(
+              //解锁进入查看大图,反之提示未解锁
+              onTap: () {
+                if (_imageName != '0') {
+                  Get.to(buildImageView(_imageName));
+                } else {
+                  EasyLoading.showToast('未解锁',
+                      toastPosition: EasyLoadingToastPosition.bottom);
+                }
+              },
+              child: Image.asset('assets/images/$_imageName.png')),
+          Padding(
+              //图鉴名字
+              padding: EdgeInsets.only(top: 5.h),
+              child: Text(
+                imageName,
+                style: TextStyle(fontSize: 25.sp, color: Colors.white),
+              )),
+        ])));
   }
 
   //图片查看
@@ -107,38 +107,25 @@ class ImagePageState extends State<ImagePage> {
           },
           child: Container(
             alignment: Alignment.bottomCenter,
-            child: Icon(Icons.download, color: Colors.white, size: (1 / 13).sw),
+            child: Icon(Icons.download, color: Colors.white, size: 50.r),
           )),
-      GestureDetector(
-          //返回按钮
-          onTap: () {
-            Get.back();
-          },
-          child: Container(
-              alignment: Alignment.topLeft,
-              child: Stack(children: [
-                Container(
-                  //标题栏
-                  color: Colors.black,
-                  width: 1.sw,
-                  height: (1 / 24).sh,
-                ),
-                //返回图标
-                Icon(Icons.chevron_left,
-                    color: Colors.white, size: (1 / 13).sw),
-                //图鉴名字
-                Container(
-                    alignment: Alignment.topCenter,
-                    child: Padding(
-                        padding: EdgeInsets.only(top: (1 / 96).sh),
-                        child: Text(
-                          imageName,
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 25.sp,
-                              decoration: TextDecoration.none),
-                        )))
-              ])))
+      Container(
+          alignment: Alignment.topLeft,
+          child: Stack(children: [
+            Container(
+              //标题栏
+              color: Colors.black,
+              width: 540.w,
+              height: 50.h,
+            ),
+            //返回图标
+            GestureDetector(
+                onTap: () {
+                  Get.back();
+                },
+                child:
+                    Icon(Icons.chevron_left, color: Colors.white, size: 50.r)),
+          ]))
     ]));
   }
 

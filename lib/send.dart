@@ -25,7 +25,7 @@ class LeftTextMsg extends StatelessWidget {
   Widget build(BuildContext context) {
     return FrameSeparateWidget(
         child: Container(
-            margin: EdgeInsets.only(top: 4, bottom: 4), //消息间隔
+            margin: EdgeInsets.only(top: 10.h), //消息间隔
             child: Entry.offset(
                 child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start, //垂直顶部对齐
@@ -36,24 +36,18 @@ class LeftTextMsg extends StatelessWidget {
                       child: Container(
                           //头像容器
                           margin: EdgeInsets.only(
-                              left: (1 / 120).sh,
-                              right: (1 / 120).sh), //头像和气泡间距
+                              left: 10.w, right: 4.5.w), //头像和气泡间距
                           child: CircleAvatar(
                               //头像图标
-                              radius: (1 / 23).sw, //头像尺寸
+                              radius: 30.r, //头像尺寸
                               backgroundImage:
                                   AssetImage(whoAvater(who)) //加载左边头像
                               ))),
                   // 消息气泡容器
                   Container(
-                      margin: EdgeInsets.only(top: 2),
-                      constraints:
-                          BoxConstraints(maxWidth: (1 / 1.3).sw), //限制容器最大宽度
-                      padding: EdgeInsets.only(
-                          top: (1 / 87).sh,
-                          left: (1 / 49).sw,
-                          right: (1 / 49).sw,
-                          bottom: (1 / 87).sh), //容器内边距
+                      margin: EdgeInsets.only(top: 5.h),
+                      constraints: BoxConstraints(maxWidth: 420.w), //限制容器最大宽度
+                      padding: EdgeInsets.all(10.r), //容器内边距
                       //圆角
                       decoration: BoxDecoration(
                           color: Color.fromRGBO(38, 38, 38, 1), //容器背景颜色
@@ -65,7 +59,7 @@ class LeftTextMsg extends StatelessWidget {
                         softWrap: true, //自动换行
                         textAlign: TextAlign.left, //文本左对齐
                         style: TextStyle(
-                            fontSize: 20.sp, color: Colors.white), //文本样式
+                            fontSize: 25.sp, color: Colors.white), //文本样式
                       ))
                 ]))));
   }
@@ -82,6 +76,7 @@ class LeftImgMsg extends StatelessWidget {
     return jsonString;
   }
 
+  //图片查看
   buildImageView(imageName) {
     return Container(
         child: Stack(children: [
@@ -97,12 +92,11 @@ class LeftImgMsg extends StatelessWidget {
                 Container(
                   //标题栏
                   color: Colors.black,
-                  width: 1.sw,
-                  height: (1 / 24).sh,
+                  width: 430.w,
+                  height: 50.h,
                 ),
                 //返回图标
-                Icon(Icons.chevron_left,
-                    color: Colors.white, size: (1 / 13.5).sw),
+                Icon(Icons.chevron_left, color: Colors.white, size: 50.r),
               ])))
     ]));
   }
@@ -111,7 +105,7 @@ class LeftImgMsg extends StatelessWidget {
   Widget build(BuildContext context) {
     return FrameSeparateWidget(
         child: Container(
-            margin: EdgeInsets.only(top: 5), //消息间隔
+            margin: EdgeInsets.only(top: 10.h), //消息间隔
             child: Entry.offset(
                 child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start, //垂直顶部对齐
@@ -121,12 +115,11 @@ class LeftImgMsg extends StatelessWidget {
                   GestureDetector(
                       onTap: () => Get.to(TrendPage()),
                       child: Container(
-                          margin: EdgeInsets.only(
-                              left: (1 / 120).sh,
-                              right: (1 / 120).sh), //头像和气泡间距
+                          margin:
+                              EdgeInsets.only(left: 10.w, right: 5.w), //头像和气泡间距
                           child: CircleAvatar(
                               //头像图标
-                              radius: (1 / 20).sw, //头像尺寸
+                              radius: 30.r, //头像尺寸
                               backgroundImage:
                                   AssetImage(whoAvater(who)) //加载左边头像
                               ))),
@@ -143,8 +136,8 @@ class LeftImgMsg extends StatelessWidget {
                         clipBehavior: Clip.antiAlias,
                         child: Image.asset(
                           'assets/images/' + img + '.png',
-                          width: 0.36.sw, //图片宽
-                          height: 0.27.sh, //图片高
+                          width: 195.w, //图片宽
+                          height: 260.h, //图片高
                         ),
                       ))
                 ]))));
@@ -165,7 +158,7 @@ class RightMsg extends StatelessWidget {
   Widget build(BuildContext context) {
     return FrameSeparateWidget(
         child: Container(
-            margin: EdgeInsets.only(top: 5), //消息间隔
+            margin: EdgeInsets.only(top: 10.h), //消息间隔
             child: Entry.offset(
                 child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start, //垂直顶部对齐
@@ -173,14 +166,9 @@ class RightMsg extends StatelessWidget {
                     children: <Widget>[
                   // 消息气泡容器
                   Container(
-                      margin: EdgeInsets.only(top: (1 / 120).sh),
-                      constraints:
-                          BoxConstraints(maxWidth: (1 / 1.2).sw), //限制容器最大宽度
-                      padding: EdgeInsets.only(
-                          top: (1 / 87).sh,
-                          left: (1 / 49).sw,
-                          right: (1 / 46).sw,
-                          bottom: (1 / 87).sh), //容器内边距
+                      margin: EdgeInsets.only(top: 10.h),
+                      constraints: BoxConstraints(maxWidth: 420.w), //限制容器最大宽度
+                      padding: EdgeInsets.all(10.r), //容器内边距
                       //圆角
                       decoration: BoxDecoration(
                           color: Color.fromRGBO(38, 38, 38, 1), //容器背景颜色
@@ -192,18 +180,17 @@ class RightMsg extends StatelessWidget {
                         softWrap: true, //自动换行
                         textAlign: TextAlign.left, //文本左对齐
                         style: TextStyle(
-                            fontSize: 20.sp, color: Colors.white), //文本样式
+                            fontSize: 25.sp, color: Colors.white), //文本样式
                       )),
                   GestureDetector(
                       onTap: () {},
                       child: Container(
                           //头像容器
                           margin: EdgeInsets.only(
-                              right: (1 / 120).sh,
-                              left: (1 / 120).sh), //头像和气泡间距
+                              right: 10.w, left: 10.h), //头像和气泡间距
                           child: CircleAvatar(
                               //头像图标
-                              radius: (1 / 20).sw, //头像尺寸
+                              radius: 30.r, //头像尺寸
                               backgroundColor: Color.fromRGBO(0, 0, 0, 1),
                               child: playerAvater() //加载右边头像
                               ))),
@@ -225,18 +212,14 @@ class MiddleMsg extends StatelessWidget {
   Widget build(BuildContext context) {
     return FrameSeparateWidget(
         child: Container(
-            margin: EdgeInsets.only(top: 5), //消息间隔
+            margin: EdgeInsets.only(top: 10.h), //消息间隔
             child: Entry.offset(
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.center, //水平居中对齐
                     children: <Widget>[
                   // 消息气泡容器
                   Container(
-                      padding: EdgeInsets.only(
-                          top: (1 / 87).sh,
-                          left: (1 / 49).sw,
-                          right: (1 / 49).sw,
-                          bottom: (1 / 87).sh), //容器内边距
+                      padding: EdgeInsets.all(10.r), //容器内边距
                       //圆角
                       decoration: BoxDecoration(
                           color: Color.fromRGBO(38, 38, 38, 1), //容器背景颜色
@@ -247,7 +230,7 @@ class MiddleMsg extends StatelessWidget {
                         text,
                         textAlign: TextAlign.center, //文本居中对齐
                         style: TextStyle(
-                            fontSize: 15.sp,
+                            fontSize: 20.sp,
                             color: Color.fromRGBO(119, 119, 119, 1)), //文本样式
                       )),
                 ]))));

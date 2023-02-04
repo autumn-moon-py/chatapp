@@ -17,7 +17,7 @@ class ChatPage extends StatefulWidget {
 }
 
 //聊天页面布局
-class ChatPageState extends State<ChatPage> {
+class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
   final TextEditingController _textController =
       TextEditingController(); //输入框状态控件
   ScrollController _scrollController = ScrollController(); //动态列表控件
@@ -27,25 +27,78 @@ class ChatPageState extends State<ChatPage> {
   String _chatName = "Miko";
   bool switchValue = false;
 
+  @override
+  void initState() {
+    loadMessage();
+    load();
+    loadMap();
+    loadtrend();
+    backgroundMusic();
+    packageInfoList();
+    WidgetsBinding.instance.addObserver(this); //增加监听者
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    //页面销毁时，移出监听者
+    WidgetsBinding.instance.removeObserver(this);
+  }
+
+//监听程序进入前后台的状态改变的方法
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    switch (state) {
+      //前台
+      case AppLifecycleState.resumed:
+        if (backgroundMusicSwitch) {
+          bgmplayer.play();
+        }
+        break;
+      //应用状态处于闲置状态
+      // 这个状态切换到前后台会触发，所以流程应该是先冻结窗口，然后停止UI
+      case AppLifecycleState.inactive:
+        if (backgroundMusicSwitch) {
+          bgmplayer.pause();
+        }
+        break;
+      //当前页面即将退出
+      case AppLifecycleState.detached:
+        break;
+      // 后台
+      case AppLifecycleState.paused:
+        if (backgroundMusicSwitch) {
+          bgmplayer.pause();
+        }
+        break;
+    }
+  }
+
   //聊天窗口布局
   @override
   Widget build(BuildContext context) {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
         overlays: [SystemUiOverlay.bottom]);
+
     return Scaffold(
         //聊天窗口容器
         body: Stack(children: [
+      // Container(width: 1.sw, height: 2.sh, color: Colors.black),
       //点击监控
       GestureDetector(
         onTap: () {
           userFocusNode.unfocus(); //点击聊天窗口丢失焦点
         },
         //背景
-        child: Image.asset('assets/images/聊天背景.png', width: 1.sw, height: 1.sh),
+        child: Positioned.fill(
+            child: Image.asset('assets/images/聊天背景.png',
+                height: 1.sh, fit: BoxFit.cover)),
       ),
       Padding(
         //聊天窗口内边距
-        padding: EdgeInsets.only(top: 45, bottom: 60, left: 5, right: 5),
+        padding: EdgeInsets.only(top: 45.h, bottom: 80.h),
         child: GestureDetector(
             onTap: () {
               userFocusNode.unfocus(); //点击聊天窗口丢失焦点
@@ -67,16 +120,12 @@ class ChatPageState extends State<ChatPage> {
       Align(
         alignment: Alignment.topCenter,
         child: Container(
-          padding: EdgeInsets.only(top: 0.02.sh),
+          padding: EdgeInsets.only(top: 10.h),
           color: Colors.black,
           width: 1.sw,
-          height: 0.0625.sh,
+          height: 50.h,
           child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  loadMessage();
-                });
-              },
+              onTap: () {},
               child: Text(
                 _chatName,
                 style: TextStyle(fontSize: 30.sp, color: Colors.white),
@@ -102,20 +151,20 @@ class ChatPageState extends State<ChatPage> {
             Get.to(ImagePage());
           },
           child: Container(
-            padding: EdgeInsets.only(top: (1 / 64).sh, left: (1 / 54).sw),
+            padding: EdgeInsets.only(top: 10.h, left: 10.w),
             alignment: Alignment.topLeft,
-            child: Icon(Icons.menu, color: Colors.white, size: (1 / 13.5).sw),
+            child: Icon(Icons.menu, color: Colors.white, size: 40.r),
           )),
+      //设置按钮
       GestureDetector(
           onTap: () async {
-            load();
-            Get.to(SettingPage());
+            Get.to(SettingPage('chat'));
           },
           child: Container(
-            padding: EdgeInsets.only(top: (1 / 64).sh, left: (1 / 1.1).sw),
-            alignment: Alignment.topLeft,
-            child:
-                Icon(Icons.settings, color: Colors.white, size: (1 / 13.5).sw),
+            width: 1.sw,
+            padding: EdgeInsets.only(top: 8.h, right: 5.w),
+            alignment: Alignment.topRight,
+            child: Icon(Icons.settings, color: Colors.white, size: 40.r),
           ))
     ]));
   }
@@ -128,16 +177,16 @@ class ChatPageState extends State<ChatPage> {
     isChoose.value = true;
     return Container(
       width: 1.sw,
-      height: 0.083.sh,
+      height: 80.h,
       color: Colors.black,
       child: Row(children: [
         //选项一按钮
         SpringButton(
           SpringButtonType.OnlyScale,
           Container(
-            width: 0.45.sw,
-            height: 0.0625.sh,
-            margin: EdgeInsets.only(left: (0.1 / 3).sw, right: (0.1 / 3).sw),
+            width: 250.w,
+            height: 60.h,
+            margin: EdgeInsets.only(left: 13.w, right: 13.w),
             decoration: BoxDecoration(
                 color: Colors.blueAccent,
                 borderRadius: BorderRadius.all(Radius.circular(5.0))),
@@ -146,17 +195,20 @@ class ChatPageState extends State<ChatPage> {
                 child: Text(
                   choose_one,
                   softWrap: true,
-                  style: TextStyle(color: Colors.white, fontSize: 25.sp),
+                  style: TextStyle(color: Colors.white, fontSize: 30.sp),
                 )),
           ),
-          onTap: () => choose(choose_one),
+          onTap: () {
+            buttonMusic();
+            choose(choose_one);
+          },
         ),
         //选项二按钮
         SpringButton(
           SpringButtonType.OnlyScale,
           Container(
-            width: 0.45.sw,
-            height: 0.0625.sh,
+            width: 250.w,
+            height: 60.h,
             decoration: BoxDecoration(
                 color: Colors.blueAccent,
                 borderRadius: BorderRadius.all(Radius.circular(5.0))),
@@ -165,10 +217,13 @@ class ChatPageState extends State<ChatPage> {
                 child: Text(
                   choose_two,
                   softWrap: true,
-                  style: TextStyle(color: Colors.white, fontSize: 25.sp),
+                  style: TextStyle(color: Colors.white, fontSize: 30.sp),
                 )),
           ),
-          onTap: () => choose(choose_two),
+          onTap: () {
+            buttonMusic();
+            choose(choose_two);
+          },
         ),
       ]),
     );
@@ -195,16 +250,16 @@ class ChatPageState extends State<ChatPage> {
   Widget _buildTextComposer() {
     return Container(
         width: 1.sw, //底部宽
-        height: 0.083.sh, //底部高
+        height: 75.h, //底部高
         color: Colors.black, //底部背景颜色
-        child: Row(
+        child: Wrap(
+          crossAxisAlignment: WrapCrossAlignment.center,
           children: [
             //输入框容器
             Container(
-              // width: (1 / 1.21).sw, //输入框宽
-              width: 270,
-              height: 0.05.sh, //输入框高
-              margin: EdgeInsets.only(left: 5), //外边距
+              width: 370.w,
+              height: 50.h, //输入框高
+              margin: EdgeInsets.only(left: 10.w), //外边距
               decoration: BoxDecoration(
                   color: Color.fromRGBO(26, 26, 26, 1), //输入框背景色
                   borderRadius: BorderRadius.all(Radius.circular(5.0)) //圆角角度
@@ -220,13 +275,13 @@ class ChatPageState extends State<ChatPage> {
                 onSubmitted: handleSubmitted, //回车调用发送消息
                 focusNode: userFocusNode, //输入框焦点控制
                 style: TextStyle(
-                    height: 1.5,
-                    fontSize: 20.sp,
+                    height: 2.h,
+                    fontSize: 25.sp,
                     color: Colors.white), //输入框内光标大小
                 decoration: InputDecoration(
                     enabledBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.black)), //输入框下划线颜色
-                    contentPadding: EdgeInsets.only(bottom: 15, left: 5)),
+                    contentPadding: EdgeInsets.only(bottom: 22.h, left: 10.w)),
               ),
             ),
             GestureDetector(
@@ -249,8 +304,8 @@ class ChatPageState extends State<ChatPage> {
                   borderRadius: BorderRadius.circular(5),
                   child: Container(
                     alignment: Alignment.center,
-                    width: (1 / 8).sw,
-                    height: 25,
+                    width: 68.w,
+                    height: 40.h,
                     color: Color.fromRGBO(0, 101, 202, 1),
                     child: Text(
                       "发送",
@@ -263,7 +318,18 @@ class ChatPageState extends State<ChatPage> {
   }
 
   //发送消息
-  void handleSubmitted(String text) {
+  Future<void> handleSubmitted(String text) async {
+    // if (await Permission.notification.request().isGranted) {
+    //   debugPrint("isGranted true");
+    //   //点击发送通知
+    //   Map params = {};
+    //   params['type'] = 200;
+    //   params['id'] = "10086";
+    //   params['content'] = "content";
+    //   notification.send("Miko", text, params: json.encode(params));
+    // } else {
+    //   requestPermission(Permission.notification);
+    // }
     if (text.isEmpty) {
       userFocusNode.unfocus(); //丢失输入框焦点,收起软键盘
       return null; //不发送空消息

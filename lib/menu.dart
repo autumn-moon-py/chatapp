@@ -28,8 +28,8 @@ buildMenu(String nowPage) {
         children: [
           Container(
             color: Colors.black,
-            width: 1.sw,
-            height: 40,
+            width: 540.w,
+            height: 40.h,
           ),
           Row(children: [
             GestureDetector(
@@ -37,14 +37,15 @@ buildMenu(String nowPage) {
                 Get.to(ImagePage());
               },
               child: Container(
-                width: (1 / 3).sw,
-                height: 40,
+                color: Color.fromRGBO(255, 255, 255, 0),
+                width: 180.w,
+                height: 40.h,
                 child: Align(
                     alignment: Alignment.center,
                     child: Text('图鉴',
                         textAlign: TextAlign.center,
-                        style:
-                            TextStyle(color: imageBottonColor, fontSize: 20))),
+                        style: TextStyle(
+                            color: imageBottonColor, fontSize: 25.sp))),
               ),
             ),
             GestureDetector(
@@ -52,14 +53,15 @@ buildMenu(String nowPage) {
                 Get.to(DictionaryPage());
               },
               child: Container(
-                width: (1 / 3).sw,
-                height: 40,
+                color: Color.fromRGBO(255, 255, 255, 0),
+                width: 180.w,
+                height: 40.h,
                 child: Align(
                     alignment: Alignment.center,
                     child: Text('词典',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            color: dictionaryBottonColor, fontSize: 20))),
+                            color: dictionaryBottonColor, fontSize: 25.sp))),
               ),
             ),
             GestureDetector(
@@ -67,14 +69,15 @@ buildMenu(String nowPage) {
                 Get.to(ChapterPage());
               },
               child: Container(
-                width: (1 / 3).sw,
-                height: 40,
+                color: Color.fromRGBO(255, 255, 255, 0),
+                width: 180.w,
+                height: 40.h,
                 child: Align(
                     alignment: Alignment.center,
                     child: Text('章节',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            color: chapterButtonColor, fontSize: 20))),
+                            color: chapterButtonColor, fontSize: 25.sp))),
               ),
             )
           ])
@@ -95,11 +98,11 @@ float1() {
   );
 }
 
-float2() {
+float2(String where) {
   return Container(
     child: FloatingActionButton(
       onPressed: () {
-        Get.to(SettingPage());
+        Get.to(SettingPage(where));
       },
       heroTag: "btn2",
       tooltip: '设置',
@@ -108,9 +111,9 @@ float2() {
   );
 }
 
-floatButton() {
+floatButton(String where) {
   return AnimatedFloatingActionButton(
-      fabButtons: [float1(), float2()],
+      fabButtons: [float1(), float2(where)],
       colorStartAnimation: Colors.blue,
       colorEndAnimation: Colors.red,
       animatedIconData: AnimatedIcons.menu_close);

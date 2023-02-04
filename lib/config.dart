@@ -1,12 +1,14 @@
 import 'dart:convert';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:just_audio/just_audio.dart';
 
 import 'send.dart';
 import 'trend.dart';
 
 SharedPreferences? local; //本地存储数据
-bool isNewImage = false; //AI图鉴
+bool isNewImage = true; //AI图鉴
 bool scrolling = true; //自动滚屏
 bool waitTyping = false; //打字时间
 bool waitOffline = true; //是否等待下线
@@ -20,8 +22,14 @@ List<String> messagesInfo = []; //消息信息列表
 List trends = []; //动态容器列表
 List<String> trendsInfo = []; //动态信息列表
 String chatName = "Miko"; //聊天对象名称
-List imageList = isNewImage ? imageList2 : imageList1; //图鉴列表
-//Miko头像更换
+List<String> imageList = imageList1; //图鉴列表
+bool backgroundMusicSwitch = true; //音乐
+bool isOldBgm = false; //新旧BGM
+final bgmplayer = AudioPlayer();
+bool buttonMusicSwitch = true; //音效
+final buttonplayer = AudioPlayer();
+late String version; //应用发布版本号
+///Miko头像更换
 List mikoDropdownList = [
   {'label': '头像1', 'value': 1},
   {'label': '头像2', 'value': 2},
@@ -36,8 +44,9 @@ List playerDropdownList = [
   {'label': '默认头像', 'value': 0},
   {'label': '上传图片', 'value': 1}
 ];
-//旧图鉴
-const List imageList1 = [
+
+///旧图鉴
+const List<String> imageList1 = [
   'S1-01',
   'S1-02',
   'S1-03',
@@ -94,8 +103,9 @@ const List imageList1 = [
   'W1-08',
   'W1-09',
 ];
-//新图鉴
-const List imageList2 = [
+
+///新图鉴
+const List<String> imageList2 = [
   'S1-01-n',
   'S1-02',
   'S1-03',
@@ -152,7 +162,8 @@ const List imageList2 = [
   'W1-08',
   'W1-09',
 ];
-//图鉴解锁
+
+///图鉴解锁
 Map imageMap = {
   '0': false,
   'E1-01-n': false,
@@ -167,8 +178,8 @@ Map imageMap = {
   'E3-01': false,
   'E3-02': false,
   'E3-03': false,
-  'S1-01-n': false,
-  'S1-01': false,
+  'S1-01-n': true,
+  'S1-01': true,
   'S1-02': false,
   'S1-03': false,
   'S1-04': false,
@@ -227,7 +238,8 @@ Map imageMap = {
   'W1-08': false,
   'W1-09': false
 };
-//章节列表
+
+///章节列表
 const List chapterList = [
   '第一章',
   '番外一',
@@ -239,7 +251,8 @@ const List chapterList = [
   '第五章',
   '第六章'
 ];
-//词典列表
+
+///词典列表
 const List dictionaryList = [
   '软件',
   '西武百货',
@@ -366,11 +379,12 @@ const List dictionaryList = [
   '柯南',
   '《美丽新世界》'
 ];
-//词典解锁
+
+///词典解锁
 Map dictionaryMap = {
   '软件': [
     '第一章',
-    'false',
+    'true',
     '这里特指异次元通讯，是睿果工作室出品的一款手机app，用于即时通讯，经大量用户反馈，相连接的用户之间似乎存在着某种未知的羁绊，原理不明'
   ],
   '西武百货': [
@@ -845,7 +859,8 @@ Map dictionaryMap = {
     '《美丽新世界》是英国作家阿道司·赫胥黎创作的长篇小说。该作主要刻画了一个距今600年的未来世界，物质生活十分丰富，科学技术高度发达，人们接受着各种安于现状的制约和教育，所有的一切都被标准统一化，人的欲望可以随时随地得到完全满足，享受着衣食无忧的日子，不必担心生老病死带来的痛苦，然而在机械文明的社会中却无所谓家庭、个性、情绪、自由和道德，人与人之间根本不存在真实的情感，人性在机器的碾磨下灰飞烟灭。'
   ]
 };
-//保存数据
+
+///保存设置
 save() async {
   local = await SharedPreferences.getInstance();
   await local?.setBool('isNewImage', isNewImage);
@@ -855,9 +870,12 @@ save() async {
   await local?.setBool('waitOffline', waitOffline);
   await local?.setString('playerAvatarSet', playerAvatarSet);
   await local?.setInt('playerNowAvater', playerNowAvater);
+  await local?.setBool('backgroundMusicSwitch', backgroundMusicSwitch);
+  await local?.setBool('buttonMusicSwitch', buttonMusicSwitch);
+  await local?.setBool('isOldBgm', isOldBgm);
 }
 
-//读取数据
+///读取设置
 load() async {
   local = await SharedPreferences.getInstance();
   isNewImage = local?.getBool('isNewImage') ?? false;
@@ -867,9 +885,12 @@ load() async {
   waitOffline = local?.getBool('waitOffline') ?? true;
   playerAvatarSet = local?.getString('playerAvatarSet') ?? '默认';
   playerNowAvater = local?.getInt('playerNowAvater') ?? 0;
+  backgroundMusicSwitch = local?.getBool('backgroundMusicSwitch') ?? true;
+  buttonMusicSwitch = local?.getBool('buttonMusicSwitch') ?? true;
+  isOldBgm = local?.getBool('isOldBgm') ?? false;
 }
 
-//检查权限
+///检查权限
 checkPermission() async {
   Permission permission = Permission.storage;
   PermissionStatus status = await permission.status;
@@ -895,7 +916,7 @@ checkPermission() async {
   }
 }
 
-//申请权限
+///申请权限
 requestPermission(Permission permission) async {
   //发起权限申请
   PermissionStatus status = await permission.request();
@@ -905,7 +926,7 @@ requestPermission(Permission permission) async {
   }
 }
 
-//保存图鉴和词典
+///保存图鉴和词典
 saveMap() async {
   local = await SharedPreferences.getInstance();
   //Map转jsonString
@@ -918,7 +939,7 @@ saveMap() async {
   local?.setString('dictionaryMap', dictionaryMapJson);
 }
 
-//读取图鉴和词典
+///读取图鉴和词典
 loadMap() async {
   local = await SharedPreferences.getInstance();
   bool checkKey1 = local?.containsKey('imageMap') ?? false;
@@ -941,14 +962,14 @@ loadMap() async {
   }
 }
 
-//保存历史消息和动态
+///保存历史消息和动态
 saveChat() async {
   local = await SharedPreferences.getInstance();
   local?.setStringList('messagesInfo', messagesInfo);
   local?.setStringList('trendsInfo', trendsInfo);
 }
 
-//读取动态
+///读取动态
 loadtrend() async {
   local = await SharedPreferences.getInstance();
   trendsInfo = await local?.getStringList('trendsInfo') ?? [];
@@ -968,7 +989,22 @@ loadtrend() async {
   }
 }
 
-//读取历史消息
+///清除缓存
+delAll() async {
+  local = await SharedPreferences.getInstance();
+  List<String> keys = local?.getKeys().toList() ?? [];
+  keys.forEach((key) {
+    local?.remove(key);
+  });
+  messages = [];
+  trends = [];
+  messagesInfo = [];
+  trendsInfo = [];
+  // EasyLoading.showToast('已清除缓存',
+  //     toastPosition: EasyLoadingToastPosition.bottom);
+}
+
+///读取历史消息
 loadMessage() async {
   local = await SharedPreferences.getInstance();
   messagesInfo = await local?.getStringList('messagesInfo') ?? [];
@@ -1021,4 +1057,36 @@ loadMessage() async {
 fromJsonString(String jsonString) {
   final Info = jsonDecode(jsonString);
   return Info;
+}
+
+///播放背景音乐
+backgroundMusic() {
+  String bgmPath =
+      isOldBgm ? 'assets/music/背景音乐-旧.mp3' : 'assets/music/背景音乐.mp3';
+  bgmplayer.setAsset(bgmPath);
+  bgmplayer.setVolume(0.5);
+  bgmplayer.setLoopMode(LoopMode.all);
+  if (backgroundMusicSwitch) {
+    bgmplayer.play();
+  } else {
+    bgmplayer.pause();
+  }
+}
+
+///播放按钮音效
+buttonMusic() {
+  buttonplayer.setAsset('assets/music/选项音效.mp3');
+  buttonplayer.setVolume(1);
+  buttonplayer.setLoopMode(LoopMode.off);
+  if (buttonMusicSwitch) {
+    buttonplayer.play();
+  } else {
+    buttonplayer.pause();
+  }
+}
+
+///查询应用信息
+packageInfoList() async {
+  PackageInfo packageInfo = await PackageInfo.fromPlatform();
+  version = packageInfo.version;
 }
