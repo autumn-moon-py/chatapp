@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,7 +28,9 @@ bool backgroundMusicSwitch = true; //音乐
 bool isOldBgm = false; //新旧BGM
 final bgmplayer = AudioPlayer();
 bool buttonMusicSwitch = true; //音效
+double sliderValue = 10; //语音音量
 final buttonplayer = AudioPlayer();
+final voiceplayer = AudioPlayer();
 late String version; //应用发布版本号
 ///Miko头像更换
 List mikoDropdownList = [
@@ -873,6 +876,7 @@ save() async {
   await local?.setBool('backgroundMusicSwitch', backgroundMusicSwitch);
   await local?.setBool('buttonMusicSwitch', buttonMusicSwitch);
   await local?.setBool('isOldBgm', isOldBgm);
+  await local?.setDouble('sliderValue', sliderValue);
 }
 
 ///读取设置
@@ -888,11 +892,11 @@ load() async {
   backgroundMusicSwitch = local?.getBool('backgroundMusicSwitch') ?? true;
   buttonMusicSwitch = local?.getBool('buttonMusicSwitch') ?? true;
   isOldBgm = local?.getBool('isOldBgm') ?? false;
+  sliderValue = local?.getDouble('sliderValue') ?? 10;
 }
 
 ///检查权限
-checkPermission() async {
-  Permission permission = Permission.storage;
+checkPermission(Permission permission) async {
   PermissionStatus status = await permission.status;
   if (status.isGranted) {
     //权限通过
@@ -1083,6 +1087,23 @@ buttonMusic() {
   } else {
     buttonplayer.pause();
   }
+}
+
+//语音彩蛋
+voice(double volume) {
+  int res = Random().nextInt(2);
+  voiceplayer.setLoopMode(LoopMode.off);
+  voiceplayer.setVolume(volume / 10);
+  if (res == 0) {
+    voiceplayer.setAsset('assets/music/喂.mp3');
+  }
+  if (res == 1) {
+    voiceplayer.setAsset('assets/music/我在哦.mp3');
+  }
+  if (res == 2) {
+    voiceplayer.setAsset('assets/music/听得见吗.mp3');
+  }
+  voiceplayer.play();
 }
 
 ///查询应用信息

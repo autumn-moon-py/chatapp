@@ -117,11 +117,7 @@ class DictionaryPageState extends State<DictionaryPage> {
                           dictionaryName,
                           style:
                               TextStyle(color: Colors.white, fontSize: 25.sp),
-                        ),
-                        Container(
-                            padding: EdgeInsets.only(left: 115.w),
-                            child: Icon(Icons.chevron_right,
-                                color: Colors.white, size: 40.r))
+                        )
                       ])))),
         ));
   }

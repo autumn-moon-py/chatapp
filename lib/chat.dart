@@ -31,6 +31,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
   void initState() {
     loadMessage();
     backgroundMusic();
+    packageInfoList();
     WidgetsBinding.instance.addObserver(this); //增加监听者
     super.initState();
   }
@@ -88,7 +89,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
         },
         //背景
         child: Image.asset('assets/images/聊天背景.png',
-            height: 1.sh, fit: BoxFit.cover),
+            width: 1.sw, height: 1.sh, fit: BoxFit.fitWidth),
       ),
 
       GestureDetector(

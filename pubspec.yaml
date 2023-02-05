@@ -56,6 +56,9 @@ dependencies:
   device_preview: ^1.1.0 #预览各种设备
   url_launcher: ^6.1.8 #访问链接
   # flutter_native_splash: ^2.2.17 #生成闪屏页
+  dio: ^4.0.6 #网络请求
+  path_provider: ^2.0.12 #路径查询
+  cached_network_image: ^3.2.3 #缓存图片
 
 
 dev_dependencies:

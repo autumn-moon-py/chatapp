@@ -1,6 +1,7 @@
 import 'package:chatapp/chat.dart';
 import 'package:chatapp/image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import "package:get/get.dart";
 import 'package:cool_dropdown/cool_dropdown.dart';
@@ -112,6 +113,53 @@ class SettingPageState extends State<SettingPage> {
                                       buttonMusicSwitch = value;
                                       setState(() {});
                                     }),
+                                Divider(
+                                  color: Colors.white,
+                                  height: 0,
+                                  indent: 20.w,
+                                  endIndent: 30.w,
+                                  thickness: 1,
+                                ),
+                                Padding(
+                                    padding: EdgeInsets.only(left: 22.w),
+                                    child: Row(
+                                      children: <Widget>[
+                                        Text('语音音量',
+                                            style: TextStyle(
+                                                fontSize: 25.sp,
+                                                color: Colors.white)),
+                                        Padding(
+                                            padding:
+                                                EdgeInsets.only(left: 130.w),
+                                            child: Slider(
+                                              value: sliderValue,
+                                              onChanged: (data) {
+                                                // print('change:$data');
+                                                voice(data);
+                                                setState(() {
+                                                  sliderValue = data;
+                                                });
+                                              },
+                                              onChangeStart: (data) {
+                                                // print('start:$data');
+                                              },
+                                              onChangeEnd: (data) {
+                                                // print('end:$data');
+                                              },
+                                              min: 0.0,
+                                              max: 10.0,
+                                              divisions: 10,
+                                              label: '$sliderValue',
+                                              activeColor: Color.fromRGBO(
+                                                  0, 102, 203, 1),
+                                              inactiveColor: Colors.grey,
+                                              semanticFormatterCallback:
+                                                  (double newValue) {
+                                                return '${newValue.round()} dollars}';
+                                              },
+                                            ))
+                                      ],
+                                    ))
                               ]),
                         ))),
                 Padding(
@@ -510,12 +558,6 @@ class MyAppInfo extends StatefulWidget {
 
 class _MyAppInfoState extends State<MyAppInfo> {
   @override
-  void initState() {
-    packageInfoList();
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Stack(children: [
       Container(
@@ -535,10 +577,24 @@ class _MyAppInfoState extends State<MyAppInfo> {
                     width: 100.w,
                     height: 100.h,
                   )),
-              Container(
-                  padding: EdgeInsets.only(top: 10.h),
-                  child: Text('异次元通讯 - 次元复苏',
-                      style: TextStyle(color: Colors.grey, fontSize: 25.sp))),
+              GestureDetector(
+                  onDoubleTap: () {
+                    imageMap.forEach((key, value) {
+                      imageMap.update(key, (value) => true);
+                    });
+                    dictionaryMap.forEach((key, value) {
+                      List dt = dictionaryMap[key];
+                      dt[1] = 'true';
+                      dictionaryMap[key] = dt;
+                    });
+                    EasyLoading.showToast('恭喜你触发彩蛋,本次启动解锁全图鉴和词典,下次启动恢复原本解锁状态',
+                        toastPosition: EasyLoadingToastPosition.bottom);
+                  },
+                  child: Container(
+                      padding: EdgeInsets.only(top: 10.h),
+                      child: Text('异次元通讯 - 次元复苏',
+                          style:
+                              TextStyle(color: Colors.grey, fontSize: 25.sp)))),
               Container(
                   padding: EdgeInsets.only(top: 10.h, bottom: 10.h),
                   child:

@@ -1,7 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:keframe/keframe.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:get/get.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
@@ -84,7 +87,8 @@ class ImagePageState extends State<ImagePage> {
                       toastPosition: EasyLoadingToastPosition.bottom);
                 }
               },
-              child: Image.asset('assets/images/$_imageName.png')),
+              // child: Image.asset('assets/images/$_imageName.png')),
+              child: loadImg(_imageName)),
           Padding(
               //图鉴名字
               padding: EdgeInsets.only(top: 5.h),
@@ -95,14 +99,53 @@ class ImagePageState extends State<ImagePage> {
         ])));
   }
 
+  //缓存图片
+  Widget loadImg(imageName) {
+    if (imageName == '0') {
+      return Image.asset('assets/images/0.png');
+    } else {
+      return CachedNetworkImage(
+        placeholder: (context, url) => CircularProgressIndicator(),
+        imageUrl: 'https://img.subrecovery.top/$imageName.png',
+        errorWidget: (context, url, error) => Text(
+          '加载失败,请检查网络',
+          style: TextStyle(color: Colors.white, fontSize: 30.sp),
+        ),
+      );
+    }
+  }
+
   //图片查看
   buildImageView(imageName) {
     return Container(
         child: Stack(children: [
-      PhotoView(imageProvider: AssetImage('assets/images/$imageName.png')),
+      // PhotoView(imageProvider: AssetImage('assets/images/$imageName.png')),
+      PhotoView(
+          loadingBuilder: (context, event) => Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(),
+                    Padding(
+                        padding: EdgeInsets.only(top: 10.h),
+                        child: Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              '第一次加载可能缓慢,请耐心等待',
+                              style: TextStyle(
+                                  color: Colors.black, fontSize: 30.sp),
+                            )))
+                  ]),
+          errorBuilder: (context, error, stackTrace) => Text(
+                '加载失败,请检查网络',
+                style: TextStyle(color: Colors.black, fontSize: 30.sp),
+              ),
+          imageProvider:
+              NetworkImage('https://img.subrecovery.top/$imageName.png')),
       GestureDetector(
           //下载按钮
           onTap: () {
+            // saveImage(imageName);
             downloadImage(imageName);
           },
           child: Container(
@@ -129,9 +172,9 @@ class ImagePageState extends State<ImagePage> {
     ]));
   }
 
-  //保存图片到本地
-  downloadImage(imageName) async {
-    if (await checkPermission()) {
+  //保存资源图片到本地
+  saveImage(imageName) async {
+    if (await checkPermission(Permission.storage)) {
       Uint8List imageBytes;
       ByteData bytes = await rootBundle.load('assets/images/$imageName.png');
       imageBytes = bytes.buffer.asUint8List();
@@ -141,6 +184,33 @@ class ImagePageState extends State<ImagePage> {
           colorText: Colors.white,
           shouldIconPulse: true,
           duration: Duration(seconds: 2));
+    }
+  }
+
+  //下载网络图片
+  downloadImage(imageName) async {
+    Get.snackbar('系统提示', '图片下载中',
+        colorText: Colors.white,
+        shouldIconPulse: true,
+        duration: Duration(seconds: 2));
+    String imgUrl = "https://img.subrecovery.top/$imageName.png";
+    if (await checkPermission(Permission.storage)) {
+      var response = await Dio()
+          .get(imgUrl, options: Options(responseType: ResponseType.bytes));
+      final result = await ImageGallerySaver.saveImage(
+          Uint8List.fromList(response.data),
+          quality: 100);
+      if (result['isSuccess']) {
+        Get.snackbar('系统提示', '图片已下载',
+            colorText: Colors.white,
+            shouldIconPulse: true,
+            duration: Duration(seconds: 2));
+      } else {
+        Get.snackbar('系统提示', '图片下载失败,请检查网络',
+            colorText: Colors.white,
+            shouldIconPulse: true,
+            duration: Duration(seconds: 2));
+      }
     }
   }
 }
