@@ -30,11 +30,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
   @override
   void initState() {
     loadMessage();
-    load();
-    loadMap();
-    loadtrend();
     backgroundMusic();
-    packageInfoList();
     WidgetsBinding.instance.addObserver(this); //增加监听者
     super.initState();
   }
@@ -85,37 +81,37 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     return Scaffold(
         //聊天窗口容器
         body: Stack(children: [
-      // Container(width: 1.sw, height: 2.sh, color: Colors.black),
-      //点击监控
+      // 点击监控
       GestureDetector(
         onTap: () {
           userFocusNode.unfocus(); //点击聊天窗口丢失焦点
         },
         //背景
-        child: Positioned.fill(
-            child: Image.asset('assets/images/聊天背景.png',
-                height: 1.sh, fit: BoxFit.cover)),
+        child: Image.asset('assets/images/聊天背景.png',
+            height: 1.sh, fit: BoxFit.cover),
       ),
-      Padding(
-        //聊天窗口内边距
-        padding: EdgeInsets.only(top: 45.h, bottom: 80.h),
-        child: GestureDetector(
-            onTap: () {
-              userFocusNode.unfocus(); //点击聊天窗口丢失焦点
-            },
-            child: Flexible(
+
+      GestureDetector(
+          onTap: () {
+            userFocusNode.unfocus(); //点击聊天窗口丢失焦点
+          },
+          child: Column(children: [
+            Flexible(
                 child: SizeCacheWidget(
                     estimateCount: 60,
-                    child: ListView.builder(
-                      controller: _scrollController, //绑定控件
-                      scrollDirection: Axis.vertical, //垂直滑动
-                      reverse: false, //正序显示
-                      shrinkWrap: true, //内容适配
-                      physics: BouncingScrollPhysics(), //内容超过一屏 上拉有回弹效果
-                      itemBuilder: (_, int index) => messages[index],
-                      itemCount: messages.length,
-                    )))),
-      ),
+                    child: Padding(
+                        padding: EdgeInsets.only(top: 40.h),
+                        child: ListView.builder(
+                          controller: _scrollController, //绑定控件
+                          scrollDirection: Axis.vertical, //垂直滑动
+                          reverse: false, //正序显示
+                          shrinkWrap: true, //内容适配
+                          physics: BouncingScrollPhysics(), //内容超过一屏 上拉有回弹效果
+                          itemBuilder: (_, int index) => messages[index],
+                          itemCount: messages.length,
+                        ))))
+          ])),
+
       //顶部状态栏
       Align(
         alignment: Alignment.topCenter,
@@ -124,13 +120,11 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
           color: Colors.black,
           width: 1.sw,
           height: 50.h,
-          child: GestureDetector(
-              onTap: () {},
-              child: Text(
-                _chatName,
-                style: TextStyle(fontSize: 30.sp, color: Colors.white),
-                textAlign: TextAlign.center,
-              )),
+          child: Text(
+            _chatName,
+            style: TextStyle(fontSize: 30.sp, color: Colors.white),
+            textAlign: TextAlign.center,
+          ),
         ),
       ),
       //选项按钮
@@ -158,6 +152,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
       //设置按钮
       GestureDetector(
           onTap: () async {
+            load();
             Get.to(SettingPage('chat'));
           },
           child: Container(
@@ -284,18 +279,16 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                     contentPadding: EdgeInsets.only(bottom: 22.h, left: 10.w)),
               ),
             ),
-            GestureDetector(
-                onTap: () {},
-                child: Switch(
-                  onChanged: (value) {
-                    switchValue = !switchValue;
-                    setState(() {});
-                  },
-                  value: switchValue,
-                  activeColor: Colors.white,
-                  activeTrackColor: Color.fromRGBO(0, 102, 203, 1),
-                  inactiveTrackColor: Color.fromRGBO(60, 60, 60, 1),
-                )),
+            Switch(
+              onChanged: (value) {
+                switchValue = !switchValue;
+                setState(() {});
+              },
+              value: switchValue,
+              activeColor: Colors.white,
+              activeTrackColor: Color.fromRGBO(0, 102, 203, 1),
+              inactiveTrackColor: Color.fromRGBO(60, 60, 60, 1),
+            ),
             GestureDetector(
                 onTap: isComposing
                     ? () => handleSubmitted(_textController.text)

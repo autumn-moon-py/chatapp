@@ -4,6 +4,7 @@ import "package:get/get.dart";
 import 'package:animated_floating_buttons/animated_floating_buttons.dart';
 
 import 'chat.dart';
+import 'config.dart';
 import 'dictionary.dart';
 import 'image.dart';
 import 'chapter.dart';
@@ -34,6 +35,7 @@ buildMenu(String nowPage) {
           Row(children: [
             GestureDetector(
               onTap: () {
+                loadMap();
                 Get.to(ImagePage());
               },
               child: Container(
@@ -50,6 +52,7 @@ buildMenu(String nowPage) {
             ),
             GestureDetector(
               onTap: () {
+                loadMap();
                 Get.to(DictionaryPage());
               },
               child: Container(
@@ -102,6 +105,7 @@ float2(String where) {
   return Container(
     child: FloatingActionButton(
       onPressed: () {
+        load();
         Get.to(SettingPage(where));
       },
       heroTag: "btn2",

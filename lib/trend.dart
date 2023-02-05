@@ -34,6 +34,12 @@ class TrendPageState extends State<TrendPage> {
   ScrollController _scrollController = ScrollController(); //动态列表控件
 
   @override
+  void initState() {
+    loadtrend();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: Stack(
@@ -58,11 +64,11 @@ class TrendPageState extends State<TrendPage> {
                 ),
                 BoxyId(
                   id: #content,
-                  child: Stack(children: [
-                    Padding(
-                        padding: EdgeInsets.only(
-                            left: 10.w, right: 5.w, bottom: 20.h),
-                        child: Flexible(
+                  child: Padding(
+                      padding:
+                          EdgeInsets.only(left: 10.w, right: 5.w, bottom: 20.h),
+                      child: Column(children: [
+                        Flexible(
                           child: ListView.builder(
                             controller: _scrollController, //绑定控件
                             scrollDirection: Axis.vertical, //垂直滑动
@@ -72,8 +78,8 @@ class TrendPageState extends State<TrendPage> {
                             itemBuilder: (_, int index) => trends[index],
                             itemCount: trends.length, //item数量
                           ),
-                        )),
-                  ]),
+                        )
+                      ])),
                 ),
                 BoxyId(
                   id: #avater,
