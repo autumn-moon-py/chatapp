@@ -457,6 +457,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     }
   }
 
+  //播放器
   storyPlayer() async {
     int line = 0; //当前下标
     String msg = ''; //消息
