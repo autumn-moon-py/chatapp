@@ -59,6 +59,7 @@ dependencies:
   dio: ^4.0.6 #网络请求
   path_provider: ^2.0.12 #路径查询
   cached_network_image: ^3.2.3 #缓存图片
+  csv: ^5.0.1
 
 
 dev_dependencies:
@@ -95,5 +96,13 @@ flutter:
 
   assets:
     - assets/
-    - assets/images/
+    - assets/story/第一章.csv
+    - assets/story/第二章.csv
+    - assets/story/第三章.csv
+    - assets/story/第四章.csv
+    - assets/story/第五章.csv
+    - assets/story/第六章.csv
+    - assets/story/番外一.csv
+    - assets/story/番外二.csv
+    - assets/story/番外三.csv
 

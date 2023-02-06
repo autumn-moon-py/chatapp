@@ -115,26 +115,15 @@ class TrendPageState extends State<TrendPage> {
                   //返回图标
                   Icon(Icons.chevron_left, color: Colors.white, size: 50.r),
                 ]))),
-        Align(
-          alignment: FractionalOffset(0.5, 1),
-          child: TextButton(
-            child: Text('测试发送', style: TextStyle(color: Colors.white)),
-            onPressed: () => newTrend("你好", "S1-01"),
-          ),
-        )
+        // Align(
+        //   alignment: FractionalOffset(0.5, 1),
+        //   child: TextButton(
+        //     child: Text('测试发送', style: TextStyle(color: Colors.white)),
+        //     onPressed: () => newTrend("你好", "S1-01"),
+        //   ),
+        // )
       ],
     ));
-  }
-
-  newTrend(String trendText, String trendImg) {
-    Trend trend = Trend(trendText: trendText, trendImg: trendImg);
-    setState(() {
-      trends.add(trend);
-      trendsInfo.add(trend.toJsonString());
-      Future.delayed(Duration(milliseconds: 100), () {
-        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
-      });
-    });
   }
 }
 

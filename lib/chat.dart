@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:keframe/keframe.dart';
 import 'send.dart';
@@ -10,6 +11,7 @@ import 'dart:async';
 import 'image.dart';
 import 'config.dart';
 import 'setting.dart';
+import 'trend.dart';
 
 class ChatPage extends StatefulWidget {
   @override
@@ -26,12 +28,18 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
   final ValueNotifier<bool> isChoose = ValueNotifier<bool>(false); //是否有选项,局部刷新
   String _chatName = "Miko";
   bool switchValue = false;
+  int jump = 0;
+  int choose_one_jump = 0; // 选项一跳转
+  int choose_two_jump = 0; // 选项二跳转
+  int last_line = 0; //最后一条
 
   @override
   void initState() {
     loadMessage();
     backgroundMusic();
     packageInfoList();
+    loadCVS();
+    storyPlayer();
     WidgetsBinding.instance.addObserver(this); //增加监听者
     super.initState();
   }
@@ -134,11 +142,11 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
           child: ValueListenableBuilder(
             valueListenable: isChoose,
             builder: (context, value, child) {
-              return chooseButton(choose_one, choose_two);
+              return chooseButton();
             },
           )),
       //输入框
-      Align(alignment: Alignment.bottomCenter, child: _buildTextComposer()),
+      // Align(alignment: Alignment.bottomCenter, child: _buildTextComposer()),
       //菜单按钮
       GestureDetector(
           onTap: () {
@@ -166,11 +174,10 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
   }
 
   //选项按钮布局
-  chooseButton(String choose_one, String choose_two) {
+  chooseButton() {
     if (choose_one.isEmpty && choose_two.isEmpty) {
       return Container();
     }
-    isChoose.value = true;
     return Container(
       width: 1.sw,
       height: 80.h,
@@ -196,7 +203,8 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
           ),
           onTap: () {
             buttonMusic();
-            choose(choose_one);
+            sendRight(choose_one);
+            jump = choose_one_jump;
           },
         ),
         //选项二按钮
@@ -218,31 +226,103 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
           ),
           onTap: () {
             buttonMusic();
-            choose(choose_two);
+            sendRight(choose_two);
+            jump = choose_two_jump;
           },
         ),
       ]),
     );
   }
 
-  //发送选项
-  choose(String choose_text) {
-    RightMsg message = RightMsg(
-      text: choose_text,
-    ); //发送消息
+  //发送右消息
+  sendRight(String choose_text) {
+    RightMsg message = RightMsg(text: choose_text);
     setState(() {
       messages.add(message);
-    }); //刷新消息列表然后重建UI
-    //延迟500毫秒自动滚屏
-    Future.delayed(Duration(milliseconds: 500), () {
-      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
-      isChoose.value = false;
-      choose_one = "";
-      choose_two = "";
+      messagesInfo.add(message.toJsonString());
+      saveChat();
     });
+    if (scrolling) {
+      Future.delayed(Duration(milliseconds: 100), () {
+        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+        isChoose.value = false;
+        choose_one = "";
+        choose_two = "";
+      });
+    }
+  }
+
+  //发送中消息
+  sendMiddle(String text, String color) {
+    MiddleMsg message = MiddleMsg(
+      text: text,
+      color: color,
+    );
+    setState(() {
+      messages.add(message);
+      messagesInfo.add(message.toJsonString());
+      saveChat();
+    });
+    if (scrolling) {
+      Future.delayed(Duration(milliseconds: 100), () {
+        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+      });
+    }
+  }
+
+  //发送左文本消息
+  sendTextLeft(String text, String who) {
+    LeftTextMsg message = LeftTextMsg(text: text, who: who);
+    if (waitTyping) {
+      chatName = who;
+      _chatName = '对方输入中...';
+      Future.delayed(Duration(seconds: (text.length / 4).ceil()), () {
+        setState(() {
+          messages.add(message);
+          messagesInfo.add(message.toJsonString());
+          saveChat();
+        });
+      });
+    } else {
+      setState(() {
+        messages.add(message);
+        messagesInfo.add(message.toJsonString());
+        saveChat();
+      });
+    }
+    if (scrolling) {
+      Future.delayed(Duration(milliseconds: 100), () {
+        _chatName = chatName;
+        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+      });
+    }
+  }
+
+  //发送左图片消息
+  sendImgLeft(String img) {
+    LeftImgMsg message = LeftImgMsg(img: img);
+    setState(() {
+      messages.add(message);
+      messagesInfo.add(message.toJsonString());
+      saveChat();
+    });
+    if (scrolling) {
+      Future.delayed(Duration(milliseconds: 100), () {
+        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+      });
+    }
+  }
+
+  //发送动态
+  sendTrend(String trendText, String trendImg) {
+    Trend trend = Trend(trendText: trendText, trendImg: trendImg);
+    trends.add(trend);
+    trendsInfo.add(trend.toJsonString());
+    saveChat();
   }
 
   //输入框和发送按钮布局
+  // ignore: unused_element
   Widget _buildTextComposer() {
     return Container(
         width: 1.sw, //底部宽
@@ -374,6 +454,151 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
           _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
         });
       }
+    }
+  }
+
+  storyPlayer() async {
+    int line = 0; //当前下标
+    String msg = ''; //消息
+    List tag_list = []; //多标签
+    String tag = ''; //单标签
+    int be_jump = 0;
+    // ignore: unused_local_variable
+    String day = '';
+    int reast_line = 0;
+    bool isStop = true;
+    int startTime = 0;
+    if (story == []) {
+      EasyLoading.showToast('剧本未加载',
+          toastPosition: EasyLoadingToastPosition.bottom);
+      return;
+    }
+    List line_info = await story[line];
+    while (isStop) {
+      do {
+        //空行继续
+        if (line_info[0] == '' && line_info[1] == '' && line_info[2] == '') {
+          line++;
+          continue;
+        }
+        String name = line_info[0];
+        msg = line_info[1];
+        tag = line_info[2];
+        if (tag.length > 1) {
+          tag_list = tag.split(',');
+          tag = '';
+        }
+        //单标签
+        if (!tag.isEmpty && jump == 0) {
+          if (tag == 'BE') {
+            line = reast_line;
+            continue;
+          }
+          if (tag == '无') {
+            day = msg;
+            last_line = line;
+            reast_line = line;
+            continue;
+          }
+          if (tag == '中') {
+            last_line = line;
+            sendMiddle(name, tag);
+            continue;
+          }
+          if (tag == '左') {
+            last_line = line;
+            sendTextLeft(msg, name);
+            continue;
+          }
+          if (tag == '右') {
+            last_line = line;
+            sendRight(msg);
+            continue;
+          }
+          if (tag == '词典') {
+            try {
+              last_line = line;
+              List _dt = dictionaryMap[msg];
+              _dt[1] = 'true';
+              dictionaryMap[msg] = _dt;
+              EasyLoading.showToast('解锁新词典$msg',
+                  toastPosition: EasyLoadingToastPosition.bottom);
+              continue;
+            } catch (error) {
+              last_line = line;
+              EasyLoading.showToast('词典解锁失败,请截图反馈',
+                  toastPosition: EasyLoadingToastPosition.bottom);
+              continue;
+            }
+          }
+          if (tag == '图鉴') {
+            last_line = line;
+            sendImgLeft(msg);
+            EasyLoading.showToast('解锁新图鉴$msg',
+                toastPosition: EasyLoadingToastPosition.bottom);
+            continue;
+          }
+          if (tag == '动态') {
+            last_line = line;
+            sendTrend(msg, name);
+            sendMiddle('对方发布了一条新动态', '');
+            continue;
+          }
+        }
+        //多标签
+        if (tag_list != []) {
+          if (tag_list[0] == '左') {
+            last_line = line;
+            tag_list.forEach((key) {
+              String str = key;
+              if (str.substring(0, 2) == '分支') {
+                be_jump = int.parse(str.substring(2, str.length));
+                if (be_jump == jump) {
+                  sendTextLeft(msg, name);
+                }
+              }
+              try {
+                jump = int.parse(tag_list[1]);
+                if (tag_list.length == 2) {
+                  sendTextLeft(msg, name);
+                }
+              } catch (error) {}
+            });
+            continue;
+          }
+          if (tag_list[0] == '右') {
+            if (tag_list[1] == '选项' && choose_one.isEmpty) {
+              choose_one = msg;
+              choose_one_jump = int.parse(tag_list[2]);
+            }
+            if (tag_list[1] == '选项' && !choose_one.isEmpty) {
+              choose_two = msg;
+              choose_two_jump = int.parse(tag_list[2]);
+            }
+          }
+          if (!choose_one.isEmpty && !choose_two.isEmpty) {
+            isChoose.value = true;
+          }
+          if (tag_list[0] == '中') {
+            last_line = line;
+            if (tag_list.length == 4) {
+              if (tag_list[1] != 0) {
+                jump = int.parse(tag_list[1]);
+              }
+              startTime = DateTime.now().millisecondsSinceEpoch +
+                  int.parse(tag_list[3]) * 100;
+            }
+          }
+        }
+        if (isChoose.value == false) {
+          continue;
+        }
+        if (startTime != 0) {
+          if (DateTime.now().millisecondsSinceEpoch > startTime) {
+            continue;
+          }
+        }
+      } while (line < story.length);
     }
   }
 }

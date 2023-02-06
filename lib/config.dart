@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
+import 'package:csv/csv.dart';
+import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,16 +17,16 @@ bool waitTyping = false; //打字时间
 bool waitOffline = true; //是否等待下线
 int nowMikoAvater = 1; //miko当前头像
 String playerAvatarSet = '默认'; //玩家头像
-int playerNowAvater = 0;
-String choose_one = '1'; //选项一
-String choose_two = '2'; //选项二
+int playerNowAvater = 0; //玩家头像下拉框默认值
+String choose_one = ''; //选项一
+String choose_two = ''; //选项二
 List messages = []; //消息容器列表
 List<String> messagesInfo = []; //消息信息列表
 List trends = []; //动态容器列表
 List<String> trendsInfo = []; //动态信息列表
 String chatName = "Miko"; //聊天对象名称
 List<String> imageList = imageList1; //图鉴列表
-bool backgroundMusicSwitch = true; //音乐
+bool backgroundMusicSwitch = false; //音乐
 bool isOldBgm = false; //新旧BGM
 final bgmplayer = AudioPlayer();
 bool buttonMusicSwitch = true; //音效
@@ -32,6 +34,9 @@ double sliderValue = 10; //语音音量
 final buttonplayer = AudioPlayer();
 final voiceplayer = AudioPlayer();
 late String version; //应用发布版本号
+List<List<dynamic>> story = []; //剧本列表
+String nowChapter = '第一章'; //当前章节
+
 ///Miko头像更换
 List mikoDropdownList = [
   {'label': '头像1', 'value': 1},
@@ -1036,7 +1041,6 @@ loadMessage() async {
           } catch (err) {
             String img = messageMap['img'];
             LeftImgMsg message = LeftImgMsg(
-              who: messageMap['who'],
               img: img,
             );
             messages.add(message);
@@ -1044,7 +1048,8 @@ loadMessage() async {
           }
         }
         if (messageMap['位置'] == '中') {
-          MiddleMsg message = MiddleMsg(text: messageMap['text']);
+          MiddleMsg message =
+              MiddleMsg(text: messageMap['text'], color: messageMap['text']);
           messages.add(message);
           i++;
         }
@@ -1110,4 +1115,14 @@ voice(double volume) {
 packageInfoList() async {
   PackageInfo packageInfo = await PackageInfo.fromPlatform();
   version = packageInfo.version;
+}
+
+//读取剧本
+loadCVS() async {
+  final rawData = await rootBundle.loadString(
+    "assets/story/$nowChapter.csv",
+  );
+  List<List<dynamic>> listData =
+      const CsvToListConverter().convert(rawData, eol: '\r');
+  story = listData;
 }

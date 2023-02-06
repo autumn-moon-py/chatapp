@@ -1,6 +1,8 @@
+import 'package:chatapp/chat.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:get/get.dart';
 
 import 'menu.dart';
 import 'config.dart';
@@ -47,6 +49,9 @@ class ChapterPageState extends State<ChapterPage> {
   Widget buildChapter(chapterName) {
     return GestureDetector(
         onTap: () {
+          nowChapter = chapterName;
+          loadCVS();
+          Get.to(ChatPage());
           EasyLoading.showToast(chapterName,
               toastPosition: EasyLoadingToastPosition.bottom);
         },

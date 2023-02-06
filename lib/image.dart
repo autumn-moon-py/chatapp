@@ -106,7 +106,8 @@ class ImagePageState extends State<ImagePage> {
     } else {
       return CachedNetworkImage(
         placeholder: (context, url) => CircularProgressIndicator(),
-        imageUrl: 'https://img.subrecovery.top/$imageName.png',
+        imageUrl:
+            'https://cdn.486486486.xyz/miko-storage/Dimension/ver0.1/$imageName.png',
         errorWidget: (context, url, error) => Text(
           '加载失败,请检查网络',
           style: TextStyle(color: Colors.white, fontSize: 30.sp),
@@ -140,8 +141,8 @@ class ImagePageState extends State<ImagePage> {
                 '加载失败,请检查网络',
                 style: TextStyle(color: Colors.black, fontSize: 30.sp),
               ),
-          imageProvider:
-              NetworkImage('https://img.subrecovery.top/$imageName.png')),
+          imageProvider: NetworkImage(
+              'https://cdn.486486486.xyz/miko-storage/Dimension/ver0.1/$imageName.png')),
       GestureDetector(
           //下载按钮
           onTap: () {
@@ -193,7 +194,8 @@ class ImagePageState extends State<ImagePage> {
         colorText: Colors.white,
         shouldIconPulse: true,
         duration: Duration(seconds: 2));
-    String imgUrl = "https://img.subrecovery.top/$imageName.png";
+    String imgUrl =
+        "https://cdn.486486486.xyz/miko-storage/Dimension/ver0.1/$imageName.png";
     if (await checkPermission(Permission.storage)) {
       var response = await Dio()
           .get(imgUrl, options: Options(responseType: ResponseType.bytes));

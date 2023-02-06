@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:keframe/keframe.dart';
@@ -32,7 +33,17 @@ class LeftTextMsg extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start, //水平左对齐
                     children: <Widget>[
                   GestureDetector(
-                      onTap: () => Get.to(TrendPage()),
+                      onTap: () {
+                        if (chatName == 'Miko') {
+                          Get.to(TrendPage());
+                        } else if (chatName == '未知用户') {
+                          EasyLoading.showToast('未解锁该功能',
+                              toastPosition: EasyLoadingToastPosition.bottom);
+                        } else {
+                          EasyLoading.showToast('对方没有动态',
+                              toastPosition: EasyLoadingToastPosition.bottom);
+                        }
+                      },
                       child: Container(
                           //头像容器
                           margin: EdgeInsets.only(
@@ -67,12 +78,11 @@ class LeftTextMsg extends StatelessWidget {
 
 //左消息图片气泡
 class LeftImgMsg extends StatelessWidget {
-  LeftImgMsg({required this.img, required this.who});
+  LeftImgMsg({required this.img});
   final String img; //图片名称
-  final String who; //头像
 
   toJsonString() {
-    final jsonString = jsonEncode({'位置': '左', 'img': img, 'who': who});
+    final jsonString = jsonEncode({'位置': '左', 'img': img});
     return jsonString;
   }
 
@@ -121,7 +131,7 @@ class LeftImgMsg extends StatelessWidget {
                               //头像图标
                               radius: 30.r, //头像尺寸
                               backgroundImage:
-                                  AssetImage(whoAvater(who)) //加载左边头像
+                                  AssetImage(whoAvater('Miko')) //加载左边头像
                               ))),
                   //消息图片
                   GestureDetector(
@@ -200,11 +210,23 @@ class RightMsg extends StatelessWidget {
 
 //系统消息
 class MiddleMsg extends StatelessWidget {
-  MiddleMsg({required this.text});
+  MiddleMsg({required this.text, required this.color});
   final String text; //消息气泡内文本
+  final String color;
+
+  textColor() {
+    if (color == '绿色') {
+      return Colors.green;
+    }
+    if (color == '红色') {
+      return Colors.red;
+    } else {
+      return Colors.white;
+    }
+  }
 
   toJsonString() {
-    final jsonString = jsonEncode({'位置': '中', 'text': text});
+    final jsonString = jsonEncode({'位置': '中', 'text': text, 'color': color});
     return jsonString;
   }
 
