@@ -1123,6 +1123,6 @@ loadCVS() async {
     "assets/story/$nowChapter.csv",
   );
   List<List<dynamic>> listData =
-      const CsvToListConverter().convert(rawData, eol: '\r');
+      CsvToListConverter().convert(rawData, eol: '\r\n');
   story = listData;
 }

@@ -35,11 +35,18 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
 
   @override
   void initState() {
-    loadMessage();
-    backgroundMusic();
-    packageInfoList();
-    loadCVS();
-    storyPlayer();
+    // loadMessage();
+    // backgroundMusic();
+    // packageInfoList();
+    // loadCVS();
+    // storyPlayer();
+    loadMessage().then((_) {
+      backgroundMusic();
+      packageInfoList();
+      loadCVS().then((_) async {
+        await storyPlayer();
+      });
+    });
     WidgetsBinding.instance.addObserver(this); //增加监听者
     super.initState();
   }
@@ -463,23 +470,17 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     String msg = ''; //消息
     List tag_list = []; //多标签
     String tag = ''; //单标签
-    int be_jump = 0;
-    // ignore: unused_local_variable
-    String day = '';
-    int reast_line = 0;
-    bool isStop = true;
-    int startTime = 0;
-    if (story == []) {
-      EasyLoading.showToast('剧本未加载',
-          toastPosition: EasyLoadingToastPosition.bottom);
-      return;
-    }
-    List line_info = await story[line];
+    int be_jump = 0; //分支,被跳转
+    int reast_line = 0; //BE时回到这行
+    bool isStop = true; //控制播放器
+    int startTime = 0; //当前时间戳大于这个的时间戳时继续播放
+
     while (isStop) {
       do {
+        List line_info = await story[line];
+        line++;
         //空行继续
         if (line_info[0] == '' && line_info[1] == '' && line_info[2] == '') {
-          line++;
           continue;
         }
         String name = line_info[0];
@@ -496,14 +497,13 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
             continue;
           }
           if (tag == '无') {
-            day = msg;
             last_line = line;
             reast_line = line;
             continue;
           }
           if (tag == '中') {
             last_line = line;
-            sendMiddle(name, tag);
+            sendMiddle(msg, name);
             continue;
           }
           if (tag == '左') {
@@ -596,6 +596,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
         }
         if (startTime != 0) {
           if (DateTime.now().millisecondsSinceEpoch > startTime) {
+            startTime = 0;
             continue;
           }
         }
