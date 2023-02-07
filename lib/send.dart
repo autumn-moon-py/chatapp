@@ -51,8 +51,7 @@ class LeftTextMsg extends StatelessWidget {
                           child: CircleAvatar(
                               //头像图标
                               radius: 30.r, //头像尺寸
-                              backgroundImage:
-                                  AssetImage(whoAvater(who)) //加载左边头像
+                              child: Image.asset(whoAvater(who)) //加载左边头像
                               ))),
                   // 消息气泡容器
                   Container(
@@ -130,8 +129,7 @@ class LeftImgMsg extends StatelessWidget {
                           child: CircleAvatar(
                               //头像图标
                               radius: 30.r, //头像尺寸
-                              backgroundImage:
-                                  AssetImage(whoAvater('Miko')) //加载左边头像
+                              child: Image.asset(whoAvater('Miko')) //加载左边头像
                               ))),
                   //消息图片
                   GestureDetector(
