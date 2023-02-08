@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:keframe/keframe.dart';
@@ -34,15 +33,7 @@ class LeftTextMsg extends StatelessWidget {
                     children: <Widget>[
                   GestureDetector(
                       onTap: () {
-                        if (chatName == 'Miko') {
-                          Get.to(TrendPage());
-                        } else if (chatName == '未知用户') {
-                          EasyLoading.showToast('未解锁该功能',
-                              toastPosition: EasyLoadingToastPosition.bottom);
-                        } else {
-                          EasyLoading.showToast('对方没有动态',
-                              toastPosition: EasyLoadingToastPosition.bottom);
-                        }
+                        Get.to(TrendPage());
                       },
                       child: Container(
                           //头像容器
@@ -123,7 +114,9 @@ class LeftImgMsg extends StatelessWidget {
                     children: <Widget>[
                   //头像容器
                   GestureDetector(
-                      onTap: () => Get.to(TrendPage()),
+                      onTap: () {
+                        Get.to(TrendPage());
+                      },
                       child: Container(
                           margin:
                               EdgeInsets.only(left: 10.w, right: 5.w), //头像和气泡间距

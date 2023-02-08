@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:csv/csv.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -11,10 +12,10 @@ import 'send.dart';
 import 'trend.dart';
 
 SharedPreferences? local; //本地存储数据
-bool isNewImage = true; //AI图鉴
+bool isNewImage = false; //AI图鉴
 bool scrolling = true; //自动滚屏
 bool waitTyping = false; //打字时间
-bool waitOffline = true; //是否等待下线
+bool waitOffline = false; //是否等待下线
 int nowMikoAvater = 1; //miko当前头像
 String playerAvatarSet = '默认'; //玩家头像
 int playerNowAvater = 0; //玩家头像下拉框默认值
@@ -36,6 +37,9 @@ final voiceplayer = AudioPlayer();
 late String version; //应用发布版本号
 List<List<dynamic>> story = []; //剧本列表
 String nowChapter = '第一章'; //当前章节
+final ValueNotifier<bool> isChoose = ValueNotifier<bool>(false); //是否有选项,局部刷新
+int line = 0; //当前下标
+int startTime = 0; //当前时间戳大于这个的时间戳时继续播放
 
 ///Miko头像更换
 List mikoDropdownList = [
@@ -186,8 +190,8 @@ Map imageMap = {
   'E3-01': false,
   'E3-02': false,
   'E3-03': false,
-  'S1-01-n': true,
-  'S1-01': true,
+  'S1-01-n': false,
+  'S1-01': false,
   'S1-02': false,
   'S1-03': false,
   'S1-04': false,
@@ -392,7 +396,7 @@ const List dictionaryList = [
 Map dictionaryMap = {
   '软件': [
     '第一章',
-    'true',
+    'false',
     '这里特指异次元通讯，是睿果工作室出品的一款手机app，用于即时通讯，经大量用户反馈，相连接的用户之间似乎存在着某种未知的羁绊，原理不明'
   ],
   '西武百货': [

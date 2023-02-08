@@ -44,7 +44,6 @@ dependencies:
   animated_floating_buttons: ^0.0.1 #悬浮按钮
   spring_button: ^2.0.0 #弹跳按钮
   entry: ^0.0.8 #进入动画
-  boxy: ^2.0.6+2 #布局优化
   keframe: ^3.0.0 #加载优化
   cool_dropdown: ^1.4.2 #下拉框
   package_info_plus: ^3.0.2 #查询应用信息
@@ -59,7 +58,7 @@ dependencies:
   dio: ^4.0.6 #网络请求
   path_provider: ^2.0.12 #路径查询
   cached_network_image: ^3.2.3 #缓存图片
-  csv: ^5.0.1
+  csv: ^5.0.1 #读取CSV
 
 
 dev_dependencies:

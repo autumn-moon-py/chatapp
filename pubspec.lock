@@ -41,14 +41,6 @@ packages:
       url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
     source: hosted
     version: "2.1.1"
-  boxy:
-    dependency: "direct main"
-    description:
-      name: boxy
-      sha256: "99cc1514e372d79f94b11b00ba5a8ebb44a49ab4e8a78486e3f82de492a6a0ee"
-      url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
-    source: hosted
-    version: "2.0.6+2"
   cached_network_image:
     dependency: "direct main"
     description:
