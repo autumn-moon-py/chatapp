@@ -1048,8 +1048,7 @@ loadMessage() async {
           }
         }
         if (messageMap['位置'] == '中') {
-          MiddleMsg message =
-              MiddleMsg(text: messageMap['text'], color: messageMap['text']);
+          MiddleMsg message = MiddleMsg(text: messageMap['text']);
           messages.add(message);
           i++;
         }
@@ -1119,6 +1118,7 @@ packageInfoList() async {
 
 //读取剧本
 loadCVS() async {
+  //报错检查csv编码是否为utf-8
   final rawData = await rootBundle.loadString(
     "assets/story/$nowChapter.csv",
   );

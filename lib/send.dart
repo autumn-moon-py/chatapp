@@ -49,6 +49,7 @@ class LeftTextMsg extends StatelessWidget {
                           margin: EdgeInsets.only(
                               left: 10.w, right: 4.5.w), //头像和气泡间距
                           child: CircleAvatar(
+                              backgroundColor: Colors.black,
                               //头像图标
                               radius: 30.r, //头像尺寸
                               child: Image.asset(whoAvater(who)) //加载左边头像
@@ -208,15 +209,14 @@ class RightMsg extends StatelessWidget {
 
 //系统消息
 class MiddleMsg extends StatelessWidget {
-  MiddleMsg({required this.text, required this.color});
+  MiddleMsg({required this.text});
   final String text; //消息气泡内文本
-  final String color;
 
   textColor() {
-    if (color == '绿色') {
-      return Colors.green;
+    if (text == '网络连接中' || text == '对方已上线') {
+      return Color.fromARGB(255, 0, 255, 8);
     }
-    if (color == '红色') {
+    if (text == '对方已下线') {
       return Colors.red;
     } else {
       return Colors.white;
@@ -224,7 +224,7 @@ class MiddleMsg extends StatelessWidget {
   }
 
   toJsonString() {
-    final jsonString = jsonEncode({'位置': '中', 'text': text, 'color': color});
+    final jsonString = jsonEncode({'位置': '中', 'text': text});
     return jsonString;
   }
 
@@ -250,8 +250,7 @@ class MiddleMsg extends StatelessWidget {
                         text,
                         textAlign: TextAlign.center, //文本居中对齐
                         style: TextStyle(
-                            fontSize: 20.sp,
-                            color: Color.fromRGBO(119, 119, 119, 1)), //文本样式
+                            fontSize: 20.sp, color: textColor()), //文本样式
                       )),
                 ]))));
   }
