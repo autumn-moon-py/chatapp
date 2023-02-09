@@ -49,8 +49,8 @@ class ChapterPageState extends State<ChapterPage> {
   Widget buildChapter(chapterName) {
     return GestureDetector(
         onTap: () {
-          nowChapter = chapterName;
-          loadCVS();
+          // nowChapter = chapterName;
+          // loadCVS();
           Get.to(ChatPage());
           EasyLoading.showToast(chapterName,
               toastPosition: EasyLoadingToastPosition.bottom);

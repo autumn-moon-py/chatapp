@@ -14,32 +14,37 @@ import 'trend.dart';
 SharedPreferences? local; //本地存储数据
 bool isNewImage = false; //AI图鉴
 bool scrolling = true; //自动滚屏
-bool waitTyping = false; //打字时间
-bool waitOffline = false; //是否等待下线
+bool waitTyping = true; //打字时间
+bool waitOffline = true; //是否等待下线
 int nowMikoAvater = 1; //miko当前头像
 String playerAvatarSet = '默认'; //玩家头像
 int playerNowAvater = 0; //玩家头像下拉框默认值
-String choose_one = ''; //选项一
-String choose_two = ''; //选项二
 List messages = []; //消息容器列表
 List<String> messagesInfo = []; //消息信息列表
 List trends = []; //动态容器列表
 List<String> trendsInfo = []; //动态信息列表
-String chatName = "Miko"; //聊天对象名称
 List<String> imageList = imageList1; //图鉴列表
 bool backgroundMusicSwitch = false; //音乐
 bool isOldBgm = false; //新旧BGM
 final bgmplayer = AudioPlayer();
 bool buttonMusicSwitch = true; //音效
 double sliderValue = 10; //语音音量
-final buttonplayer = AudioPlayer();
-final voiceplayer = AudioPlayer();
+final buttonplayer = AudioPlayer(); //按钮音效播放器
+final voiceplayer = AudioPlayer(); //语音播放器
 late String version; //应用发布版本号
 List<List<dynamic>> story = []; //剧本列表
 String nowChapter = '第一章'; //当前章节
 final ValueNotifier<bool> isChoose = ValueNotifier<bool>(false); //是否有选项,局部刷新
-int line = 0; //当前下标
-int startTime = 0; //当前时间戳大于这个的时间戳时继续播放
+String chatName = "Miko"; //聊天对象名称
+int line = 40; //当前下标
+int startTime = 0; //等待,时间戳
+int jump = 0; //跳转
+int be_jump = 0; //分支,被跳转
+int reast_line = 0; //BE时回到这行
+String choose_one = ''; //选项一
+String choose_two = ''; //选项二
+int choose_one_jump = 0; //选项一跳转
+int choose_two_jump = 0; //选项二跳转
 
 ///Miko头像更换
 List mikoDropdownList = [
@@ -980,6 +985,11 @@ saveChat() async {
   local = await SharedPreferences.getInstance();
   local?.setStringList('messagesInfo', messagesInfo);
   local?.setStringList('trendsInfo', trendsInfo);
+  local?.setInt('line', line);
+  local?.setInt('startTime', startTime);
+  local?.setInt('jump', jump);
+  local?.setInt('be_jump', be_jump);
+  local?.setInt('reast_line', reast_line);
 }
 
 ///读取动态
@@ -1020,6 +1030,11 @@ delAll() async {
 ///读取历史消息
 loadMessage() async {
   local = await SharedPreferences.getInstance();
+  line = local?.getInt('line') ?? 0;
+  startTime = local?.getInt('startTime') ?? 0;
+  jump = local?.getInt('jump') ?? 0;
+  be_jump = local?.getInt('be_jump') ?? 0;
+  reast_line = local?.getInt('reast_line') ?? 0;
   messagesInfo = await local?.getStringList('messagesInfo') ?? [];
   Map _messagesInfo = {};
   int num = 0;

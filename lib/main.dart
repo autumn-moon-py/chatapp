@@ -4,17 +4,10 @@ import "package:get/get.dart";
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 import 'chat.dart';
-import 'notification.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await notification.init();
-  runApp(MyApp()
-      // DevicePreview(
-      //   enabled: !kReleaseMode,
-      //   builder: (context) => MyApp()
-      // )
-      );
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -26,9 +19,6 @@ class MyApp extends StatelessWidget {
       useInheritedMediaQuery: true,
       builder: (context, child) {
         return MaterialApp(
-            // useInheritedMediaQuery: true,
-            // locale: DevicePreview.locale(context),
-            // builder: DevicePreview.appBuilder,
             home: GetMaterialApp(
                 home: ChatScreen(),
                 debugShowCheckedModeBanner: false,
@@ -40,10 +30,9 @@ class MyApp extends StatelessWidget {
 }
 
 class ChatScreen extends StatelessWidget {
+  // GlobalKey<SliderDrawerState> _key = GlobalKey<SliderDrawerState>();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ChatPage(),
-    );
+    return Scaffold(body: ChatPage());
   }
 }

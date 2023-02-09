@@ -176,7 +176,7 @@ class SettingPageState extends State<SettingPage> {
                                     style: TextStyle(
                                         fontSize: 25.sp, color: Colors.white)),
                                 subtitle: Text(
-                                    '用AI绘画(stable-diffusion)重新绘制部分图鉴',
+                                    '用AI绘画(stable-diffusion)重新绘制部分图鉴,只修改在菜单的图鉴,聊天和动态仍为原图鉴',
                                     style: TextStyle(
                                         fontSize: 15.sp, color: Colors.grey)),
                                 value: isNewImage,
@@ -204,31 +204,31 @@ class SettingPageState extends State<SettingPage> {
                               endIndent: 30.w,
                               thickness: 1,
                             ),
-                            SwitchListTile(
-                                title: Text('自动滚屏',
-                                    style: TextStyle(
-                                        fontSize: 25.sp, color: Colors.white)),
-                                subtitle: Text('当聊天内容超出一屏,发送消息自动滚动到最新一条',
-                                    style: TextStyle(
-                                        fontSize: 15.sp, color: Colors.grey)),
-                                value: scrolling,
-                                activeColor: Colors.white,
-                                activeTrackColor:
-                                    Color.fromRGBO(0, 102, 203, 1),
-                                inactiveTrackColor:
-                                    Color.fromRGBO(60, 60, 60, 1),
-                                onChanged: (value) {
-                                  save();
-                                  scrolling = value;
-                                  setState(() {});
-                                }),
-                            Divider(
-                              color: Colors.white,
-                              height: 0,
-                              indent: 20.w,
-                              endIndent: 30.w,
-                              thickness: 1,
-                            ),
+                            // SwitchListTile(
+                            //     title: Text('自动滚屏',
+                            //         style: TextStyle(
+                            //             fontSize: 25.sp, color: Colors.white)),
+                            //     subtitle: Text('当聊天内容超出一屏,发送消息自动滚动到最新一条',
+                            //         style: TextStyle(
+                            //             fontSize: 15.sp, color: Colors.grey)),
+                            //     value: scrolling,
+                            //     activeColor: Colors.white,
+                            //     activeTrackColor:
+                            //         Color.fromRGBO(0, 102, 203, 1),
+                            //     inactiveTrackColor:
+                            //         Color.fromRGBO(60, 60, 60, 1),
+                            //     onChanged: (value) {
+                            //       save();
+                            //       scrolling = value;
+                            //       setState(() {});
+                            //     }),
+                            // Divider(
+                            //   color: Colors.white,
+                            //   height: 0,
+                            //   indent: 20.w,
+                            //   endIndent: 30.w,
+                            //   thickness: 1,
+                            // ),
                             SwitchListTile(
                                 title: Text('打字时间',
                                     style: TextStyle(

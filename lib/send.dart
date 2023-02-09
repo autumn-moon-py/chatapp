@@ -1,9 +1,10 @@
+import 'package:animate_do/animate_do.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:keframe/keframe.dart';
 import 'package:photo_view/photo_view.dart';
-import 'package:entry/entry.dart';
 import 'dart:convert';
 
 import 'config.dart';
@@ -26,7 +27,7 @@ class LeftTextMsg extends StatelessWidget {
     return FrameSeparateWidget(
         child: Container(
             margin: EdgeInsets.only(top: 10.h), //消息间隔
-            child: Entry.offset(
+            child: FadeInLeft(
                 child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start, //垂直顶部对齐
                     mainAxisAlignment: MainAxisAlignment.start, //水平左对齐
@@ -81,7 +82,9 @@ class LeftImgMsg extends StatelessWidget {
   buildImageView(imageName) {
     return Container(
         child: Stack(children: [
-      PhotoView(imageProvider: AssetImage('assets/images/$imageName.png')),
+      PhotoView(
+          imageProvider: NetworkImage(
+              'https://cdn.486486486.xyz/miko-storage/Dimension/ver0.1/$imageName.png')),
       GestureDetector(
           //返回按钮
           onTap: () {
@@ -104,10 +107,12 @@ class LeftImgMsg extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FrameSeparateWidget(
-        child: Container(
+    return
+        // FrameSeparateWidget(
+        //     child:
+        Container(
             margin: EdgeInsets.only(top: 10.h), //消息间隔
-            child: Entry.offset(
+            child: FadeInLeft(
                 child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start, //垂直顶部对齐
                     mainAxisAlignment: MainAxisAlignment.start, //水平左对齐
@@ -131,18 +136,25 @@ class LeftImgMsg extends StatelessWidget {
                         Get.to(buildImageView(img));
                       },
                       child: Card(
-                        color: Colors.black,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadiusDirectional.circular(20),
-                        ),
-                        clipBehavior: Clip.antiAlias,
-                        child: Image.asset(
-                          'assets/images/' + img + '.png',
-                          width: 195.w, //图片宽
-                          height: 260.h, //图片高
-                        ),
-                      ))
-                ]))));
+                          color: Colors.black,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadiusDirectional.circular(20),
+                          ),
+                          clipBehavior: Clip.antiAlias,
+                          child: CachedNetworkImage(
+                            placeholder: (context, url) =>
+                                CircularProgressIndicator(),
+                            width: 195.w,
+                            height: 260.h,
+                            imageUrl:
+                                'https://cdn.486486486.xyz/miko-storage/Dimension/ver0.1/$img.png',
+                            errorWidget: (context, url, error) => Text(
+                              '加载失败,请检查网络',
+                              style: TextStyle(
+                                  color: Colors.white, fontSize: 30.sp),
+                            ),
+                          )))
+                ])));
   }
 }
 
@@ -161,7 +173,7 @@ class RightMsg extends StatelessWidget {
     return FrameSeparateWidget(
         child: Container(
             margin: EdgeInsets.only(top: 10.h), //消息间隔
-            child: Entry.offset(
+            child: FadeInRight(
                 child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start, //垂直顶部对齐
                     mainAxisAlignment: MainAxisAlignment.end, //水平右对齐
@@ -223,11 +235,14 @@ class MiddleMsg extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FrameSeparateWidget(
-        child: Container(
+    return
+        // FrameSeparateWidget(child:
+        Container(
             margin: EdgeInsets.only(top: 10.h), //消息间隔
-            child: Entry.offset(
-                child: Row(
+            child:
+                // FadeInUp(
+                //     child:
+                Row(
                     mainAxisAlignment: MainAxisAlignment.center, //水平居中对齐
                     children: <Widget>[
                   // 消息气泡容器
@@ -245,7 +260,8 @@ class MiddleMsg extends StatelessWidget {
                         style: TextStyle(
                             fontSize: 20.sp, color: textColor()), //文本样式
                       )),
-                ]))));
+                ]));
+    // );
   }
 }
 
