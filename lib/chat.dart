@@ -32,20 +32,18 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
   bool isPaused = false; //是否在后台
 
   @override
-  void initState() {
+  initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this); //增加监听者
     // loadMessage().then((_) {
     //   backgroundMusic();
     // buttonMusic();
-    // packageInfoList();
+    packageInfoList();
+    // buttonMusic();
     //   loadCVS().then((_) async {
     //     await storyPlayer();
     //   });
     // });
-    loadCVS().then((_) async {
-      await storyPlayer();
-    });
   }
 
   @override
@@ -115,7 +113,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
         },
         //背景
         child: Image.asset('assets/images/聊天背景.png',
-            width: 1.sw, height: 1.sh, fit: BoxFit.fitWidth),
+            height: 1.sh, fit: BoxFit.cover),
       ),
 
       GestureDetector(
@@ -156,17 +154,9 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
         ),
       ),
       //选项按钮
-      // Align(
-      //     alignment: FractionalOffset(0.5, 1),
-      //     child: ValueListenableBuilder(
-      //       valueListenable: isChoose,
-      //       builder: (context, value, child) {
-      //         return chooseButton();
-      //       },
-      //     )),
       Align(alignment: FractionalOffset(0.5, 1), child: chooseButton()),
       //输入框
-      // Align(alignment: Alignment.bottomCenter, child: _buildTextComposer()),
+      Align(alignment: Alignment.bottomCenter, child: _buildTextComposer()),
       //菜单按钮
       GestureDetector(
           onTap: () {

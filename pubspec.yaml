@@ -50,15 +50,15 @@ dependencies:
   image_picker: ^0.8.6+1 #图片选项
   just_audio: ^0.9.31 #音频播放
   # flutter_launcher_icons: ^0.11.0 #生成应用图标
-  url_launcher: ^6.1.8 #访问链接
   # flutter_native_splash: ^2.2.17 #生成闪屏页
-  dio: ^4.0.6 #网络请求
+  url_launcher: ^6.1.8 #访问链接
   path_provider: ^2.0.12 #路径查询
   cached_network_image: ^3.2.3 #缓存图片
   csv: ^5.0.1 #读取CSV
   logger: ^1.1.0 #精美日志
   animate_do: ^3.0.2 #动画
-  # event_bus: ^2.0.0 #简化调用
+  dio: ^4.0.6 #网络请求
+  flutter_progress_hud: ^2.0.2 #屏幕加载
 
 
 dev_dependencies:

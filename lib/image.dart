@@ -120,7 +120,6 @@ class ImagePageState extends State<ImagePage> {
   buildImageView(imageName) {
     return Container(
         child: Stack(children: [
-      // PhotoView(imageProvider: AssetImage('assets/images/$imageName.png')),
       PhotoView(
           loadingBuilder: (context, event) => Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -146,7 +145,6 @@ class ImagePageState extends State<ImagePage> {
       GestureDetector(
           //下载按钮
           onTap: () {
-            // saveImage(imageName);
             downloadImage(imageName);
           },
           child: Container(

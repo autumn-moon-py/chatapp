@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:io';
+import 'package:chatapp/dictionary.dart';
+import 'package:dio/dio.dart';
 import 'package:chatapp/chat.dart';
 import 'package:chatapp/image.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +10,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import "package:get/get.dart";
 import 'package:cool_dropdown/cool_dropdown.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter_progress_hud/flutter_progress_hud.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'config.dart';
@@ -21,12 +26,13 @@ class SettingPage extends StatefulWidget {
 //设置页面布局
 class SettingPageState extends State<SettingPage> {
   late final String where;
-  bool isChange = false;
+
   SettingPageState(this.where);
 
   @override
-  Widget build(Object context) {
-    return Stack(children: [
+  Widget build(BuildContext context) {
+    return Scaffold(
+        body: Stack(children: [
       Container(
           color: Color.fromRGBO(13, 13, 13, 1), width: 540.w, height: 960.h),
       Padding(
@@ -130,7 +136,7 @@ class SettingPageState extends State<SettingPage> {
                                                 color: Colors.white)),
                                         Padding(
                                             padding:
-                                                EdgeInsets.only(left: 130.w),
+                                                EdgeInsets.only(left: 100.w),
                                             child: Slider(
                                               value: sliderValue,
                                               onChanged: (data) {
@@ -409,24 +415,45 @@ class SettingPageState extends State<SettingPage> {
                     )),
                 GestureDetector(
                     onTap: () {
-                      Get.defaultDialog(
-                        title: '警告',
-                        titleStyle: TextStyle(color: Colors.red),
-                        content: Text(
-                          '此功能会清除图鉴,词典,动态,游玩进度等记录',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.black),
-                        ),
-                        textConfirm: '确定',
-                        confirmTextColor: Colors.white,
-                        onConfirm: () {
-                          Get.defaultDialog(
-                              title: '提示',
-                              titleStyle: TextStyle(color: Colors.blue),
-                              middleText: '缓存已清除');
-                          delAll();
-                        },
-                      );
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              content: Container(
+                                  height: 120.h,
+                                  child: Column(children: [
+                                    Text('提示',
+                                        style: TextStyle(
+                                            fontSize: 40.sp,
+                                            color: Colors.red)),
+                                    Padding(
+                                        padding: EdgeInsets.only(top: 10.h),
+                                        child: Text(
+                                          '此操作会清除图鉴,词典,游玩进度等记录',
+                                          style: TextStyle(fontSize: 25.sp),
+                                        ))
+                                  ])),
+                              actions: [
+                                TextButton(
+                                  child: Text("取消"),
+                                  onPressed: () {
+                                    Navigator.pop(context, 'Cancle');
+                                  },
+                                ),
+                                TextButton(
+                                    child: Text("确定"),
+                                    onPressed: () {
+                                      Navigator.pop(context, 'Ok');
+                                      delAll();
+                                      Get.defaultDialog(
+                                          title: '提示',
+                                          titleStyle:
+                                              TextStyle(color: Colors.blue),
+                                          middleText: '缓存已清除');
+                                    })
+                              ],
+                            );
+                          });
                     },
                     child: Padding(
                       padding: EdgeInsets.only(
@@ -529,17 +556,17 @@ class SettingPageState extends State<SettingPage> {
             //返回图标
             GestureDetector(
                 onTap: () {
-                  // Get.back();
                   if (isChange == true && where == 'chat') {
                     isChange = false;
-                    // where = '';
                     Get.offAll(ChatPage());
                   } else if (where == 'chat') {
-                    // where = '';
                     Get.back();
                   } else if (isChange && where == 'image') {
-                    // where = '';
+                    isChange = false;
                     Get.offAll(ImagePage());
+                  } else if (isChange && where == '词典') {
+                    isChange = false;
+                    Get.offAll(DictionaryPage());
                   } else {
                     Get.back();
                   }
@@ -547,7 +574,7 @@ class SettingPageState extends State<SettingPage> {
                 child:
                     Icon(Icons.chevron_left, color: Colors.white, size: 50.r)),
           ])),
-    ]);
+    ]));
   }
 }
 
@@ -559,320 +586,453 @@ class MyAppInfo extends StatefulWidget {
 class _MyAppInfoState extends State<MyAppInfo> {
   @override
   Widget build(BuildContext context) {
-    return Stack(children: [
-      Container(
-        width: 540.w,
-        height: 960.h,
-        color: Color.fromRGBO(13, 13, 13, 1),
-      ),
-      Container(
-          padding: EdgeInsets.only(top: 80.h),
-          width: 540.w,
-          child: Column(
-            children: [
-              ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: Image.asset(
-                    'assets/icon/icon.png',
-                    width: 100.w,
-                    height: 100.h,
-                  )),
-              GestureDetector(
-                  onDoubleTap: () {
-                    imageMap.forEach((key, value) {
-                      imageMap.update(key, (value) => true);
-                    });
-                    dictionaryMap.forEach((key, value) {
-                      List dt = dictionaryMap[key];
-                      dt[1] = 'true';
-                      dictionaryMap[key] = dt;
-                    });
-                    EasyLoading.showToast('恭喜你触发彩蛋,本次启动解锁全图鉴和词典,下次启动恢复原本解锁状态',
-                        toastPosition: EasyLoadingToastPosition.bottom);
-                  },
-                  child: Container(
-                      padding: EdgeInsets.only(top: 10.h),
-                      child: Text('异次元通讯 - 次元复苏',
-                          style:
-                              TextStyle(color: Colors.grey, fontSize: 25.sp)))),
-              Container(
-                  padding: EdgeInsets.only(top: 10.h, bottom: 10.h),
-                  child:
-                      Text('V $version', style: TextStyle(color: Colors.grey))),
-              ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: Container(
-                      width: 500.w,
-                      color: Color.fromRGBO(38, 38, 38, 1),
+    return ProgressHUD(
+        child: Builder(
+            builder: (context) => Stack(children: [
+                  Container(
+                    width: 540.w,
+                    height: 960.h,
+                    color: Color.fromRGBO(13, 13, 13, 1),
+                  ),
+                  Container(
+                      padding: EdgeInsets.only(top: 80.h),
+                      width: 540.w,
                       child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            GestureDetector(
-                                onTap: () async {
-                                  final Uri url =
-                                      Uri.parse('https://www.subrecovery.top');
-                                  await launchUrl(url);
-                                },
-                                child: Padding(
-                                  padding:
-                                      EdgeInsets.only(left: 10.w, right: 10.w),
-                                  child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(20),
-                                      child: Container(
-                                          color: Color.fromRGBO(38, 38, 38, 1),
-                                          child: Column(
-                                            children: [
-                                              Padding(
-                                                  padding: EdgeInsets.only(
-                                                      top: 10.h,
-                                                      left: 20.w,
-                                                      bottom: 10.h),
-                                                  child: Row(children: [
-                                                    Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
+                        children: [
+                          ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: Image.asset(
+                                'assets/icon/icon.png',
+                                width: 100.w,
+                                height: 100.h,
+                              )),
+                          GestureDetector(
+                              onDoubleTap: () {
+                                isChange = true;
+                                imageMap.forEach((key, value) {
+                                  imageMap.update(key, (value) => true);
+                                });
+                                dictionaryMap.forEach((key, value) {
+                                  List dt = dictionaryMap[key];
+                                  dt[1] = 'true';
+                                  dictionaryMap[key] = dt;
+                                });
+                                EasyLoading.showToast(
+                                    '恭喜你触发彩蛋,本次启动解锁全图鉴和词典,下次启动恢复原本解锁状态',
+                                    toastPosition:
+                                        EasyLoadingToastPosition.bottom);
+                              },
+                              child: Container(
+                                  padding: EdgeInsets.only(top: 10.h),
+                                  child: Text('异次元通讯 - 次元复苏',
+                                      style: TextStyle(
+                                          color: Colors.grey,
+                                          fontSize: 25.sp)))),
+                          Container(
+                              padding: EdgeInsets.only(top: 10.h, bottom: 10.h),
+                              child: Text('V $version',
+                                  style: TextStyle(color: Colors.grey))),
+                          ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: Container(
+                                  width: 500.w,
+                                  color: Color.fromRGBO(38, 38, 38, 1),
+                                  child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        GestureDetector(
+                                            onTap: () async {
+                                              Map result = {'info': ''};
+                                              final progress =
+                                                  ProgressHUD.of(context);
+                                              try {
+                                                progress!
+                                                    .showWithText('检查中...');
+                                                var response = await Dio().get(
+                                                    "https://www.subrecovery.top/app/upgrade.json");
+                                                if (response.statusCode ==
+                                                    HttpStatus.ok) {
+                                                  progress.dismiss();
+                                                  result = jsonDecode(
+                                                      response.toString());
+                                                } else {
+                                                  result.update(
+                                                      'info', (value) => '无网络');
+                                                  progress.dismiss();
+                                                  EasyLoading.showToast('无网络',
+                                                      toastPosition:
+                                                          EasyLoadingToastPosition
+                                                              .bottom);
+                                                }
+                                              } catch (error) {
+                                                progress!.dismiss();
+                                                result.update(
+                                                    'info',
+                                                    (value) =>
+                                                        '请求失败,请重试,如果多次失败请反馈');
+                                              }
+                                              if (result.length > 1) {
+                                                if (result['version'] !=
+                                                    version) {
+                                                  showDialog(
+                                                      context: context,
+                                                      builder: (context) {
+                                                        return AlertDialog(
+                                                          content: Container(
+                                                              height: 120.h,
+                                                              child: Column(
+                                                                  children: [
+                                                                    Text(
+                                                                        result[
+                                                                            'version'],
+                                                                        style: TextStyle(
+                                                                            fontSize:
+                                                                                35.sp,
+                                                                            color: Colors.blue)),
+                                                                    Text(
+                                                                      result[
+                                                                          'info'],
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              20.sp),
+                                                                    )
+                                                                  ])),
+                                                          actions: [
+                                                            TextButton(
+                                                              child: Text("取消"),
+                                                              onPressed: () {
+                                                                Navigator.pop(
+                                                                    context,
+                                                                    'Cancle');
+                                                              },
+                                                            ),
+                                                            TextButton(
+                                                                child:
+                                                                    Text("更新"),
+                                                                onPressed:
+                                                                    () async {
+                                                                  await launchUrl(
+                                                                      Uri.parse(
+                                                                          'https://www.subrecovery.top/app'),
+                                                                      mode: LaunchMode
+                                                                          .externalApplication);
+                                                                })
+                                                          ],
+                                                        );
+                                                      });
+                                                } else {
+                                                  EasyLoading.showToast('无更新',
+                                                      toastPosition:
+                                                          EasyLoadingToastPosition
+                                                              .bottom);
+                                                }
+                                              } else {
+                                                Get.defaultDialog(
+                                                    title: '错误',
+                                                    titleStyle: TextStyle(
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        color: Colors.red),
+                                                    middleText: '请求失败');
+                                              }
+                                            },
+                                            child: Padding(
+                                              padding: EdgeInsets.only(
+                                                  left: 10.w, right: 10.w),
+                                              child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                  child: Container(
+                                                      color: Color.fromRGBO(
+                                                          38, 38, 38, 1),
+                                                      child: Column(
                                                         children: [
-                                                          Text('官网',
-                                                              style: TextStyle(
-                                                                  fontSize:
-                                                                      25.sp,
-                                                                  color: Colors
-                                                                      .white))
-                                                        ]),
-                                                    Padding(
-                                                        padding:
-                                                            EdgeInsets.only(
-                                                                left: 350.w),
-                                                        child: ClipRRect(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        5),
-                                                            child: Container(
-                                                                child: Icon(
-                                                                    Icons
-                                                                        .chevron_right,
-                                                                    color: Colors
-                                                                        .white,
-                                                                    size: 50
-                                                                        .r)))),
-                                                  ]))
-                                            ],
-                                          ))),
-                                )),
-                            Divider(
-                              color: Colors.grey,
-                              height: 0,
-                              indent: 30.w,
-                              endIndent: 30.w,
-                              thickness: 1,
-                            ),
-                            GestureDetector(
-                                onTap: () async {
-                                  final Uri url = Uri.parse(
-                                      'https://www.yuque.com/docs/share/61b42397-f1f4-4457-9fdd-d50e45d214df');
-                                  await launchUrl(url);
-                                },
-                                child: Padding(
-                                  padding:
-                                      EdgeInsets.only(left: 10.w, right: 10.w),
-                                  child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(20),
-                                      child: Container(
-                                          color: Color.fromRGBO(38, 38, 38, 1),
-                                          child: Column(
-                                            children: [
-                                              Padding(
-                                                  padding: EdgeInsets.only(
-                                                      top: 10.h,
-                                                      left: 20.w,
-                                                      bottom: 10.h),
-                                                  child: Row(children: [
-                                                    Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
+                                                          Padding(
+                                                              padding: EdgeInsets
+                                                                  .only(
+                                                                      top: 10.h,
+                                                                      left:
+                                                                          20.w,
+                                                                      bottom:
+                                                                          10.h),
+                                                              child: Row(
+                                                                  children: [
+                                                                    Column(
+                                                                        crossAxisAlignment:
+                                                                            CrossAxisAlignment.start,
+                                                                        children: [
+                                                                          Text(
+                                                                              '检查更新',
+                                                                              style: TextStyle(fontSize: 25.sp, color: Colors.white))
+                                                                        ]),
+                                                                    Padding(
+                                                                        padding: EdgeInsets.only(
+                                                                            left: 300
+                                                                                .w),
+                                                                        child: ClipRRect(
+                                                                            borderRadius:
+                                                                                BorderRadius.circular(5),
+                                                                            child: Container(child: Icon(Icons.chevron_right, color: Colors.white, size: 50.r)))),
+                                                                  ]))
+                                                        ],
+                                                      ))),
+                                            )),
+                                        Divider(
+                                          color: Colors.grey,
+                                          height: 0,
+                                          indent: 30.w,
+                                          endIndent: 30.w,
+                                          thickness: 1,
+                                        ),
+                                        GestureDetector(
+                                            onTap: () async {
+                                              final Uri url = Uri.parse(
+                                                  'https://www.subrecovery.top');
+                                              await launchUrl(url,
+                                                  mode: LaunchMode
+                                                      .externalApplication);
+                                            },
+                                            child: Padding(
+                                              padding: EdgeInsets.only(
+                                                  left: 10.w, right: 10.w),
+                                              child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                  child: Container(
+                                                      color: Color.fromRGBO(
+                                                          38, 38, 38, 1),
+                                                      child: Column(
                                                         children: [
-                                                          Text('帮助',
-                                                              style: TextStyle(
-                                                                  fontSize:
-                                                                      25.sp,
-                                                                  color: Colors
-                                                                      .white))
-                                                        ]),
-                                                    Padding(
-                                                        padding:
-                                                            EdgeInsets.only(
-                                                                left: 350.w),
-                                                        child: ClipRRect(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        5),
-                                                            child: Container(
-                                                                child: Icon(
-                                                                    Icons
-                                                                        .chevron_right,
-                                                                    color: Colors
-                                                                        .white,
-                                                                    size: 50
-                                                                        .r)))),
-                                                  ]))
-                                            ],
-                                          ))),
-                                )),
-                            Divider(
-                              color: Colors.grey,
-                              height: 0,
-                              indent: 30.w,
-                              endIndent: 30.w,
-                              thickness: 1,
-                            ),
-                            GestureDetector(
-                                onTap: () async {
-                                  final Uri url = Uri.parse(
-                                      'https://jq.qq.com/?_wv=1027&k=YTPhqrNW');
-                                  await launchUrl(url);
-                                },
-                                child: Padding(
-                                  padding:
-                                      EdgeInsets.only(left: 10.w, right: 10.w),
-                                  child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(20),
-                                      child: Container(
-                                          color: Color.fromRGBO(38, 38, 38, 1),
-                                          child: Column(
-                                            children: [
-                                              Padding(
-                                                  padding: EdgeInsets.only(
-                                                      top: 10.h,
-                                                      left: 20.w,
-                                                      bottom: 10.h),
-                                                  child: Row(children: [
-                                                    Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
+                                                          Padding(
+                                                              padding: EdgeInsets
+                                                                  .only(
+                                                                      top: 10.h,
+                                                                      left:
+                                                                          20.w,
+                                                                      bottom:
+                                                                          10.h),
+                                                              child: Row(
+                                                                  children: [
+                                                                    Column(
+                                                                        crossAxisAlignment:
+                                                                            CrossAxisAlignment.start,
+                                                                        children: [
+                                                                          Text(
+                                                                              '官网',
+                                                                              style: TextStyle(fontSize: 25.sp, color: Colors.white))
+                                                                        ]),
+                                                                    Padding(
+                                                                        padding: EdgeInsets.only(
+                                                                            left: 350
+                                                                                .w),
+                                                                        child: ClipRRect(
+                                                                            borderRadius:
+                                                                                BorderRadius.circular(5),
+                                                                            child: Container(child: Icon(Icons.chevron_right, color: Colors.white, size: 50.r)))),
+                                                                  ]))
+                                                        ],
+                                                      ))),
+                                            )),
+                                        Divider(
+                                          color: Colors.grey,
+                                          height: 0,
+                                          indent: 30.w,
+                                          endIndent: 30.w,
+                                          thickness: 1,
+                                        ),
+                                        GestureDetector(
+                                            onTap: () async {
+                                              final Uri url = Uri.parse(
+                                                  'https://www.yuque.com/docs/share/61b42397-f1f4-4457-9fdd-d50e45d214df');
+                                              await launchUrl(url,
+                                                  mode: LaunchMode
+                                                      .externalApplication);
+                                            },
+                                            child: Padding(
+                                              padding: EdgeInsets.only(
+                                                  left: 10.w, right: 10.w),
+                                              child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                  child: Container(
+                                                      color: Color.fromRGBO(
+                                                          38, 38, 38, 1),
+                                                      child: Column(
                                                         children: [
-                                                          Text('Q群',
-                                                              style: TextStyle(
-                                                                  fontSize:
-                                                                      25.sp,
-                                                                  color: Colors
-                                                                      .white))
-                                                        ]),
-                                                    Padding(
-                                                        padding:
-                                                            EdgeInsets.only(
-                                                                left: 358.w),
-                                                        child: ClipRRect(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        5),
-                                                            child: Container(
-                                                                child: Icon(
-                                                                    Icons
-                                                                        .chevron_right,
-                                                                    color: Colors
-                                                                        .white,
-                                                                    size: 50
-                                                                        .r)))),
-                                                  ]))
-                                            ],
-                                          ))),
-                                )),
-                            Divider(
-                              color: Colors.grey,
-                              height: 0,
-                              indent: 30.w,
-                              endIndent: 30.w,
-                              thickness: 1,
-                            ),
-                            GestureDetector(
-                                onTap: () async {
-                                  final Uri url = Uri.parse(
-                                      'https://afdian.net/a/subrecovery');
-                                  await launchUrl(url);
-                                },
-                                child: Padding(
-                                  padding:
-                                      EdgeInsets.only(left: 10.w, right: 10.w),
-                                  child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(20),
-                                      child: Container(
-                                          color: Color.fromRGBO(38, 38, 38, 1),
-                                          child: Column(
-                                            children: [
-                                              Padding(
-                                                  padding: EdgeInsets.only(
-                                                      top: 10.h,
-                                                      left: 20.w,
-                                                      bottom: 10.h),
-                                                  child: Row(children: [
-                                                    Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
+                                                          Padding(
+                                                              padding: EdgeInsets
+                                                                  .only(
+                                                                      top: 10.h,
+                                                                      left:
+                                                                          20.w,
+                                                                      bottom:
+                                                                          10.h),
+                                                              child: Row(
+                                                                  children: [
+                                                                    Column(
+                                                                        crossAxisAlignment:
+                                                                            CrossAxisAlignment.start,
+                                                                        children: [
+                                                                          Text(
+                                                                              '帮助',
+                                                                              style: TextStyle(fontSize: 25.sp, color: Colors.white))
+                                                                        ]),
+                                                                    Padding(
+                                                                        padding: EdgeInsets.only(
+                                                                            left: 350
+                                                                                .w),
+                                                                        child: ClipRRect(
+                                                                            borderRadius:
+                                                                                BorderRadius.circular(5),
+                                                                            child: Container(child: Icon(Icons.chevron_right, color: Colors.white, size: 50.r)))),
+                                                                  ]))
+                                                        ],
+                                                      ))),
+                                            )),
+                                        Divider(
+                                          color: Colors.grey,
+                                          height: 0,
+                                          indent: 30.w,
+                                          endIndent: 30.w,
+                                          thickness: 1,
+                                        ),
+                                        GestureDetector(
+                                            onTap: () async {
+                                              final Uri url = Uri.parse(
+                                                  'https://jq.qq.com/?_wv=1027&k=YTPhqrNW');
+                                              await launchUrl(url,
+                                                  mode: LaunchMode
+                                                      .externalApplication);
+                                            },
+                                            child: Padding(
+                                              padding: EdgeInsets.only(
+                                                  left: 10.w, right: 10.w),
+                                              child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                  child: Container(
+                                                      color: Color.fromRGBO(
+                                                          38, 38, 38, 1),
+                                                      child: Column(
                                                         children: [
-                                                          Text('投喂',
-                                                              style: TextStyle(
-                                                                  fontSize:
-                                                                      25.sp,
-                                                                  color: Colors
-                                                                      .white))
-                                                        ]),
-                                                    Padding(
-                                                        padding:
-                                                            EdgeInsets.only(
-                                                                left: 350.w),
-                                                        child: ClipRRect(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        5),
-                                                            child: Container(
-                                                                child: Icon(
-                                                                    Icons
-                                                                        .chevron_right,
-                                                                    color: Colors
-                                                                        .white,
-                                                                    size: 50
-                                                                        .r)))),
-                                                  ]))
-                                            ],
-                                          ))),
-                                )),
-                          ])))
-            ],
-          )),
-      Container(
-          alignment: Alignment.topLeft,
-          child: Stack(children: [
-            Container(
-              //标题栏
-              color: Colors.black,
-              width: 540.h,
-              height: 50.h,
-            ),
-            Align(
-                alignment: Alignment.topCenter,
-                child: Padding(
-                    padding: EdgeInsets.only(top: 10.h),
-                    child: Text('关于异次元通讯',
-                        style:
-                            TextStyle(color: Colors.white, fontSize: 25.sp)))),
+                                                          Padding(
+                                                              padding: EdgeInsets
+                                                                  .only(
+                                                                      top: 10.h,
+                                                                      left:
+                                                                          20.w,
+                                                                      bottom:
+                                                                          10.h),
+                                                              child: Row(
+                                                                  children: [
+                                                                    Column(
+                                                                        crossAxisAlignment:
+                                                                            CrossAxisAlignment.start,
+                                                                        children: [
+                                                                          Text(
+                                                                              'Q群',
+                                                                              style: TextStyle(fontSize: 25.sp, color: Colors.white))
+                                                                        ]),
+                                                                    Padding(
+                                                                        padding: EdgeInsets.only(
+                                                                            left: 358
+                                                                                .w),
+                                                                        child: ClipRRect(
+                                                                            borderRadius:
+                                                                                BorderRadius.circular(5),
+                                                                            child: Container(child: Icon(Icons.chevron_right, color: Colors.white, size: 50.r)))),
+                                                                  ]))
+                                                        ],
+                                                      ))),
+                                            )),
+                                        Divider(
+                                          color: Colors.grey,
+                                          height: 0,
+                                          indent: 30.w,
+                                          endIndent: 30.w,
+                                          thickness: 1,
+                                        ),
+                                        GestureDetector(
+                                            onTap: () async {
+                                              final Uri url = Uri.parse(
+                                                  'https://afdian.net/a/subrecovery');
+                                              await launchUrl(url,
+                                                  mode: LaunchMode
+                                                      .externalApplication);
+                                            },
+                                            child: Padding(
+                                              padding: EdgeInsets.only(
+                                                  left: 10.w, right: 10.w),
+                                              child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                  child: Container(
+                                                      color: Color.fromRGBO(
+                                                          38, 38, 38, 1),
+                                                      child: Column(
+                                                        children: [
+                                                          Padding(
+                                                              padding: EdgeInsets
+                                                                  .only(
+                                                                      top: 10.h,
+                                                                      left:
+                                                                          20.w,
+                                                                      bottom:
+                                                                          10.h),
+                                                              child: Row(
+                                                                  children: [
+                                                                    Column(
+                                                                        crossAxisAlignment:
+                                                                            CrossAxisAlignment.start,
+                                                                        children: [
+                                                                          Text(
+                                                                              '投喂',
+                                                                              style: TextStyle(fontSize: 25.sp, color: Colors.white))
+                                                                        ]),
+                                                                    Padding(
+                                                                        padding: EdgeInsets.only(
+                                                                            left: 350
+                                                                                .w),
+                                                                        child: ClipRRect(
+                                                                            borderRadius:
+                                                                                BorderRadius.circular(5),
+                                                                            child: Container(child: Icon(Icons.chevron_right, color: Colors.white, size: 50.r)))),
+                                                                  ]))
+                                                        ],
+                                                      ))),
+                                            )),
+                                      ])))
+                        ],
+                      )),
+                  Container(
+                      alignment: Alignment.topLeft,
+                      child: Stack(children: [
+                        Container(
+                          //标题栏
+                          color: Colors.black,
+                          width: 540.h,
+                          height: 50.h,
+                        ),
+                        Align(
+                            alignment: Alignment.topCenter,
+                            child: Padding(
+                                padding: EdgeInsets.only(top: 10.h),
+                                child: Text('关于异次元通讯',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 25.sp)))),
 
-            //返回图标
-            GestureDetector(
-                onTap: () {
-                  Get.back();
-                },
-                child:
-                    Icon(Icons.chevron_left, color: Colors.white, size: 50.r)),
-          ])),
-    ]);
+                        //返回图标
+                        GestureDetector(
+                            onTap: () {
+                              Get.back();
+                            },
+                            child: Icon(Icons.chevron_left,
+                                color: Colors.white, size: 50.r)),
+                      ])),
+                ])));
   }
 }

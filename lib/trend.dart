@@ -1,13 +1,10 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import "package:get/get.dart";
 import 'package:photo_view/photo_view.dart';
 
 import 'config.dart';
-
-
 
 class TrendPage extends StatefulWidget {
   @override
@@ -23,29 +20,56 @@ class TrendPageState extends State<TrendPage> {
     super.initState();
   }
 
+  sendTrend(String trendText, String trendImg) {
+    Trend trend = Trend(trendText: trendText, trendImg: trendImg);
+    setState(() {
+      trends.add(trend);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: Stack(
       children: [
         Container(
-            color: Color.fromRGBO(25, 25, 25, 1), width: 540.w, height: 960.h),
-        Padding(
-            padding: EdgeInsets.only(left: 10.w, right: 5.w, bottom: 20.h),
-            child: Column(children: [
-              Flexible(
-                child: ListView.builder(
-                  controller: _scrollController, //绑定控件
-                  scrollDirection: Axis.vertical, //垂直滑动
-                  reverse: true, //正序显示
-                  shrinkWrap: true, //内容适配
-                  physics: BouncingScrollPhysics(), //内容超过一屏 上拉有回弹效果
-                  itemBuilder: (_, int index) => trends[index],
-                  itemCount: trends.length, //item数量
-                ),
-              )
-            ])),
-
+            color: Color.fromRGBO(25, 25, 25, 1), width: 1.sw, height: 1.sh),
+        Flexible(
+            child: ListView(children: [
+          Column(children: [
+            Stack(children: [
+              Padding(
+                  padding: EdgeInsets.only(bottom: 20.h),
+                  child: Image.asset('assets/images/聊天背景.png',
+                      width: 1.sw, height: 0.8.sw, fit: BoxFit.cover)),
+              Positioned(
+                  right: 15.w,
+                  bottom: 0,
+                  child: Image.asset('assets/icon/头像$nowMikoAvater.png',
+                      width: 60.r, height: 60.r))
+            ]),
+            Padding(
+                padding: EdgeInsets.only(left: 10.w, bottom: 20.h),
+                child: Flexible(
+                  child: ListView.builder(
+                    controller: _scrollController, //绑定控件
+                    scrollDirection: Axis.vertical, //垂直滑动
+                    reverse: true, //正序显示
+                    shrinkWrap: true, //内容适配
+                    physics: BouncingScrollPhysics(), //内容超过一屏 上拉有回弹效果
+                    itemBuilder: (_, int index) => trends[index],
+                    itemCount: trends.length, //item数量
+                  ),
+                ))
+          ]),
+        ])),
+        // Center(
+        //     child: TextButton(
+        //   child: Text('发送', style: TextStyle(color: Colors.white)),
+        //   onPressed: () {
+        //     sendTrend('你好', 'S1-01');
+        //   },
+        // )),
         GestureDetector(
             //返回按钮
             onTap: () {
@@ -124,36 +148,57 @@ class Trend extends StatelessWidget {
                               child: Container(
                                   width: 440.w,
                                   height: 440.w,
-                                  child: Image.asset(
-                                    'assets/images/$trendImg.png',
-                                    fit: BoxFit.cover,
-                                  ))))))
+                                  child: Image.network(
+                                      'https://cdn.486486486.xyz/miko-storage/Dimension/ver0.1/$trendImg.png',
+                                      fit: BoxFit.cover))))))
             ])),
       ],
     );
   }
 
+  //图片查看
   buildImageView(imageName) {
     return Container(
         child: Stack(children: [
-      PhotoView(imageProvider: AssetImage('assets/images/$imageName.png')),
-      GestureDetector(
-          //返回按钮
-          onTap: () {
-            Get.back();
-          },
-          child: Container(
-              alignment: Alignment.topLeft,
-              child: Stack(children: [
-                Container(
-                  //标题栏
-                  color: Colors.black,
-                  width: 540.w,
-                  height: 40.h,
-                ),
-                //返回图标
-                Icon(Icons.chevron_left, color: Colors.white, size: 50.r),
-              ])))
+      PhotoView(
+          loadingBuilder: (context, event) => Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(),
+                    Padding(
+                        padding: EdgeInsets.only(top: 10.h),
+                        child: Align(
+                            alignment: Alignment.center,
+                            child: Text(
+                              '第一次加载可能缓慢,请耐心等待',
+                              style: TextStyle(
+                                  color: Colors.black, fontSize: 30.sp),
+                            )))
+                  ]),
+          errorBuilder: (context, error, stackTrace) => Text(
+                '加载失败,请检查网络',
+                style: TextStyle(color: Colors.black, fontSize: 30.sp),
+              ),
+          imageProvider: NetworkImage(
+              'https://cdn.486486486.xyz/miko-storage/Dimension/ver0.1/$imageName.png')),
+      Container(
+          alignment: Alignment.topLeft,
+          child: Stack(children: [
+            Container(
+              //标题栏
+              color: Colors.black,
+              width: 540.w,
+              height: 50.h,
+            ),
+            //返回图标
+            GestureDetector(
+                onTap: () {
+                  Get.back();
+                },
+                child:
+                    Icon(Icons.chevron_left, color: Colors.white, size: 50.r)),
+          ]))
     ]));
   }
 }

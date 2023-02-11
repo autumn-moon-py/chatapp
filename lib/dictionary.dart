@@ -124,32 +124,33 @@ class DictionaryPageState extends State<DictionaryPage> {
 
   //词典展示
   buildDictionaryView(dictionaryName, dictionaryMean) {
-    return Stack(children: [
+    return Stack(alignment: Alignment.center, children: [
       GestureDetector(
           onTap: () => Get.back(),
           child: Container(width: 540.w, height: 960.h, color: Colors.black)),
-      Stack(children: [
-        Center(
-            child: Container(
-                decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey, width: 1.w),
-                    borderRadius: BorderRadius.circular(9)),
-                child: Image.asset(
-                  'assets/词典/词典展示.png',
-                  width: 386.w, //图片宽
-                  height: 624.h, //图片高
-                ))),
+      Center(
+          child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.asset(
+                'assets/词典/词典展示.png',
+                width: 386.w,
+                height: 624.h,
+              ))),
+      Column(children: [
         Padding(
-            padding: EdgeInsets.only(top: 291.h, left: 237.6.w),
-            child: Text(dictionaryName,
-                style: TextStyle(fontSize: 30.sp, color: Colors.white))),
-        Padding(
-            padding: EdgeInsets.only(top: 349.h, left: 94.5.w),
-            child: Container(
-                width: 351.w,
-                child: Text(dictionaryMean,
-                    style: TextStyle(fontSize: 25.sp, color: Colors.white))))
-      ]),
+            padding: EdgeInsets.only(top: 291.h),
+            child: Column(children: [
+              Text(dictionaryName,
+                  style: TextStyle(fontSize: 30.sp, color: Colors.white)),
+              Padding(
+                  padding: EdgeInsets.only(top: 20.h, left: 10.w),
+                  child: Container(
+                      width: 370.w,
+                      child: Text(dictionaryMean,
+                          style:
+                              TextStyle(fontSize: 25.sp, color: Colors.white))))
+            ]))
+      ])
     ]);
   }
 }
