@@ -29,9 +29,7 @@ class DictionaryPageState extends State<DictionaryPage> {
           ),
           //图鉴布局列表
           Padding(
-              padding: EdgeInsets.only(top: 10.h),
-              child: buildDictionaryList()),
-          buildMenu("词典") //菜单栏
+              padding: EdgeInsets.only(top: 10.h), child: buildDictionaryList())
         ]));
   }
 

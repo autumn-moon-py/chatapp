@@ -10,84 +10,6 @@ import 'image.dart';
 import 'chapter.dart';
 import 'setting.dart';
 
-buildMenu(String nowPage) {
-  Color imageBottonColor = Colors.grey;
-  Color dictionaryBottonColor = Colors.grey;
-  Color chapterButtonColor = Colors.grey;
-  if (nowPage == "图鉴") {
-    imageBottonColor = Colors.white;
-  }
-  if (nowPage == "词典") {
-    dictionaryBottonColor = Colors.white;
-  }
-  if (nowPage == "章节") {
-    chapterButtonColor = Colors.white;
-  }
-  return Align(
-      alignment: Alignment(0.5, -1),
-      child: Stack(
-        children: [
-          Container(
-            color: Colors.black,
-            width: 540.w,
-            height: 40.h,
-          ),
-          Row(children: [
-            GestureDetector(
-              onTap: () {
-                loadMap();
-                Get.to(ImagePage());
-              },
-              child: Container(
-                color: Color.fromRGBO(255, 255, 255, 0),
-                width: 180.w,
-                height: 40.h,
-                child: Align(
-                    alignment: Alignment.center,
-                    child: Text('图鉴',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: imageBottonColor, fontSize: 25.sp))),
-              ),
-            ),
-            GestureDetector(
-              onTap: () {
-                loadMap();
-                Get.to(DictionaryPage());
-              },
-              child: Container(
-                color: Color.fromRGBO(255, 255, 255, 0),
-                width: 180.w,
-                height: 40.h,
-                child: Align(
-                    alignment: Alignment.center,
-                    child: Text('词典',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: dictionaryBottonColor, fontSize: 25.sp))),
-              ),
-            ),
-            GestureDetector(
-              onTap: () {
-                Get.to(ChapterPage());
-              },
-              child: Container(
-                color: Color.fromRGBO(255, 255, 255, 0),
-                width: 180.w,
-                height: 40.h,
-                child: Align(
-                    alignment: Alignment.center,
-                    child: Text('章节',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            color: chapterButtonColor, fontSize: 25.sp))),
-              ),
-            )
-          ])
-        ],
-      ));
-}
-
 float1() {
   return Container(
     child: FloatingActionButton(
@@ -121,4 +43,109 @@ floatButton(String where) {
       colorStartAnimation: Colors.blue,
       colorEndAnimation: Colors.red,
       animatedIconData: AnimatedIcons.menu_close);
+}
+
+class MenuPage extends StatefulWidget {
+  @override
+  _MenuPageState createState() => new _MenuPageState();
+}
+
+class _MenuPageState extends State<MenuPage> {
+  int nowPage = 0;
+  final PageController menuController = PageController(); //菜单控制器
+
+  @override
+  void dispose() {
+    menuController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        body: Stack(children: [
+      PageView(
+        controller: menuController,
+        onPageChanged: (value) {
+          nowPage = value;
+          setState(() {});
+        },
+        children: <Widget>[
+          ImagePage(),
+          DictionaryPage(),
+          ChapterPage(),
+        ],
+      ),
+      buildMenu()
+    ]));
+  }
+
+  buildMenu() {
+    Color imageBottonColor = Colors.grey;
+    Color dictionaryBottonColor = Colors.grey;
+    Color chapterButtonColor = Colors.grey;
+    if (nowPage == 0) {
+      imageBottonColor = Colors.white;
+    }
+    if (nowPage == 1) {
+      dictionaryBottonColor = Colors.white;
+    }
+    if (nowPage == 2) {
+      chapterButtonColor = Colors.white;
+    }
+    return Align(
+        alignment: Alignment(0.5, -1),
+        child: Stack(
+          children: [
+            Container(
+              color: Colors.black,
+              width: 540.w,
+              height: 40.h,
+            ),
+            Row(children: [
+              MaterialButton(
+                  splashColor: Color.fromRGBO(0, 0, 0, 0),
+                  highlightColor: Color.fromRGBO(0, 0, 0, 0),
+                  padding: EdgeInsets.only(bottom: 20.h),
+                  minWidth: (1 / 3).sw,
+                  onPressed: () {
+                    menuController.animateToPage(0,
+                        duration: Duration(milliseconds: 500),
+                        curve: Curves.easeInOut);
+                  },
+                  child: Text('图鉴',
+                      style:
+                          TextStyle(color: imageBottonColor, fontSize: 25.sp))),
+              MaterialButton(
+                  padding: EdgeInsets.only(bottom: 20.h),
+                  minWidth: (1 / 3).sw,
+                  splashColor: Color.fromRGBO(0, 0, 0, 0),
+                  highlightColor: Color.fromRGBO(0, 0, 0, 0),
+                  onPressed: () {
+                    menuController.animateToPage(1,
+                        duration: Duration(milliseconds: 500),
+                        curve: Curves.easeInOut);
+                  },
+                  child: Text('词典',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: dictionaryBottonColor, fontSize: 25.sp))),
+              MaterialButton(
+                  padding: EdgeInsets.only(bottom: 20.h),
+                  minWidth: (1 / 3).sw,
+                  splashColor: Color.fromRGBO(0, 0, 0, 0),
+                  highlightColor: Color.fromRGBO(0, 0, 0, 0),
+                  onPressed: () {
+                    menuController.animateToPage(2,
+                        duration: Duration(milliseconds: 500),
+                        curve: Curves.easeInOut);
+                  },
+                  child: Text('章节',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: chapterButtonColor, fontSize: 25.sp)))
+            ])
+          ],
+        ));
+  }
 }

@@ -4,13 +4,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:keframe/keframe.dart';
+import 'menu.dart';
 import 'send.dart';
 import "package:get/get.dart";
 import 'package:spring_button/spring_button.dart';
 import 'dart:math' as math;
 
 import 'dart:async';
-import 'image.dart';
 import 'config.dart';
 import 'setting.dart';
 import 'trend.dart';
@@ -165,7 +165,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                   toastPosition: EasyLoadingToastPosition.bottom);
             } else {
               loadMap();
-              Get.to(ImagePage());
+              Get.to(MenuPage());
             }
           },
           child: Container(

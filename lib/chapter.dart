@@ -30,8 +30,7 @@ class ChapterPageState extends State<ChapterPage> {
           //章节布局列表
           Padding(
               padding: EdgeInsets.only(top: 15.h, bottom: 5.h),
-              child: buildChapterList()),
-          buildMenu("章节") //菜单栏
+              child: buildChapterList())
         ]));
   }
 

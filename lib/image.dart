@@ -45,18 +45,21 @@ class ImagePageState extends State<ImagePage> {
                           loadMap();
                         });
                       },
-                      child: GridView.count(
-                          crossAxisCount: 3, // 一行最多显示3张图片
-                          crossAxisSpacing: 10,
-                          childAspectRatio: 1 / 1.6,
-                          padding: EdgeInsets.only(
-                              top: 38.h, left: 10.w, right: 10.w),
-                          //遍历图鉴列表生成布局
-                          children: imageList.map((imageName) {
-                            return buildImage(imageName);
-                          }).toList())))),
-          buildMenu("图鉴") //菜单栏
+                      child: buildImageList())))
         ]));
+  }
+
+  //图鉴列表
+  Widget buildImageList() {
+    return GridView.count(
+        crossAxisCount: 3, // 一行最多显示3张图片
+        crossAxisSpacing: 10,
+        childAspectRatio: 1 / 1.6,
+        padding: EdgeInsets.only(top: 38.h, left: 10.w, right: 10.w),
+        //遍历图鉴列表生成布局
+        children: imageList.map((imageName) {
+          return buildImage(imageName);
+        }).toList());
   }
 
   //单个图片构成
