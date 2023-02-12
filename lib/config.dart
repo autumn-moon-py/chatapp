@@ -13,7 +13,7 @@ import 'trend.dart';
 
 SharedPreferences? local; //本地存储数据
 bool isNewImage = false; //AI图鉴
-bool scrolling = true; //自动滚屏
+bool scrolling = false; //自娱自乐模式
 bool waitTyping = true; //打字时间
 bool waitOffline = true; //是否等待下线
 int nowMikoAvater = 1; //miko当前头像
@@ -36,7 +36,7 @@ List<List<dynamic>> story = []; //剧本列表
 String nowChapter = '第一章'; //当前章节
 final ValueNotifier<bool> isChoose = ValueNotifier<bool>(false); //是否有选项,局部刷新
 String chatName = "Miko"; //聊天对象名称
-int line = 40; //当前下标
+int line = 0; //当前下标
 int startTime = 0; //等待,时间戳
 int jump = 0; //跳转
 int be_jump = 0; //分支,被跳转

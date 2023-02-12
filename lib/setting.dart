@@ -146,12 +146,8 @@ class SettingPageState extends State<SettingPage> {
                                                   sliderValue = data;
                                                 });
                                               },
-                                              onChangeStart: (data) {
-                                                // print('start:$data');
-                                              },
-                                              onChangeEnd: (data) {
-                                                // print('end:$data');
-                                              },
+                                              onChangeStart: (data) {},
+                                              onChangeEnd: (data) {},
                                               min: 0.0,
                                               max: 10.0,
                                               divisions: 10,
@@ -210,31 +206,45 @@ class SettingPageState extends State<SettingPage> {
                               endIndent: 30.w,
                               thickness: 1,
                             ),
-                            // SwitchListTile(
-                            //     title: Text('自动滚屏',
-                            //         style: TextStyle(
-                            //             fontSize: 25.sp, color: Colors.white)),
-                            //     subtitle: Text('当聊天内容超出一屏,发送消息自动滚动到最新一条',
-                            //         style: TextStyle(
-                            //             fontSize: 15.sp, color: Colors.grey)),
-                            //     value: scrolling,
-                            //     activeColor: Colors.white,
-                            //     activeTrackColor:
-                            //         Color.fromRGBO(0, 102, 203, 1),
-                            //     inactiveTrackColor:
-                            //         Color.fromRGBO(60, 60, 60, 1),
-                            //     onChanged: (value) {
-                            //       save();
-                            //       scrolling = value;
-                            //       setState(() {});
-                            //     }),
-                            // Divider(
-                            //   color: Colors.white,
-                            //   height: 0,
-                            //   indent: 20.w,
-                            //   endIndent: 30.w,
-                            //   thickness: 1,
-                            // ),
+                            SwitchListTile(
+                                title: Text('自娱自乐',
+                                    style: TextStyle(
+                                        fontSize: 25.sp, color: Colors.white)),
+                                subtitle: Text('自己跟Miko(也是你)聊天,会清除当前游玩进度',
+                                    style: TextStyle(
+                                        fontSize: 15.sp, color: Colors.grey)),
+                                value: scrolling,
+                                activeColor: Colors.white,
+                                activeTrackColor:
+                                    Color.fromRGBO(0, 102, 203, 1),
+                                inactiveTrackColor:
+                                    Color.fromRGBO(60, 60, 60, 1),
+                                onChanged: (value) {
+                                  messages = [];
+                                  messagesInfo = [];
+                                  line = 0; //当前下标
+                                  startTime = 0;
+                                  jump = 0;
+                                  be_jump = 0;
+                                  reast_line = 0;
+                                  choose_one = '';
+                                  choose_two = '';
+                                  choose_one_jump = 0;
+                                  choose_two_jump = 0;
+                                  story = [];
+                                  saveChat();
+                                  save();
+                                  isChange = true;
+                                  scrolling = value;
+                                  setState(() {});
+                                }),
+                            Divider(
+                              color: Colors.white,
+                              height: 0,
+                              indent: 20.w,
+                              endIndent: 30.w,
+                              thickness: 1,
+                            ),
                             SwitchListTile(
                                 title: Text('打字时间',
                                     style: TextStyle(

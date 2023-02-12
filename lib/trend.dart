@@ -34,42 +34,43 @@ class TrendPageState extends State<TrendPage> {
       children: [
         Container(
             color: Color.fromRGBO(25, 25, 25, 1), width: 1.sw, height: 1.sh),
-        Flexible(
-            child: ListView(children: [
-          Column(children: [
-            Stack(children: [
+        Column(children: [
+          Flexible(
+              child: ListView(children: [
+            Column(children: [
+              Stack(children: [
+                Padding(
+                    padding: EdgeInsets.only(bottom: 20.h),
+                    child: Image.asset('assets/images/聊天背景.png',
+                        width: 1.sw, height: 0.8.sw, fit: BoxFit.cover)),
+                Positioned(
+                    right: 15.w,
+                    bottom: 0,
+                    child: Image.asset('assets/icon/头像$nowMikoAvater.png',
+                        width: 60.r, height: 60.r))
+              ]),
               Padding(
-                  padding: EdgeInsets.only(bottom: 20.h),
-                  child: Image.asset('assets/images/聊天背景.png',
-                      width: 1.sw, height: 0.8.sw, fit: BoxFit.cover)),
-              Positioned(
-                  right: 15.w,
-                  bottom: 0,
-                  child: Image.asset('assets/icon/头像$nowMikoAvater.png',
-                      width: 60.r, height: 60.r))
-            ]),
-            Padding(
                 padding: EdgeInsets.only(left: 10.w, bottom: 20.h),
-                child: Flexible(
-                  child: ListView.builder(
-                    controller: _scrollController, //绑定控件
-                    scrollDirection: Axis.vertical, //垂直滑动
-                    reverse: true, //正序显示
-                    shrinkWrap: true, //内容适配
-                    physics: BouncingScrollPhysics(), //内容超过一屏 上拉有回弹效果
-                    itemBuilder: (_, int index) => trends[index],
-                    itemCount: trends.length, //item数量
-                  ),
-                ))
-          ]),
-        ])),
-        // Center(
-        //     child: TextButton(
-        //   child: Text('发送', style: TextStyle(color: Colors.white)),
-        //   onPressed: () {
-        //     sendTrend('你好', 'S1-01');
-        //   },
-        // )),
+                child: ListView.builder(
+                  controller: _scrollController, //绑定控件
+                  scrollDirection: Axis.vertical, //垂直滑动
+                  reverse: true, //正序显示
+                  shrinkWrap: true, //内容适配
+                  physics: BouncingScrollPhysics(), //内容超过一屏 上拉有回弹效果
+                  itemBuilder: (_, int index) => trends[index],
+                  itemCount: trends.length, //item数量
+                ),
+              )
+            ]),
+          ]))
+        ]),
+        Center(
+            child: TextButton(
+          child: Text('发送', style: TextStyle(color: Colors.white)),
+          onPressed: () {
+            sendTrend('你好', 'S1-01');
+          },
+        )),
         GestureDetector(
             //返回按钮
             onTap: () {

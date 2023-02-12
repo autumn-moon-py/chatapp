@@ -195,7 +195,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
 
   //选项按钮布局
   chooseButton() {
-    if (choose_one.isEmpty && choose_two.isEmpty) {
+    if (choose_one.isEmpty && choose_two.isEmpty || scrolling) {
       return Container();
     }
     return FadeInUp(
@@ -258,6 +258,9 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
 //输入框和发送按钮布局
   // ignore: unused_element
   Widget _buildTextComposer() {
+    if (!scrolling) {
+      return Container();
+    }
     return Container(
         width: 1.sw, //底部宽
         height: 75.h, //底部高
