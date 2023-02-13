@@ -1,0 +1,2 @@
+flutter -v run
+pause
