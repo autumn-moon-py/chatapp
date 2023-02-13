@@ -1,12 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.sub.chatapp">
+    package="com.example.subrecovery">
+	<!--读取外部存储--->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+	<!--写入外部存储--->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+	<!--读取媒体图像--->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+	<!--联网--->
     <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-	<uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
    <application
         android:label="异次元通讯"
         android:name="${applicationName}"

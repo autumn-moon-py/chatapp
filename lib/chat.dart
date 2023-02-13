@@ -35,15 +35,14 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
   initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this); //增加监听者
-    // loadMessage().then((_) {
-    //   backgroundMusic();
-    // buttonMusic();
-    packageInfoList();
-    // buttonMusic();
-    //   loadCVS().then((_) async {
-    //     await storyPlayer();
-    //   });
-    // });
+    loadMessage().then((_) {
+      backgroundMusic();
+      buttonMusic();
+      packageInfoList();
+      //   loadCVS().then((_) async {
+      //     await storyPlayer();
+      //   });
+    });
   }
 
   @override

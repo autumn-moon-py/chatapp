@@ -13,7 +13,7 @@ import 'trend.dart';
 
 SharedPreferences? local; //本地存储数据
 bool isNewImage = false; //AI图鉴
-bool scrolling = false; //自娱自乐模式
+bool scrolling = true; //自娱自乐模式
 bool waitTyping = true; //打字时间
 bool waitOffline = true; //是否等待下线
 int nowMikoAvater = 1; //miko当前头像
@@ -195,8 +195,8 @@ Map imageMap = {
   'E3-01': false,
   'E3-02': false,
   'E3-03': false,
-  'S1-01-n': false,
-  'S1-01': false,
+  'S1-01-n': true,
+  'S1-01': true,
   'S1-02': false,
   'S1-03': false,
   'S1-04': false,
@@ -401,7 +401,7 @@ const List dictionaryList = [
 Map dictionaryMap = {
   '软件': [
     '第一章',
-    'false',
+    'true',
     '这里特指异次元通讯，是睿果工作室出品的一款手机app，用于即时通讯，经大量用户反馈，相连接的用户之间似乎存在着某种未知的羁绊，原理不明'
   ],
   '西武百货': [

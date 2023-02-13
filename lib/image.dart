@@ -197,6 +197,7 @@ class ImagePageState extends State<ImagePage> {
         duration: Duration(seconds: 2));
     String imgUrl =
         "https://cdn.486486486.xyz/miko-storage/Dimension/ver0.1/$imageName.png";
+
     if (await checkPermission(Permission.storage)) {
       var response = await Dio()
           .get(imgUrl, options: Options(responseType: ResponseType.bytes));
