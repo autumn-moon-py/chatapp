@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import "package:get/get.dart";
 import 'package:animated_floating_buttons/animated_floating_buttons.dart';
 
-import 'chat.dart';
 import 'config.dart';
 import 'dictionary.dart';
 import 'image.dart';
@@ -14,7 +13,7 @@ float1() {
   return Container(
     child: FloatingActionButton(
       onPressed: () {
-        Get.to(ChatPage());
+        Get.back();
       },
       heroTag: "btn1",
       tooltip: '聊天',
@@ -62,8 +61,8 @@ class _MenuPageState extends State<MenuPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: Stack(children: [
+    return Container(
+        child: Stack(children: [
       PageView(
         controller: menuController,
         onPageChanged: (value) {

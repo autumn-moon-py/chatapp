@@ -1,7 +1,6 @@
 import 'package:chatapp/chat.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
 import 'menu.dart';
@@ -48,11 +47,57 @@ class ChapterPageState extends State<ChapterPage> {
   Widget buildChapter(chapterName) {
     return GestureDetector(
         onTap: () {
-          // nowChapter = chapterName;
-          // loadCVS();
-          Get.to(ChatPage());
-          EasyLoading.showToast(chapterName,
-              toastPosition: EasyLoadingToastPosition.bottom);
+          if (chapterName == nowChapter) {
+            Get.back();
+          } else {
+            showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    content: Container(
+                        height: 120.h,
+                        child: Column(children: [
+                          Text('提示',
+                              style: TextStyle(
+                                  fontSize: 40.sp, color: Colors.red)),
+                          Padding(
+                              padding: EdgeInsets.only(top: 10.h),
+                              child: Text(
+                                '此操作会清除当前游玩进度',
+                                style: TextStyle(fontSize: 25.sp),
+                              ))
+                        ])),
+                    actions: [
+                      TextButton(
+                        child: Text("取消"),
+                        onPressed: () {
+                          Navigator.pop(context, 'Cancle');
+                        },
+                      ),
+                      TextButton(
+                          child: Text("确定"),
+                          onPressed: () {
+                            line = 0;
+                            startTime = 0;
+                            jump = 0;
+                            be_jump = 0;
+                            reast_line = 0;
+                            choose_one = '';
+                            choose_two = '';
+                            choose_one_jump = 0;
+                            choose_two_jump = 0;
+                            nowChapter = chapterName;
+                            loadCVS();
+                            Get.to(ChatPage());
+                            Navigator.pop(context, 'Ok');
+                          })
+                    ],
+                  );
+                });
+          }
+
+          // EasyLoading.showToast(chapterName,
+          //     toastPosition: EasyLoadingToastPosition.bottom);
         },
         child: Image.asset('assets/chapter/$chapterName.png', width: 540.w));
   }

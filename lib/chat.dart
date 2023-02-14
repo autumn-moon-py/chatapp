@@ -37,14 +37,17 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
   initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this); //增加监听者
-    // loadMessage().then((_) {
-    backgroundMusic();
-    buttonplayer.setAsset('assets/music/选项音效.mp3');
-    packageInfoList();
-    loadCVS().then((_) async {
-      await storyPlayer();
+    loadMessage().then((_) {
+      backgroundMusic();
+      buttonplayer.setAsset('assets/music/选项音效.mp3');
+      packageInfoList();
+      loadCVS().then((_) async {
+        EasyLoading.showToast(line.toString(),
+            toastPosition: EasyLoadingToastPosition.bottom);
+
+        await storyPlayer();
+      });
     });
-    // });
   }
 
   @override
@@ -76,15 +79,6 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
         break;
       //当前页面即将退出
       case AppLifecycleState.detached:
-        if (!choose_one.isEmpty && !choose_two.isEmpty) {
-          line -= 3;
-          jump = 0;
-          be_jump = 0;
-          choose_one = '';
-          choose_two = '';
-          choose_one_jump = 0;
-          choose_two_jump = 0;
-        }
         saveChat();
         break;
       // 后台
@@ -159,11 +153,15 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
           color: Colors.black,
           width: 1.sw,
           height: 50.h,
-          child: Text(
-            _chatName,
-            style: TextStyle(fontSize: 30.sp, color: Colors.white),
-            textAlign: TextAlign.center,
-          ),
+          child: GestureDetector(
+              onTap: () {
+                storyPlayer();
+              },
+              child: Text(
+                _chatName,
+                style: TextStyle(fontSize: 30.sp, color: Colors.white),
+                textAlign: TextAlign.center,
+              )),
         ),
       ),
       //选项按钮
@@ -173,13 +171,8 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
       //菜单按钮
       GestureDetector(
           onTap: () {
-            if (!choose_one.isEmpty) {
-              EasyLoading.showToast('有选项时无法前往菜单页面',
-                  toastPosition: EasyLoadingToastPosition.bottom);
-            } else {
-              loadMap();
-              Get.to(MenuPage());
-            }
+            loadMap();
+            Get.to(MenuPage());
           },
           child: Container(
             padding: EdgeInsets.only(top: 10.h, left: 10.w),
@@ -188,14 +181,9 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
           )),
       //设置按钮
       GestureDetector(
-          onTap: () async {
-            if (!choose_one.isEmpty) {
-              EasyLoading.showToast('有选项时无法前往设置页面',
-                  toastPosition: EasyLoadingToastPosition.bottom);
-            } else {
-              load();
-              Get.to(SettingPage('chat'));
-            }
+          onTap: () {
+            load();
+            Get.to(SettingPage('chat'));
           },
           child: Container(
             width: 1.sw,
@@ -211,6 +199,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     if (choose_one.isEmpty && choose_two.isEmpty || scrolling) {
       return Container();
     }
+    saveChat();
     return FadeInUp(
         child: Container(
       width: 1.sw,
@@ -239,6 +228,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
             buttonMusic();
             sendRight(choose_one);
             jump = choose_one_jump;
+            saveChat();
           },
         ),
         //选项二按钮
@@ -262,6 +252,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
             buttonMusic();
             sendRight(choose_two);
             jump = choose_two_jump;
+            saveChat();
           },
         ),
       ]),
@@ -360,7 +351,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
   }
 
   //发送中消息
-  sendMiddle(String text) {
+  sendMiddle(String text) async {
     if (text.isEmpty) {
       return;
     }
@@ -382,9 +373,8 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     LeftTextMsg message = LeftTextMsg(text: text, who: who);
     messages.add(message);
     messagesInfo.add(message.toJsonString());
-    saveChat();
     setState(() {});
-    if (waitTyping) {}
+    saveChat();
     Future.delayed(Duration(milliseconds: 100), () {
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
     });
@@ -462,6 +452,10 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     do {
       if (startTime > 0 && DateTime.now().millisecondsSinceEpoch < startTime) {
         continue;
+      }
+      if (!choose_one.isEmpty && !choose_two.isEmpty) {
+        chooseButton();
+        // break;
       }
       startTime = 0;
       List line_info = story[line];
@@ -555,7 +549,6 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
               //左,XX
               jump = int.parse(str);
               sendTextLeft(msg, name);
-
               continue;
             }
           }
@@ -567,7 +560,6 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
             if (be_jump == jump) {
               jump = 0;
               sendTextLeft(msg, name);
-
               continue;
             }
           } else {
@@ -608,6 +600,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
           if (tag_list[1] == '选项' && !choose_one.isEmpty) {
             choose_two = msg;
             choose_two_jump = int.parse(tag_list[2]);
+            line -= 3;
             break;
           }
         }
@@ -617,6 +610,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
             if (tag_list[1] != 0) {
               jump = int.parse(tag_list[1]);
             }
+            sendMiddle(msg);
             startTime = DateTime.now().millisecondsSinceEpoch +
                 int.parse(tag_list[3]) * 60000;
             Future.delayed(
@@ -624,7 +618,6 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                 () async {
               await storyPlayer();
             });
-            sendMiddle(msg);
             break;
           }
           if (tag_list.length == 2) {

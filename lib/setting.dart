@@ -31,8 +31,8 @@ class SettingPageState extends State<SettingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: Stack(children: [
+    return Container(
+        child: Stack(children: [
       Container(
           color: Color.fromRGBO(13, 13, 13, 1), width: 540.w, height: 960.h),
       Padding(
@@ -245,31 +245,31 @@ class SettingPageState extends State<SettingPage> {
                               endIndent: 30.w,
                               thickness: 1,
                             ),
-                            SwitchListTile(
-                                title: Text('打字时间',
-                                    style: TextStyle(
-                                        fontSize: 25.sp, color: Colors.white)),
-                                subtitle: Text('关闭则对方直接发送消息',
-                                    style: TextStyle(
-                                        fontSize: 15.sp, color: Colors.grey)),
-                                value: waitTyping,
-                                activeColor: Colors.white,
-                                activeTrackColor:
-                                    Color.fromRGBO(0, 102, 203, 1),
-                                inactiveTrackColor:
-                                    Color.fromRGBO(60, 60, 60, 1),
-                                onChanged: (value) {
-                                  save();
-                                  waitTyping = value;
-                                  setState(() {});
-                                }),
-                            Divider(
-                              color: Colors.white,
-                              height: 0,
-                              indent: 20.w,
-                              endIndent: 30.w,
-                              thickness: 1,
-                            ),
+                            // SwitchListTile(
+                            //     title: Text('打字时间',
+                            //         style: TextStyle(
+                            //             fontSize: 25.sp, color: Colors.white)),
+                            //     subtitle: Text('关闭则对方直接发送消息',
+                            //         style: TextStyle(
+                            //             fontSize: 15.sp, color: Colors.grey)),
+                            //     value: waitTyping,
+                            //     activeColor: Colors.white,
+                            //     activeTrackColor:
+                            //         Color.fromRGBO(0, 102, 203, 1),
+                            //     inactiveTrackColor:
+                            //         Color.fromRGBO(60, 60, 60, 1),
+                            //     onChanged: (value) {
+                            //       save();
+                            //       waitTyping = value;
+                            //       setState(() {});
+                            //     }),
+                            // Divider(
+                            //   color: Colors.white,
+                            //   height: 0,
+                            //   indent: 20.w,
+                            //   endIndent: 30.w,
+                            //   thickness: 1,
+                            // ),
                             SwitchListTile(
                                 title: Text('等待上线',
                                     style: TextStyle(

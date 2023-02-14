@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:csv/csv.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -14,7 +13,6 @@ import 'trend.dart';
 SharedPreferences? local; //本地存储数据
 bool isNewImage = false; //AI图鉴
 bool scrolling = false; //自娱自乐模式
-bool waitTyping = true; //打字时间
 bool waitOffline = true; //是否等待下线
 int nowMikoAvater = 1; //miko当前头像
 String playerAvatarSet = '默认'; //玩家头像
@@ -27,14 +25,13 @@ List<String> imageList = imageList1; //图鉴列表
 bool backgroundMusicSwitch = false; //音乐
 bool isOldBgm = false; //新旧BGM
 final bgmplayer = AudioPlayer();
-bool buttonMusicSwitch = true; //音效
+bool buttonMusicSwitch = false; //音效
 double sliderValue = 10; //语音音量
 final buttonplayer = AudioPlayer(); //按钮音效播放器
 late String version; //应用发布版本号
 bool isChange = false; //监听设置修改
 List<List<dynamic>> story = []; //剧本列表
 String nowChapter = '第一章'; //当前章节
-final ValueNotifier<bool> isChoose = ValueNotifier<bool>(false); //是否有选项,局部刷新
 String chatName = "Miko"; //聊天对象名称
 int line = 0; //当前下标
 int startTime = 0; //等待,时间戳
@@ -883,7 +880,6 @@ save() async {
   await local?.setBool('isNewImage', isNewImage);
   await local?.setBool('scrolling', scrolling);
   await local?.setInt('nowMikoAvater', nowMikoAvater);
-  await local?.setBool('waitTyping', waitTyping);
   await local?.setBool('waitOffline', waitOffline);
   await local?.setString('playerAvatarSet', playerAvatarSet);
   await local?.setInt('playerNowAvater', playerNowAvater);
@@ -899,7 +895,6 @@ load() async {
   isNewImage = local?.getBool('isNewImage') ?? false;
   scrolling = local?.getBool('scrolling') ?? true;
   nowMikoAvater = local?.getInt('nowMikoAvater') ?? 1;
-  waitTyping = local?.getBool('waitTyping') ?? true;
   waitOffline = local?.getBool('waitOffline') ?? true;
   playerAvatarSet = local?.getString('playerAvatarSet') ?? '默认';
   playerNowAvater = local?.getInt('playerNowAvater') ?? 0;
@@ -990,6 +985,10 @@ saveChat() async {
   local?.setInt('jump', jump);
   local?.setInt('be_jump', be_jump);
   local?.setInt('reast_line', reast_line);
+  local?.setString('choose_one', choose_one);
+  local?.setString('choose_two', choose_two);
+  local?.setInt('choose_one_jump', choose_one_jump);
+  local?.setInt('choose_two_jump', choose_two_jump);
 }
 
 ///读取动态
@@ -1035,7 +1034,11 @@ loadMessage() async {
   jump = local?.getInt('jump') ?? 0;
   be_jump = local?.getInt('be_jump') ?? 0;
   reast_line = local?.getInt('reast_line') ?? 0;
-  messagesInfo = await local?.getStringList('messagesInfo') ?? [];
+  messagesInfo = local?.getStringList('messagesInfo') ?? [];
+  choose_one = local?.getString('choose_one') ?? '';
+  choose_two = local?.getString('choose_two') ?? '';
+  choose_one_jump = local?.getInt('choose_one_jump') ?? 0;
+  choose_two_jump = local?.getInt('choose_two_jump') ?? 0;
   Map _messagesInfo = {};
   int num = 0;
   if (messagesInfo != []) {
