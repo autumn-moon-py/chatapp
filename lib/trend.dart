@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import "package:get/get.dart";
@@ -149,9 +150,17 @@ class Trend extends StatelessWidget {
                               child: Container(
                                   width: 440.w,
                                   height: 440.w,
-                                  child: Image.network(
-                                      'https://cdn.486486486.xyz/miko-storage/Dimension/ver0.1/$trendImg.png',
-                                      fit: BoxFit.cover))))))
+                                  child: CachedNetworkImage(
+                                    placeholder: (context, url) =>
+                                        CircularProgressIndicator(),
+                                    imageUrl:
+                                        'https://cdn.486486486.xyz/miko-storage/Dimension/ver0.1/$trendImg.png',
+                                    errorWidget: (context, url, error) => Text(
+                                      '加载失败,请检查网络',
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 30.sp),
+                                    ),
+                                  ))))))
             ])),
       ],
     );

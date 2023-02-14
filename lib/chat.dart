@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:animate_do/animate_do.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -111,8 +114,20 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
           userFocusNode.unfocus(); //点击聊天窗口丢失焦点
         },
         //背景
-        child: Image.asset('assets/images/聊天背景.png',
-            height: 1.sh, fit: BoxFit.cover),
+        child: Platform.isAndroid
+            ? Image.asset('assets/images/聊天背景.png',
+                height: 1.sh, fit: BoxFit.cover)
+            : CachedNetworkImage(
+                height: 1.sh,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => CircularProgressIndicator(),
+                imageUrl:
+                    'https://cdn.486486486.xyz/miko-storage/Dimension/ver0.1/聊天背景.png',
+                errorWidget: (context, url, error) => Text(
+                  '加载失败,请检查网络',
+                  style: TextStyle(color: Colors.white, fontSize: 30.sp),
+                ),
+              ),
       ),
 
       GestureDetector(
