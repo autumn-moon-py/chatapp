@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:keframe/keframe.dart';
@@ -175,19 +176,18 @@ class ImagePageState extends State<ImagePage> {
   }
 
   //保存资源图片到本地
-  saveImage(imageName) async {
-    if (await checkPermission(Permission.storage)) {
-      Uint8List imageBytes;
-      ByteData bytes = await rootBundle.load('assets/images/$imageName.png');
-      imageBytes = bytes.buffer.asUint8List();
-
-      ImageGallerySaver.saveImage(imageBytes);
-      Get.snackbar('系统提示', '图片保存成功',
-          colorText: Colors.white,
-          shouldIconPulse: true,
-          duration: Duration(seconds: 2));
-    }
-  }
+  // saveImage(imageName) async {
+  //   if (await checkPermission(Permission.storage)) {
+  //     Uint8List imageBytes;
+  //     ByteData bytes = await rootBundle.load('assets/images/$imageName.png');
+  //     imageBytes = bytes.buffer.asUint8List();
+  //     ImageGallerySaver.saveImage(imageBytes);
+  //     Get.snackbar('系统提示', '图片保存成功',
+  //         colorText: Colors.white,
+  //         shouldIconPulse: true,
+  //         duration: Duration(seconds: 2));
+  //   }
+  // }
 
   //下载网络图片
   downloadImage(imageName) async {
@@ -197,8 +197,14 @@ class ImagePageState extends State<ImagePage> {
         duration: Duration(seconds: 2));
     String imgUrl =
         "https://cdn.486486486.xyz/miko-storage/Dimension/ver0.1/$imageName.png";
+    bool check = false;
+    if (Platform.isAndroid) {
+      check = checkPermission(Permission.storage);
+    } else {
+      check = checkPermission(Permission.photos);
+    }
 
-    if (await checkPermission(Permission.storage)) {
+    if (check) {
       var response = await Dio()
           .get(imgUrl, options: Options(responseType: ResponseType.bytes));
       final result = await ImageGallerySaver.saveImage(
@@ -215,6 +221,11 @@ class ImagePageState extends State<ImagePage> {
             shouldIconPulse: true,
             duration: Duration(seconds: 2));
       }
+    } else {
+      Get.snackbar('系统提示', '获取权限失败,无法下载',
+          colorText: Colors.white,
+          shouldIconPulse: true,
+          duration: Duration(seconds: 2));
     }
   }
 }

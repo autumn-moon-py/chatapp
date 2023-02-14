@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:animate_do/animate_do.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -7,8 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:keframe/keframe.dart';
-import 'menu.dart';
-import 'send.dart';
 import "package:get/get.dart";
 import 'package:spring_button/spring_button.dart';
 import 'dart:math' as math;
@@ -17,6 +14,8 @@ import 'dart:async';
 import 'config.dart';
 import 'setting.dart';
 import 'trend.dart';
+import 'menu.dart';
+import 'send.dart';
 
 class ChatPage extends StatefulWidget {
   @override
@@ -38,14 +37,14 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
   initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this); //增加监听者
-    loadMessage().then((_) {
-      backgroundMusic();
-      buttonMusic();
-      packageInfoList();
-      //   loadCVS().then((_) async {
-      //     await storyPlayer();
-      //   });
+    // loadMessage().then((_) {
+    backgroundMusic();
+    buttonplayer.setAsset('assets/music/选项音效.mp3');
+    packageInfoList();
+    loadCVS().then((_) async {
+      await storyPlayer();
     });
+    // });
   }
 
   @override
@@ -270,7 +269,6 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
   }
 
 //输入框和发送按钮布局
-  // ignore: unused_element
   Widget _buildTextComposer() {
     if (!scrolling) {
       return Container();
@@ -344,6 +342,9 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
 
   //发送右消息
   sendRight(String choose_text) {
+    if (choose_text.isEmpty) {
+      return;
+    }
     RightMsg message = RightMsg(text: choose_text);
     choose_one = "";
     choose_two = "";
@@ -360,6 +361,9 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
 
   //发送中消息
   sendMiddle(String text) {
+    if (text.isEmpty) {
+      return;
+    }
     MiddleMsg message = MiddleMsg(text: text);
     messages.add(message);
     messagesInfo.add(message.toJsonString());
@@ -372,6 +376,9 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
 
   //发送左文本消息
   sendTextLeft(String text, String who) async {
+    if (text.isEmpty) {
+      return;
+    }
     LeftTextMsg message = LeftTextMsg(text: text, who: who);
     messages.add(message);
     messagesInfo.add(message.toJsonString());
@@ -391,7 +398,6 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
       messagesInfo.add(message.toJsonString());
       saveChat();
     });
-
     Future.delayed(Duration(milliseconds: 100), () {
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
     });
@@ -405,12 +411,59 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     saveChat();
   }
 
-//播放器
+  //输入框发送消息
+  Future<void> handleSubmitted(String text) async {
+    if (text.isEmpty) {
+      userFocusNode.unfocus(); //丢失输入框焦点,收起软键盘
+      return null; //不发送空消息
+    }
+    _textController.clear(); //清除输入框
+    setState(() {
+      isComposing = false;
+    }); //没有在输入
+    userFocusNode.unfocus(); //丢失输入框焦点
+    if (switchValue) {
+      RightMsg message = RightMsg(text: text);
+      setState(() {
+        messages.add(message);
+        messagesInfo.add(message.toJsonString());
+        saveChat();
+      });
+      if (scrolling) {
+        Future.delayed(Duration(milliseconds: 100), () {
+          _chatName = chatName;
+          _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+        });
+      }
+    } else {
+      LeftTextMsg message = LeftTextMsg(
+        who: 'Miko',
+        text: text,
+      );
+      setState(() {
+        messages.add(message);
+        messagesInfo.add(message.toJsonString());
+      });
+      //延迟自动滚屏
+      if (scrolling) {
+        Future.delayed(Duration(milliseconds: 100), () {
+          _chatName = chatName;
+          _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+        });
+      }
+    }
+  }
+
+  //播放器
   storyPlayer() async {
     String msg = ''; //消息
     List tag_list = []; //多标签
     String tag = ''; //单标签
     do {
+      if (startTime > 0 && DateTime.now().millisecondsSinceEpoch < startTime) {
+        continue;
+      }
+      startTime = 0;
       List line_info = story[line];
       line++;
       //空行继续
@@ -502,6 +555,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
               //左,XX
               jump = int.parse(str);
               sendTextLeft(msg, name);
+
               continue;
             }
           }
@@ -513,6 +567,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
             if (be_jump == jump) {
               jump = 0;
               sendTextLeft(msg, name);
+
               continue;
             }
           } else {
@@ -564,6 +619,13 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
             }
             startTime = DateTime.now().millisecondsSinceEpoch +
                 int.parse(tag_list[3]) * 60000;
+            Future.delayed(
+                Duration(milliseconds: int.parse(tag_list[3]) * 60000),
+                () async {
+              await storyPlayer();
+            });
+            sendMiddle(msg);
+            break;
           }
           if (tag_list.length == 2) {
             //中,分支XX
@@ -578,59 +640,5 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
         }
       }
     } while (line < story.length);
-  }
-
-  //输入框发送消息
-  Future<void> handleSubmitted(String text) async {
-    // if (await Permission.notification.request().isGranted) {
-    //   debugPrint("isGranted true");
-    //   //点击发送通知
-    //   Map params = {};
-    //   params['type'] = 200;
-    //   params['id'] = "10086";
-    //   params['content'] = "content";
-    //   notification.send("Miko", text, params: json.encode(params));
-    // } else {
-    //   requestPermission(Permission.notification);
-    // }
-    if (text.isEmpty) {
-      userFocusNode.unfocus(); //丢失输入框焦点,收起软键盘
-      return null; //不发送空消息
-    }
-    _textController.clear(); //清除输入框
-    setState(() {
-      isComposing = false;
-    }); //没有在输入
-    userFocusNode.unfocus(); //丢失输入框焦点
-    if (switchValue) {
-      RightMsg message = RightMsg(text: text);
-      setState(() {
-        messages.add(message);
-        messagesInfo.add(message.toJsonString());
-        saveChat();
-      });
-      if (scrolling) {
-        Future.delayed(Duration(milliseconds: 100), () {
-          _chatName = chatName;
-          _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
-        });
-      }
-    } else {
-      LeftTextMsg message = LeftTextMsg(
-        who: 'Miko',
-        text: text,
-      );
-      setState(() {
-        messages.add(message);
-        messagesInfo.add(message.toJsonString());
-      });
-      //延迟自动滚屏
-      if (scrolling) {
-        Future.delayed(Duration(milliseconds: 100), () {
-          _chatName = chatName;
-          _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
-        });
-      }
-    }
   }
 }

@@ -13,7 +13,7 @@ import 'trend.dart';
 
 SharedPreferences? local; //本地存储数据
 bool isNewImage = false; //AI图鉴
-bool scrolling = true; //自娱自乐模式
+bool scrolling = false; //自娱自乐模式
 bool waitTyping = true; //打字时间
 bool waitOffline = true; //是否等待下线
 int nowMikoAvater = 1; //miko当前头像
@@ -1102,7 +1102,6 @@ backgroundMusic() {
 
 ///播放按钮音效
 buttonMusic() {
-  buttonplayer.setAsset('assets/music/选项音效.mp3');
   buttonplayer.setVolume(1);
   buttonplayer.setLoopMode(LoopMode.off);
   if (buttonMusicSwitch) {
