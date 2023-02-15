@@ -42,10 +42,8 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
       buttonplayer.setAsset('assets/music/选项音效.mp3');
       packageInfoList();
       loadCVS().then((_) async {
-        EasyLoading.showToast(line.toString(),
-            toastPosition: EasyLoadingToastPosition.bottom);
-
-        await storyPlayer();
+        // await storyPlayer();
+        test();
       });
     });
   }
@@ -95,6 +93,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
   //聊天窗口布局
   @override
   Widget build(BuildContext context) {
+    //全屏
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
         overlays: [SystemUiOverlay.bottom]);
 
@@ -103,25 +102,27 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
         body: Stack(children: [
       // 点击监控
       GestureDetector(
-        onTap: () {
-          userFocusNode.unfocus(); //点击聊天窗口丢失焦点
-        },
-        //背景
-        child: Platform.isAndroid
-            ? Image.asset('assets/images/聊天背景.png',
-                height: 1.sh, fit: BoxFit.cover)
-            : CachedNetworkImage(
-                height: 1.sh,
-                fit: BoxFit.cover,
-                placeholder: (context, url) => CircularProgressIndicator(),
-                imageUrl:
-                    'https://cdn.486486486.xyz/miko-storage/Dimension/ver0.1/聊天背景.png',
-                errorWidget: (context, url, error) => Text(
-                  '加载失败,请检查网络',
-                  style: TextStyle(color: Colors.white, fontSize: 30.sp),
-                ),
-              ),
-      ),
+          onTap: () {
+            userFocusNode.unfocus(); //点击聊天窗口丢失焦点
+          },
+          //背景
+          child: Platform.isAndroid
+              ? Image.asset('assets/images/聊天背景.png',
+                  height: 1.sh, fit: BoxFit.cover)
+              : Container(
+                  width: 1.sw,
+                  height: 1.sh,
+                  color: Colors.black,
+                  child: CachedNetworkImage(
+                      height: 1.sh,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) =>
+                          CircularProgressIndicator(),
+                      imageUrl:
+                          'https://cdn.486486486.xyz/miko-storage/Dimension/ver0.1/聊天背景.png',
+                      errorWidget: (context, url, error) => Text('加载失败,请检查网络',
+                          style: TextStyle(
+                              color: Colors.white, fontSize: 30.sp))))),
 
       GestureDetector(
           onTap: () {
@@ -155,7 +156,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
           height: 50.h,
           child: GestureDetector(
               onTap: () {
-                storyPlayer();
+                // storyPlayer();
               },
               child: Text(
                 _chatName,
@@ -199,7 +200,6 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     if (choose_one.isEmpty && choose_two.isEmpty || scrolling) {
       return Container();
     }
-    saveChat();
     return FadeInUp(
         child: Container(
       width: 1.sw,
@@ -339,11 +339,10 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     RightMsg message = RightMsg(text: choose_text);
     choose_one = "";
     choose_two = "";
-    setState(() {
-      messages.add(message);
-      messagesInfo.add(message.toJsonString());
-      saveChat();
-    });
+    messages.add(message);
+    messagesInfo.add(message.toJsonString());
+    saveChat();
+    setState(() {});
     Future.delayed(Duration(milliseconds: 100), () {
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
       storyPlayer();
@@ -351,7 +350,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
   }
 
   //发送中消息
-  sendMiddle(String text) async {
+  sendMiddle(String text) {
     if (text.isEmpty) {
       return;
     }
@@ -365,16 +364,25 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     });
   }
 
+  List msg = ['对方已上线', '对方已上线', '对方已上线', '对方已上线', '对方已上线'];
+  test() {
+    do {
+      for (var value in msg) {
+        sendMiddle(value);
+      }
+    } while (messages.length < msg.length);
+  }
+
   //发送左文本消息
-  sendTextLeft(String text, String who) async {
+  sendTextLeft(String text, String who) {
     if (text.isEmpty) {
       return;
     }
     LeftTextMsg message = LeftTextMsg(text: text, who: who);
     messages.add(message);
     messagesInfo.add(message.toJsonString());
-    setState(() {});
     saveChat();
+    setState(() {});
     Future.delayed(Duration(milliseconds: 100), () {
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
     });
@@ -383,11 +391,10 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
   //发送左图片消息
   sendImgLeft(String img) async {
     LeftImgMsg message = LeftImgMsg(img: img);
-    setState(() {
-      messages.add(message);
-      messagesInfo.add(message.toJsonString());
-      saveChat();
-    });
+    messages.add(message);
+    messagesInfo.add(message.toJsonString());
+    saveChat();
+    setState(() {});
     Future.delayed(Duration(milliseconds: 100), () {
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
     });
@@ -408,17 +415,15 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
       return null; //不发送空消息
     }
     _textController.clear(); //清除输入框
-    setState(() {
-      isComposing = false;
-    }); //没有在输入
+    isComposing = false;
+    // setState(() {});
     userFocusNode.unfocus(); //丢失输入框焦点
     if (switchValue) {
       RightMsg message = RightMsg(text: text);
-      setState(() {
-        messages.add(message);
-        messagesInfo.add(message.toJsonString());
-        saveChat();
-      });
+      messages.add(message);
+      messagesInfo.add(message.toJsonString());
+      saveChat();
+      // setState(() {});
       if (scrolling) {
         Future.delayed(Duration(milliseconds: 100), () {
           _chatName = chatName;
@@ -430,17 +435,14 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
         who: 'Miko',
         text: text,
       );
-      setState(() {
-        messages.add(message);
-        messagesInfo.add(message.toJsonString());
-      });
+      messages.add(message);
+      messagesInfo.add(message.toJsonString());
+      // setState(() {});
       //延迟自动滚屏
-      if (scrolling) {
-        Future.delayed(Duration(milliseconds: 100), () {
-          _chatName = chatName;
-          _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
-        });
-      }
+      Future.delayed(Duration(milliseconds: 100), () {
+        _chatName = chatName;
+        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+      });
     }
   }
 
@@ -600,7 +602,6 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
           if (tag_list[1] == '选项' && !choose_one.isEmpty) {
             choose_two = msg;
             choose_two_jump = int.parse(tag_list[2]);
-            line -= 3;
             break;
           }
         }

@@ -235,33 +235,27 @@ class MiddleMsg extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return
-        // FrameSeparateWidget(child:
-        Container(
-            margin: EdgeInsets.only(top: 10.h), //消息间隔
-            child:
-                // FadeInUp(
-                //     child:
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.center, //水平居中对齐
-                    children: <Widget>[
-                  // 消息气泡容器
-                  Container(
-                      padding: EdgeInsets.all(10.r), //容器内边距
-                      //圆角
-                      decoration: BoxDecoration(
-                          color: Color.fromRGBO(38, 38, 38, 1), //容器背景颜色
-                          borderRadius:
-                              BorderRadius.all(Radius.circular(7))), //圆角角度
-                      //消息文本
-                      child: Text(
-                        text,
-                        textAlign: TextAlign.center, //文本居中对齐
-                        style: TextStyle(
-                            fontSize: 20.sp, color: textColor()), //文本样式
-                      )),
-                ]));
-    // );
+    return Container(
+        margin: EdgeInsets.only(top: 10.h), //消息间隔
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.center, //水平居中对齐
+            children: <Widget>[
+              // 消息气泡容器
+              Container(
+                  padding: EdgeInsets.all(10.r), //容器内边距
+                  //圆角
+                  decoration: BoxDecoration(
+                      color: Color.fromRGBO(38, 38, 38, 1), //容器背景颜色
+                      borderRadius:
+                          BorderRadius.all(Radius.circular(7))), //圆角角度
+                  //消息文本
+                  child: Text(
+                    text,
+                    textAlign: TextAlign.center, //文本居中对齐
+                    style:
+                        TextStyle(fontSize: 20.sp, color: textColor()), //文本样式
+                  )),
+            ]));
   }
 }
 
