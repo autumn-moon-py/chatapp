@@ -14,6 +14,7 @@ SharedPreferences? local; //本地存储数据
 bool isNewImage = false; //AI图鉴
 bool scrolling = false; //自娱自乐模式
 bool waitOffline = true; //是否等待下线
+bool waitTyping = true; //打字时间
 int nowMikoAvater = 1; //miko当前头像
 String playerAvatarSet = '默认'; //玩家头像
 int playerNowAvater = 0; //玩家头像下拉框默认值
@@ -22,10 +23,10 @@ List<String> messagesInfo = []; //消息信息列表
 List trends = []; //动态容器列表
 List<String> trendsInfo = []; //动态信息列表
 List<String> imageList = imageList1; //图鉴列表
-bool backgroundMusicSwitch = false; //音乐
+bool backgroundMusicSwitch = true; //音乐
 bool isOldBgm = false; //新旧BGM
 final bgmplayer = AudioPlayer();
-bool buttonMusicSwitch = false; //音效
+bool buttonMusicSwitch = true; //音效
 double sliderValue = 10; //语音音量
 final buttonplayer = AudioPlayer(); //按钮音效播放器
 late String version; //应用发布版本号
@@ -192,8 +193,8 @@ Map imageMap = {
   'E3-01': false,
   'E3-02': false,
   'E3-03': false,
-  'S1-01-n': true,
-  'S1-01': true,
+  'S1-01-n': false,
+  'S1-01': false,
   'S1-02': false,
   'S1-03': false,
   'S1-04': false,
@@ -398,7 +399,7 @@ const List dictionaryList = [
 Map dictionaryMap = {
   '软件': [
     '第一章',
-    'true',
+    'false',
     '这里特指异次元通讯，是睿果工作室出品的一款手机app，用于即时通讯，经大量用户反馈，相连接的用户之间似乎存在着某种未知的羁绊，原理不明'
   ],
   '西武百货': [
@@ -881,6 +882,7 @@ save() async {
   await local?.setBool('scrolling', scrolling);
   await local?.setInt('nowMikoAvater', nowMikoAvater);
   await local?.setBool('waitOffline', waitOffline);
+  await local?.setBool('waitTyping', waitTyping);
   await local?.setString('playerAvatarSet', playerAvatarSet);
   await local?.setInt('playerNowAvater', playerNowAvater);
   await local?.setBool('backgroundMusicSwitch', backgroundMusicSwitch);
@@ -893,9 +895,10 @@ save() async {
 load() async {
   local = await SharedPreferences.getInstance();
   isNewImage = local?.getBool('isNewImage') ?? false;
-  scrolling = local?.getBool('scrolling') ?? true;
+  scrolling = local?.getBool('scrolling') ?? false;
   nowMikoAvater = local?.getInt('nowMikoAvater') ?? 1;
   waitOffline = local?.getBool('waitOffline') ?? true;
+  waitTyping = local?.getBool('waitTyping') ?? true;
   playerAvatarSet = local?.getString('playerAvatarSet') ?? '默认';
   playerNowAvater = local?.getInt('playerNowAvater') ?? 0;
   backgroundMusicSwitch = local?.getBool('backgroundMusicSwitch') ?? true;
@@ -985,10 +988,6 @@ saveChat() async {
   local?.setInt('jump', jump);
   local?.setInt('be_jump', be_jump);
   local?.setInt('reast_line', reast_line);
-  local?.setString('choose_one', choose_one);
-  local?.setString('choose_two', choose_two);
-  local?.setInt('choose_one_jump', choose_one_jump);
-  local?.setInt('choose_two_jump', choose_two_jump);
 }
 
 ///读取动态
@@ -1016,14 +1015,15 @@ delAll() async {
   local = await SharedPreferences.getInstance();
   List<String> keys = local?.getKeys().toList() ?? [];
   keys.forEach((key) {
-    local?.remove(key);
+    if (key == 'messages' || key == 'messages') {
+      local?.remove(key);
+    }
   });
+  line = 0;
   messages = [];
-  trends = [];
   messagesInfo = [];
-  trendsInfo = [];
-  // EasyLoading.showToast('已清除缓存',
-  //     toastPosition: EasyLoadingToastPosition.bottom);
+  choose_one = '';
+  choose_two = '';
 }
 
 ///读取历史消息
@@ -1035,10 +1035,6 @@ loadMessage() async {
   be_jump = local?.getInt('be_jump') ?? 0;
   reast_line = local?.getInt('reast_line') ?? 0;
   messagesInfo = local?.getStringList('messagesInfo') ?? [];
-  choose_one = local?.getString('choose_one') ?? '';
-  choose_two = local?.getString('choose_two') ?? '';
-  choose_one_jump = local?.getInt('choose_one_jump') ?? 0;
-  choose_two_jump = local?.getInt('choose_two_jump') ?? 0;
   Map _messagesInfo = {};
   int num = 0;
   if (messagesInfo != []) {
@@ -1149,7 +1145,6 @@ loadCVS() async {
   final rawData = await rootBundle.loadString(
     "assets/story/$nowChapter.csv",
   );
-  List<List<dynamic>> listData =
-      CsvToListConverter().convert(rawData, eol: '\r\n');
+  List<List> listData = CsvToListConverter().convert(rawData, eol: '\r\n');
   story = listData;
 }

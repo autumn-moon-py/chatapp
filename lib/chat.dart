@@ -37,15 +37,15 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
   initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this); //增加监听者
-    loadMessage().then((_) {
-      backgroundMusic();
-      buttonplayer.setAsset('assets/music/选项音效.mp3');
-      packageInfoList();
-      loadCVS().then((_) async {
-        // await storyPlayer();
-        test();
-      });
+    // loadMessage().then((_) {
+    backgroundMusic();
+    buttonplayer.setAsset('assets/music/选项音效.mp3');
+    packageInfoList();
+    load();
+    loadCVS().then((_) async {
+      await storyPlayer();
     });
+    // });
   }
 
   @override
@@ -156,7 +156,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
           height: 50.h,
           child: GestureDetector(
               onTap: () {
-                // storyPlayer();
+                // line = 516;
               },
               child: Text(
                 _chatName,
@@ -183,7 +183,6 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
       //设置按钮
       GestureDetector(
           onTap: () {
-            load();
             Get.to(SettingPage('chat'));
           },
           child: Container(
@@ -200,6 +199,9 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     if (choose_one.isEmpty && choose_two.isEmpty || scrolling) {
       return Container();
     }
+    Future.delayed(Duration(milliseconds: 500), () {
+      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+    });
     return FadeInUp(
         child: Container(
       width: 1.sw,
@@ -219,14 +221,14 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
             child: Align(
                 alignment: Alignment.center,
                 child: Text(
-                  choose_one,
+                  choose_one.toString(),
                   softWrap: true,
                   style: TextStyle(color: Colors.white, fontSize: 20.sp),
                 )),
           ),
           onTap: () {
             buttonMusic();
-            sendRight(choose_one);
+            sendRight(choose_one.toString());
             jump = choose_one_jump;
             saveChat();
           },
@@ -243,14 +245,14 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
             child: Align(
                 alignment: Alignment.center,
                 child: Text(
-                  choose_two,
+                  choose_two.toString(),
                   softWrap: true,
                   style: TextStyle(color: Colors.white, fontSize: 20.sp),
                 )),
           ),
           onTap: () {
             buttonMusic();
-            sendRight(choose_two);
+            sendRight(choose_two.toString());
             jump = choose_two_jump;
             saveChat();
           },
@@ -332,7 +334,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
   }
 
   //发送右消息
-  sendRight(String choose_text) {
+  sendRight(String choose_text) async {
     if (choose_text.isEmpty) {
       return;
     }
@@ -343,9 +345,11 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     messagesInfo.add(message.toJsonString());
     saveChat();
     setState(() {});
+    await Future.delayed(Duration(seconds: 1), () {
+      storyPlayer();
+    });
     Future.delayed(Duration(milliseconds: 100), () {
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
-      storyPlayer();
     });
   }
 
@@ -362,15 +366,6 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     Future.delayed(Duration(milliseconds: 100), () {
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
     });
-  }
-
-  List msg = ['对方已上线', '对方已上线', '对方已上线', '对方已上线', '对方已上线'];
-  test() {
-    do {
-      for (var value in msg) {
-        sendMiddle(value);
-      }
-    } while (messages.length < msg.length);
   }
 
   //发送左文本消息
@@ -455,10 +450,6 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
       if (startTime > 0 && DateTime.now().millisecondsSinceEpoch < startTime) {
         continue;
       }
-      if (!choose_one.isEmpty && !choose_two.isEmpty) {
-        chooseButton();
-        // break;
-      }
       startTime = 0;
       List line_info = story[line];
       line++;
@@ -488,32 +479,34 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
         }
         if (tag == '中') {
           sendMiddle(msg);
+          await Future.delayed(Duration(milliseconds: 500));
           continue;
         }
         if (tag == '左') {
           sendTextLeft(msg, name);
+          _chatName = '对方输入中...';
+          await Future.delayed(
+              Duration(seconds: waitTyping ? (msg.length / 4).ceil() : 1));
+          _chatName = name;
+          chatName = name;
           continue;
         }
         if (tag == '右') {
           sendRight(msg);
+          await Future.delayed(Duration(milliseconds: 500));
           continue;
         }
         if (tag == '词典') {
-          try {
-            List _dt = dictionaryMap[msg];
-            _dt[1] = 'true';
-            dictionaryMap[msg] = _dt;
-            EasyLoading.showToast('解锁新词典$msg',
-                toastPosition: EasyLoadingToastPosition.bottom);
-            continue;
-          } catch (error) {
-            EasyLoading.showToast('词典解锁失败,请截图反馈',
-                toastPosition: EasyLoadingToastPosition.bottom);
-            continue;
-          }
+          List _dt = dictionaryMap[msg];
+          _dt[1] = 'true';
+          dictionaryMap[msg] = _dt;
+          EasyLoading.showToast('解锁新词典$msg',
+              toastPosition: EasyLoadingToastPosition.bottom);
+          continue;
         }
         if (tag == '图鉴') {
           sendImgLeft(msg);
+          await Future.delayed(Duration(seconds: 1));
           imageMap[msg] = true;
           EasyLoading.showToast('解锁新图鉴$msg',
               toastPosition: EasyLoadingToastPosition.bottom);
@@ -529,11 +522,29 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
           EasyLoading.showToast('解锁新图鉴$name',
               toastPosition: EasyLoadingToastPosition.bottom);
           sendMiddle('对方发布了一条新动态');
+          await Future.delayed(Duration(seconds: 1));
           continue;
         }
       }
       //多标签
       if (tag_list != []) {
+        if (tag_list[0] == '词典') {
+          List _dt = dictionaryMap[msg];
+          _dt[1] = 'true';
+          dictionaryMap[msg] = _dt;
+          EasyLoading.showToast('解锁新词典',
+              toastPosition: EasyLoadingToastPosition.bottom);
+          continue;
+        }
+        if (tag_list[0] == '动态') {
+          sendTrend(msg, name);
+          imageMap[name] = true;
+          EasyLoading.showToast('解锁新图鉴$name',
+              toastPosition: EasyLoadingToastPosition.bottom);
+          sendMiddle('对方发布了一条新动态');
+          await Future.delayed(Duration(seconds: 1));
+          continue;
+        }
         if (tag_list[0] == '左') {
           if (tag_list.length == 2) {
             //左,分支XX
@@ -544,6 +555,8 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                 if (be_jump == jump) {
                   jump = 0;
                   sendTextLeft(msg, name);
+                  await Future.delayed(Duration(
+                      seconds: waitTyping ? (msg.length / 4).ceil() : 1));
                   continue;
                 }
               }
@@ -551,6 +564,8 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
               //左,XX
               jump = int.parse(str);
               sendTextLeft(msg, name);
+              await Future.delayed(
+                  Duration(seconds: waitTyping ? (msg.length / 4).ceil() : 1));
               continue;
             }
           }
@@ -562,11 +577,14 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
             if (be_jump == jump) {
               jump = 0;
               sendTextLeft(msg, name);
-              continue;
+              await Future.delayed(
+                  Duration(seconds: waitTyping ? (msg.length / 4).ceil() : 1));
+              // continue;
             }
-          } else {
             //上下搜索跳转分支
             sendTextLeft(msg, name);
+            await Future.delayed(
+                Duration(seconds: waitTyping ? (msg.length / 4).ceil() : 1));
             bool needToNewLine = false;
             for (int j = math.max(0, line - 100); j < line; j++) {
               List li = story[j];
@@ -599,9 +617,10 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
             choose_one_jump = int.parse(tag_list[2]);
             continue;
           }
-          if (tag_list[1] == '选项' && !choose_one.isEmpty) {
+          if (tag_list[1] == '选项' && choose_two.isEmpty) {
             choose_two = msg;
             choose_two_jump = int.parse(tag_list[2]);
+            setState(() {});
             break;
           }
         }
@@ -610,13 +629,39 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
             //中,XX,等待,XX
             if (tag_list[1] != 0) {
               jump = int.parse(tag_list[1]);
+              bool needToNewLine = false;
+              for (int j = math.max(0, line - 100); j < line; j++) {
+                List li = story[j];
+                if (li[0] == '' && li[1] == '' && li[2] == '') {
+                  continue;
+                }
+                String tg = li[2];
+                if (tg.length > 1) {
+                  List tl = tg.split(',');
+                  if (tl.isNotEmpty && tl.length == 2) {
+                    String tlStr1 = tl[1]; //分支
+                    int tlJp = int.parse(tlStr1.substring(2, tlStr1.length));
+                    if (tl[0] == tag_list[0] && tlJp == jump) {
+                      line = j;
+                      needToNewLine = true;
+                      break;
+                    }
+                  }
+                }
+              }
+              if (needToNewLine) {
+                continue;
+              }
             }
-            sendMiddle(msg);
-            startTime = DateTime.now().millisecondsSinceEpoch +
-                int.parse(tag_list[3]) * 60000;
+            startTime = waitOffline
+                ? DateTime.now().millisecondsSinceEpoch +
+                    int.parse(tag_list[3]) * 60000
+                : 0;
             Future.delayed(
-                Duration(milliseconds: int.parse(tag_list[3]) * 60000),
-                () async {
+                Duration(
+                    milliseconds: waitOffline
+                        ? int.parse(tag_list[3]) * 60000
+                        : 100), () async {
               await storyPlayer();
             });
             break;
@@ -628,6 +673,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
             if (be_jump == jump) {
               jump = 0;
               sendMiddle(msg);
+              await Future.delayed(Duration(microseconds: 500));
               continue;
             }
           }

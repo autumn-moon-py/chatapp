@@ -206,61 +206,36 @@ class SettingPageState extends State<SettingPage> {
                               endIndent: 30.w,
                               thickness: 1,
                             ),
-                            SwitchListTile(
-                                title: Text('自娱自乐',
-                                    style: TextStyle(
-                                        fontSize: 25.sp, color: Colors.white)),
-                                subtitle: Text('自己跟Miko(也是你)聊天,会清除当前游玩进度',
-                                    style: TextStyle(
-                                        fontSize: 15.sp, color: Colors.grey)),
-                                value: scrolling,
-                                activeColor: Colors.white,
-                                activeTrackColor:
-                                    Color.fromRGBO(0, 102, 203, 1),
-                                inactiveTrackColor:
-                                    Color.fromRGBO(60, 60, 60, 1),
-                                onChanged: (value) {
-                                  messages = [];
-                                  messagesInfo = [];
-                                  line = 0; //当前下标
-                                  startTime = 0;
-                                  jump = 0;
-                                  be_jump = 0;
-                                  reast_line = 0;
-                                  choose_one = '';
-                                  choose_two = '';
-                                  choose_one_jump = 0;
-                                  choose_two_jump = 0;
-                                  story = [];
-                                  saveChat();
-                                  save();
-                                  isChange = true;
-                                  scrolling = value;
-                                  setState(() {});
-                                }),
-                            Divider(
-                              color: Colors.white,
-                              height: 0,
-                              indent: 20.w,
-                              endIndent: 30.w,
-                              thickness: 1,
-                            ),
                             // SwitchListTile(
-                            //     title: Text('打字时间',
+                            //     title: Text('自娱自乐',
                             //         style: TextStyle(
                             //             fontSize: 25.sp, color: Colors.white)),
-                            //     subtitle: Text('关闭则对方直接发送消息',
+                            //     subtitle: Text('自己跟Miko(也是你)聊天',
                             //         style: TextStyle(
                             //             fontSize: 15.sp, color: Colors.grey)),
-                            //     value: waitTyping,
+                            //     value: scrolling,
                             //     activeColor: Colors.white,
                             //     activeTrackColor:
                             //         Color.fromRGBO(0, 102, 203, 1),
                             //     inactiveTrackColor:
                             //         Color.fromRGBO(60, 60, 60, 1),
                             //     onChanged: (value) {
+                            //       messages = [];
+                            //       messagesInfo = [];
+                            //       line = 0; //当前下标
+                            //       startTime = 0;
+                            //       jump = 0;
+                            //       be_jump = 0;
+                            //       reast_line = 0;
+                            //       choose_one = '';
+                            //       choose_two = '';
+                            //       choose_one_jump = 0;
+                            //       choose_two_jump = 0;
+                            //       story = [];
+                            //       saveChat();
                             //       save();
-                            //       waitTyping = value;
+                            //       isChange = true;
+                            //       scrolling = value;
                             //       setState(() {});
                             //     }),
                             // Divider(
@@ -270,6 +245,31 @@ class SettingPageState extends State<SettingPage> {
                             //   endIndent: 30.w,
                             //   thickness: 1,
                             // ),
+                            SwitchListTile(
+                                title: Text('打字时间',
+                                    style: TextStyle(
+                                        fontSize: 25.sp, color: Colors.white)),
+                                subtitle: Text('关闭则对方直接发送消息',
+                                    style: TextStyle(
+                                        fontSize: 15.sp, color: Colors.grey)),
+                                value: waitTyping,
+                                activeColor: Colors.white,
+                                activeTrackColor:
+                                    Color.fromRGBO(0, 102, 203, 1),
+                                inactiveTrackColor:
+                                    Color.fromRGBO(60, 60, 60, 1),
+                                onChanged: (value) {
+                                  save();
+                                  waitTyping = value;
+                                  setState(() {});
+                                }),
+                            Divider(
+                              color: Colors.white,
+                              height: 0,
+                              indent: 20.w,
+                              endIndent: 30.w,
+                              thickness: 1,
+                            ),
                             SwitchListTile(
                                 title: Text('等待上线',
                                     style: TextStyle(
@@ -439,7 +439,7 @@ class SettingPageState extends State<SettingPage> {
                                     Padding(
                                         padding: EdgeInsets.only(top: 10.h),
                                         child: Text(
-                                          '此操作会清除图鉴,词典,游玩进度等记录',
+                                          '此操作会清除聊天记录',
                                           style: TextStyle(fontSize: 25.sp),
                                         ))
                                   ])),
@@ -455,6 +455,7 @@ class SettingPageState extends State<SettingPage> {
                                     onPressed: () {
                                       Navigator.pop(context, 'Ok');
                                       delAll();
+                                      isChange = true;
                                       Get.defaultDialog(
                                           title: '提示',
                                           titleStyle:

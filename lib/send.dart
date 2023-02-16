@@ -60,7 +60,6 @@ class LeftTextMsg extends StatelessWidget {
                       child: Text(
                         text,
                         softWrap: true, //自动换行
-                        textAlign: TextAlign.left, //文本左对齐
                         style: TextStyle(
                             fontSize: 25.sp, color: Colors.white), //文本样式
                       ))
@@ -269,6 +268,8 @@ whoAvater(String name) {
   }
   if (name == 'Lily') {
     return "assets/icon/Lily.png";
+  } else {
+    return "assets/icon/头像$nowMikoAvater.png";
   }
 }
 

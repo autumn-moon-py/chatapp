@@ -65,13 +65,13 @@ class TrendPageState extends State<TrendPage> {
             ]),
           ]))
         ]),
-        Center(
-            child: TextButton(
-          child: Text('发送', style: TextStyle(color: Colors.white)),
-          onPressed: () {
-            sendTrend('你好', 'S1-01');
-          },
-        )),
+        // Center(
+        //     child: TextButton(
+        //   child: Text('发送', style: TextStyle(color: Colors.white)),
+        //   onPressed: () {
+        //     sendTrend('你好', 'S1-01');
+        //   },
+        // )),
         GestureDetector(
             //返回按钮
             onTap: () {
@@ -153,6 +153,7 @@ class Trend extends StatelessWidget {
                                   child: CachedNetworkImage(
                                     placeholder: (context, url) =>
                                         CircularProgressIndicator(),
+                                    fit: BoxFit.cover,
                                     imageUrl:
                                         'https://cdn.486486486.xyz/miko-storage/Dimension/ver0.1/$trendImg.png',
                                     errorWidget: (context, url, error) => Text(
