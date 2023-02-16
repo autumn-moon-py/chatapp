@@ -1,6 +1,6 @@
-import 'dart:io';
+// import 'dart:io';
 import 'package:animate_do/animate_do.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+// import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -37,15 +37,16 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
   initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this); //增加监听者
-    // loadMessage().then((_) {
-    backgroundMusic();
-    buttonplayer.setAsset('assets/music/选项音效.mp3');
-    packageInfoList();
-    load();
-    loadCVS().then((_) async {
-      await storyPlayer();
+    loadMessage().then((_) {
+      load();
+      backgroundMusic();
+      buttonplayer.setAsset('assets/music/选项音效.mp3');
+      packageInfoList();
+      line = 702;
+      loadCVS().then((_) async {
+        await storyPlayer();
+      });
     });
-    // });
   }
 
   @override
@@ -100,30 +101,39 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     return Scaffold(
         //聊天窗口容器
         body: Stack(children: [
+      Container(
+        width: 1.sw,
+        height: 1.sh,
+        color: Colors.black,
+        child: Center(
+            child: Text('加载中...',
+                style: TextStyle(color: Colors.white, fontSize: 40.r))),
+      ),
       // 点击监控
       GestureDetector(
           onTap: () {
             userFocusNode.unfocus(); //点击聊天窗口丢失焦点
           },
           //背景
-          child: Platform.isAndroid
-              ? Image.asset('assets/images/聊天背景.png',
+          child:
+              // Platform.isAndroid
+              Image.asset('assets/images/聊天背景.png',
                   height: 1.sh, fit: BoxFit.cover)
-              : Container(
-                  width: 1.sw,
-                  height: 1.sh,
-                  color: Colors.black,
-                  child: CachedNetworkImage(
-                      height: 1.sh,
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) =>
-                          CircularProgressIndicator(),
-                      imageUrl:
-                          'https://cdn.486486486.xyz/miko-storage/Dimension/ver0.1/聊天背景.png',
-                      errorWidget: (context, url, error) => Text('加载失败,请检查网络',
-                          style: TextStyle(
-                              color: Colors.white, fontSize: 30.sp))))),
-
+          // : Container(
+          //     width: 1.sw,
+          //     height: 1.sh,
+          //     color: Colors.black,
+          //     child: CachedNetworkImage(
+          //         height: 1.sh,
+          //         fit: BoxFit.cover,
+          //         placeholder: (context, url) =>
+          //             CircularProgressIndicator(),
+          //         imageUrl:
+          //             'https://cdn.486486486.xyz/miko-storage/Dimension/ver0.1/聊天背景.png',
+          //         errorWidget: (context, url, error) => Text('加载失败,请检查网络',
+          //             style: TextStyle(
+          //                 color: Colors.white, fontSize: 30.sp))))
+          ),
       GestureDetector(
           onTap: () {
             userFocusNode.unfocus(); //点击聊天窗口丢失焦点
@@ -145,7 +155,11 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                           itemCount: messages.length,
                         ))))
           ])),
-
+      Center(
+          child: Wrap(children: [
+        Text('当前行: $line 跳转: $jump \r\n分支: $be_jump 上线: $startTime',
+            style: TextStyle(color: Colors.red, fontSize: 40.r))
+      ])),
       //顶部状态栏
       Align(
         alignment: Alignment.topCenter,
@@ -156,7 +170,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
           height: 50.h,
           child: GestureDetector(
               onTap: () {
-                // line = 516;
+                storyPlayer();
               },
               child: Text(
                 _chatName,
@@ -228,9 +242,8 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
           ),
           onTap: () {
             buttonMusic();
-            sendRight(choose_one.toString());
             jump = choose_one_jump;
-            saveChat();
+            sendRight(choose_one.toString());
           },
         ),
         //选项二按钮
@@ -252,9 +265,8 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
           ),
           onTap: () {
             buttonMusic();
-            sendRight(choose_two.toString());
             jump = choose_two_jump;
-            saveChat();
+            sendRight(choose_two.toString());
           },
         ),
       ]),
@@ -448,11 +460,21 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     String tag = ''; //单标签
     do {
       if (startTime > 0 && DateTime.now().millisecondsSinceEpoch < startTime) {
+        EasyLoading.showToast('等待结束',
+            toastPosition: EasyLoadingToastPosition.bottom);
         continue;
+      } else if (startTime == 0) {
+        EasyLoading.showToast('等待跳过',
+            toastPosition: EasyLoadingToastPosition.bottom);
+        continue;
+      } else {
+        EasyLoading.showToast('等待中',
+            toastPosition: EasyLoadingToastPosition.bottom);
       }
       startTime = 0;
       List line_info = story[line];
       line++;
+      setState(() {});
       //空行继续
       if (line_info[0] == '' && line_info[1] == '' && line_info[2] == '') {
         continue;
@@ -579,7 +601,6 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
               sendTextLeft(msg, name);
               await Future.delayed(
                   Duration(seconds: waitTyping ? (msg.length / 4).ceil() : 1));
-              // continue;
             }
             //上下搜索跳转分支
             sendTextLeft(msg, name);
@@ -610,7 +631,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
             }
           }
         }
-        if (tag_list[0] == '右') {
+        if (tag_list[0] == '右' && jump == 0) {
           //右,选项,XX
           if (tag_list[1] == '选项' && choose_one.isEmpty) {
             choose_one = msg;
@@ -627,44 +648,48 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
         if (tag_list[0] == '中') {
           if (tag_list.length == 4) {
             //中,XX,等待,XX
-            if (tag_list[1] != 0) {
+            if (tag_list[1] != 0 && jump == 0) {
               jump = int.parse(tag_list[1]);
-              bool needToNewLine = false;
-              for (int j = math.max(0, line - 100); j < line; j++) {
-                List li = story[j];
-                if (li[0] == '' && li[1] == '' && li[2] == '') {
-                  continue;
-                }
-                String tg = li[2];
-                if (tg.length > 1) {
-                  List tl = tg.split(',');
-                  if (tl.isNotEmpty && tl.length == 2) {
-                    String tlStr1 = tl[1]; //分支
-                    int tlJp = int.parse(tlStr1.substring(2, tlStr1.length));
-                    if (tl[0] == tag_list[0] && tlJp == jump) {
-                      line = j;
-                      needToNewLine = true;
-                      break;
-                    }
-                  }
-                }
-              }
-              if (needToNewLine) {
-                continue;
-              }
+              // bool needToNewLine = false;
+              // for (int j = math.max(0, line - 100); j < line; j++) {
+              //   List li = story[j];
+              //   if (li[0] == '' && li[1] == '' && li[2] == '') {
+              //     continue;
+              //   }
+              //   String tg = li[2];
+              //   if (tg.length > 1) {
+              //     List tl = tg.split(',');
+              //     if (tl.isNotEmpty && tl.length == 2) {
+              //       String tlStr1 = tl[1]; //分支
+              //       int tlJp = int.parse(tlStr1.substring(2, tlStr1.length));
+              //       if (tl[0] == tag_list[0] && tlJp == jump) {
+              //         line = j;
+              //         needToNewLine = true;
+              //         break;
+              //       }
+              //     }
+              //   }
+              // }
+              // if (needToNewLine) {
+              //   continue;
+              // }
             }
+            // else {
+            //   continue;
+            // }
             startTime = waitOffline
                 ? DateTime.now().millisecondsSinceEpoch +
                     int.parse(tag_list[3]) * 60000
                 : 0;
-            Future.delayed(
-                Duration(
-                    milliseconds: waitOffline
-                        ? int.parse(tag_list[3]) * 60000
-                        : 100), () async {
-              await storyPlayer();
-            });
-            break;
+            continue;
+            // Future.delayed(
+            //     Duration(
+            //         milliseconds: waitOffline
+            //             ? int.parse(tag_list[3]) * 60000
+            //             : 100), () async {
+            //   await storyPlayer();
+            // });
+            // break;
           }
           if (tag_list.length == 2) {
             //中,分支XX

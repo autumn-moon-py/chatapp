@@ -2,10 +2,11 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:csv/csv.dart';
 import 'package:flutter/services.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:just_audio/just_audio.dart';
+// import 'package:just_audio/just_audio.dart';
 
 import 'send.dart';
 import 'trend.dart';
@@ -13,8 +14,8 @@ import 'trend.dart';
 SharedPreferences? local; //本地存储数据
 bool isNewImage = false; //AI图鉴
 bool scrolling = false; //自娱自乐模式
-bool waitOffline = true; //是否等待下线
-bool waitTyping = true; //打字时间
+bool waitOffline = false; //是否等待下线
+bool waitTyping = false; //打字时间
 int nowMikoAvater = 1; //miko当前头像
 String playerAvatarSet = '默认'; //玩家头像
 int playerNowAvater = 0; //玩家头像下拉框默认值
@@ -399,7 +400,7 @@ const List dictionaryList = [
 Map dictionaryMap = {
   '软件': [
     '第一章',
-    'false',
+    'true',
     '这里特指异次元通讯，是睿果工作室出品的一款手机app，用于即时通讯，经大量用户反馈，相连接的用户之间似乎存在着某种未知的羁绊，原理不明'
   ],
   '西武百货': [
@@ -1024,6 +1025,7 @@ delAll() async {
   messagesInfo = [];
   choose_one = '';
   choose_two = '';
+  story = [];
 }
 
 ///读取历史消息

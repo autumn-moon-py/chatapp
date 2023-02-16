@@ -201,11 +201,7 @@ class RightMsg extends StatelessWidget {
                           //头像容器
                           margin: EdgeInsets.only(
                               right: 10.w, left: 10.h), //头像和气泡间距
-                          child: CircleAvatar(
-                              //头像图标
-                              radius: 30.r, //头像尺寸
-                              backgroundColor: Color.fromRGBO(0, 0, 0, 1),
-                              child: playerAvater() //加载右边头像
+                          child: ClipOval(child: playerAvater() //加载右边头像
                               ))),
                 ]))));
   }
@@ -276,11 +272,14 @@ whoAvater(String name) {
 Widget playerAvater() {
   if (playerAvatarSet != "默认") {
     try {
-      return Image.file(File(playerAvatarSet));
+      return Image.file(File(playerAvatarSet),
+          fit: BoxFit.cover, width: 60.r, height: 60.r);
     } catch (error) {
       playerAvatarSet = '默认';
-      return Image.asset('assets/icon/未知用户.png');
+      return Image.asset('assets/icon/未知用户.png',
+          fit: BoxFit.cover, width: 60.r, height: 60.r);
     }
   }
-  return Image.asset('assets/icon/未知用户.png');
+  return Image.asset('assets/icon/未知用户.png',
+      fit: BoxFit.cover, width: 60.r, height: 60.r);
 }
