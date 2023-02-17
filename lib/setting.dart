@@ -423,86 +423,86 @@ class SettingPageState extends State<SettingPage> {
                                     )),
                               ])),
                     )),
-                GestureDetector(
-                    onTap: () {
-                      showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              content: Container(
-                                  height: 120.h,
-                                  child: Column(children: [
-                                    Text('提示',
-                                        style: TextStyle(
-                                            fontSize: 40.sp,
-                                            color: Colors.red)),
-                                    Padding(
-                                        padding: EdgeInsets.only(top: 10.h),
-                                        child: Text(
-                                          '此操作会清除聊天记录',
-                                          style: TextStyle(fontSize: 25.sp),
-                                        ))
-                                  ])),
-                              actions: [
-                                TextButton(
-                                  child: Text("取消"),
-                                  onPressed: () {
-                                    Navigator.pop(context, 'Cancle');
-                                  },
-                                ),
-                                TextButton(
-                                    child: Text("确定"),
-                                    onPressed: () {
-                                      Navigator.pop(context, 'Ok');
-                                      delAll();
-                                      isChange = true;
-                                      Get.defaultDialog(
-                                          title: '提示',
-                                          titleStyle:
-                                              TextStyle(color: Colors.blue),
-                                          middleText: '缓存已清除');
-                                    })
-                              ],
-                            );
-                          });
-                    },
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                          top: 5.h, left: 10.w, right: 10.w, bottom: 5.w),
-                      child: ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: Container(
-                              color: Color.fromRGBO(38, 38, 38, 1),
-                              child: Column(
-                                children: [
-                                  Padding(
-                                      padding: EdgeInsets.only(
-                                          top: 10.h, left: 20.w, bottom: 10.h),
-                                      child: Row(children: [
-                                        Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text('清除缓存',
-                                                  style: TextStyle(
-                                                      fontSize: 25.sp,
-                                                      color: Colors.white))
-                                            ]),
-                                        Padding(
-                                            padding:
-                                                EdgeInsets.only(left: 325.w),
-                                            child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(5),
-                                                child: Container(
-                                                    child: Icon(
-                                                        Icons.chevron_right,
-                                                        color: Colors.white,
-                                                        size: 50.r)))),
-                                      ]))
-                                ],
-                              ))),
-                    )),
+                // GestureDetector(
+                //     onTap: () {
+                //       showDialog(
+                //           context: context,
+                //           builder: (context) {
+                //             return AlertDialog(
+                //               content: Container(
+                //                   height: 120.h,
+                //                   child: Column(children: [
+                //                     Text('提示',
+                //                         style: TextStyle(
+                //                             fontSize: 40.sp,
+                //                             color: Colors.red)),
+                //                     Padding(
+                //                         padding: EdgeInsets.only(top: 10.h),
+                //                         child: Text(
+                //                           '此操作会清除聊天记录',
+                //                           style: TextStyle(fontSize: 25.sp),
+                //                         ))
+                //                   ])),
+                //               actions: [
+                //                 TextButton(
+                //                   child: Text("取消"),
+                //                   onPressed: () {
+                //                     Navigator.pop(context, 'Cancle');
+                //                   },
+                //                 ),
+                //                 TextButton(
+                //                     child: Text("确定"),
+                //                     onPressed: () {
+                //                       Navigator.pop(context, 'Ok');
+                //                       delAll();
+                //                       isChange = true;
+                //                       Get.defaultDialog(
+                //                           title: '提示',
+                //                           titleStyle:
+                //                               TextStyle(color: Colors.blue),
+                //                           middleText: '缓存已清除');
+                //                     })
+                //               ],
+                //             );
+                //           });
+                //     },
+                //     child: Padding(
+                //       padding: EdgeInsets.only(
+                //           top: 5.h, left: 10.w, right: 10.w, bottom: 5.w),
+                //       child: ClipRRect(
+                //           borderRadius: BorderRadius.circular(20),
+                //           child: Container(
+                //               color: Color.fromRGBO(38, 38, 38, 1),
+                //               child: Column(
+                //                 children: [
+                //                   Padding(
+                //                       padding: EdgeInsets.only(
+                //                           top: 10.h, left: 20.w, bottom: 10.h),
+                //                       child: Row(children: [
+                //                         Column(
+                //                             crossAxisAlignment:
+                //                                 CrossAxisAlignment.start,
+                //                             children: [
+                //                               Text('清除缓存',
+                //                                   style: TextStyle(
+                //                                       fontSize: 25.sp,
+                //                                       color: Colors.white))
+                //                             ]),
+                //                         Padding(
+                //                             padding:
+                //                                 EdgeInsets.only(left: 325.w),
+                //                             child: ClipRRect(
+                //                                 borderRadius:
+                //                                     BorderRadius.circular(5),
+                //                                 child: Container(
+                //                                     child: Icon(
+                //                                         Icons.chevron_right,
+                //                                         color: Colors.white,
+                //                                         size: 50.r)))),
+                //                       ]))
+                //                 ],
+                //               ))),
+                //     )),
                 GestureDetector(
                     onTap: () {
                       Get.to(MyAppInfo());

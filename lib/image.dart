@@ -197,32 +197,23 @@ class ImagePageState extends State<ImagePage> {
         duration: Duration(seconds: 2));
     String imgUrl =
         "https://cdn.486486486.xyz/miko-storage/Dimension/ver0.1/$imageName.png";
-    bool check = false;
     if (Platform.isAndroid) {
-      check = checkPermission(Permission.storage);
+      checkPermission(Permission.storage);
     } else {
-      check = checkPermission(Permission.photos);
+      checkPermission(Permission.photos);
     }
-
-    if (check) {
-      var response = await Dio()
-          .get(imgUrl, options: Options(responseType: ResponseType.bytes));
-      final result = await ImageGallerySaver.saveImage(
-          Uint8List.fromList(response.data),
-          quality: 100);
-      if (result['isSuccess']) {
-        Get.snackbar('系统提示', '图片已下载',
-            colorText: Colors.white,
-            shouldIconPulse: true,
-            duration: Duration(seconds: 2));
-      } else {
-        Get.snackbar('系统提示', '图片下载失败,请检查网络',
-            colorText: Colors.white,
-            shouldIconPulse: true,
-            duration: Duration(seconds: 2));
-      }
+    var response = await Dio()
+        .get(imgUrl, options: Options(responseType: ResponseType.bytes));
+    final result = await ImageGallerySaver.saveImage(
+        Uint8List.fromList(response.data),
+        quality: 100);
+    if (result['isSuccess']) {
+      Get.snackbar('系统提示', '图片已下载',
+          colorText: Colors.white,
+          shouldIconPulse: true,
+          duration: Duration(seconds: 2));
     } else {
-      Get.snackbar('系统提示', '获取权限失败,无法下载',
+      Get.snackbar('系统提示', '图片下载失败,请检查网络',
           colorText: Colors.white,
           shouldIconPulse: true,
           duration: Duration(seconds: 2));

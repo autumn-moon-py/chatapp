@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:csv/csv.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:just_audio/just_audio.dart';
 
 import 'send.dart';
 import 'trend.dart';
@@ -14,8 +14,9 @@ import 'trend.dart';
 SharedPreferences? local; //本地存储数据
 bool isNewImage = false; //AI图鉴
 bool scrolling = false; //自娱自乐模式
-bool waitOffline = false; //是否等待下线
-bool waitTyping = false; //打字时间
+bool waitOffline = true; //是否等待下线
+bool waitTyping = true; //打字时间
+FocusNode userFocusNode = FocusNode(); //输入框焦点控件
 int nowMikoAvater = 1; //miko当前头像
 String playerAvatarSet = '默认'; //玩家头像
 int playerNowAvater = 0; //玩家头像下拉框默认值
@@ -400,7 +401,7 @@ const List dictionaryList = [
 Map dictionaryMap = {
   '软件': [
     '第一章',
-    'true',
+    'false',
     '这里特指异次元通讯，是睿果工作室出品的一款手机app，用于即时通讯，经大量用户反馈，相连接的用户之间似乎存在着某种未知的羁绊，原理不明'
   ],
   '西武百货': [
@@ -913,23 +914,18 @@ checkPermission(Permission permission) async {
   PermissionStatus status = await permission.status;
   if (status.isGranted) {
     //权限通过
-    return true;
   } else if (status.isDenied) {
     //权限拒绝， 需要区分IOS和Android，二者不一样
     requestPermission(permission);
-    return false;
   } else if (status.isPermanentlyDenied) {
     //权限永久拒绝，且不在提示，需要进入设置界面，IOS和Android不同
     openAppSettings();
-    return false;
   } else if (status.isRestricted) {
     //活动限制（例如，设置了家长控件，仅在iOS以上受支持。
     openAppSettings();
-    return false;
   } else {
     //第一次申请
     requestPermission(permission);
-    return false;
   }
 }
 

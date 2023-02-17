@@ -42,7 +42,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
       backgroundMusic();
       buttonplayer.setAsset('assets/music/选项音效.mp3');
       packageInfoList();
-      line = 702;
+      // line = 510;
       loadCVS().then((_) async {
         await storyPlayer();
       });
@@ -155,11 +155,13 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                           itemCount: messages.length,
                         ))))
           ])),
-      Center(
-          child: Wrap(children: [
-        Text('当前行: $line 跳转: $jump \r\n分支: $be_jump 上线: $startTime',
-            style: TextStyle(color: Colors.red, fontSize: 40.r))
-      ])),
+      // Center(
+      //     child: Wrap(children: [
+      //   Text(
+      //       '当前行: $line 跳转: $jump \r\n分支: $be_jump 上线: $startTime \r\n等待上线: $waitOffline',
+      //       style: TextStyle(color: Colors.red, fontSize: 40.r))
+      // ])),
+      //
       //顶部状态栏
       Align(
         alignment: Alignment.topCenter,
@@ -170,7 +172,26 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
           height: 50.h,
           child: GestureDetector(
               onTap: () {
-                storyPlayer();
+                if (choose_one.isNotEmpty && choose_two.isNotEmpty) {
+                  EasyLoading.showToast('不能在有选项时进入',
+                      toastPosition: EasyLoadingToastPosition.top);
+                } else {
+                  showDialog(
+                      barrierDismissible: false,
+                      context: context,
+                      builder: (context) {
+                        return RenameDialog(
+                          contentWidget: RenameDialogContent(
+                            cancelBtnTitle: '取消',
+                            okBtnTitle: '确定',
+                            title: "请输入跳转行号(数字),有概率失败",
+                            okBtnTap: () {},
+                            vc: TextEditingController(),
+                            cancelBtnTap: () {},
+                          ),
+                        );
+                      });
+                }
               },
               child: Text(
                 _chatName,
@@ -305,9 +326,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                 onSubmitted: handleSubmitted, //回车调用发送消息
                 focusNode: userFocusNode, //输入框焦点控制
                 style: TextStyle(
-                    height: 2.h,
-                    fontSize: 25.sp,
-                    color: Colors.white), //输入框内光标大小
+                    height: 2.h, fontSize: 25.sp, color: Colors.white),
                 decoration: InputDecoration(
                     enabledBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.black)), //输入框下划线颜色
@@ -460,16 +479,13 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     String tag = ''; //单标签
     do {
       if (startTime > 0 && DateTime.now().millisecondsSinceEpoch < startTime) {
-        EasyLoading.showToast('等待结束',
-            toastPosition: EasyLoadingToastPosition.bottom);
         continue;
-      } else if (startTime == 0) {
-        EasyLoading.showToast('等待跳过',
-            toastPosition: EasyLoadingToastPosition.bottom);
-        continue;
-      } else {
-        EasyLoading.showToast('等待中',
-            toastPosition: EasyLoadingToastPosition.bottom);
+      } else if (startTime > 0) {
+        int _waitTime = startTime - DateTime.now().millisecondsSinceEpoch;
+        Future.delayed(Duration(milliseconds: _waitTime), () async {
+          await storyPlayer();
+        });
+        break;
       }
       startTime = 0;
       List line_info = story[line];
@@ -480,7 +496,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
         continue;
       }
       String name = line_info[0];
-      msg = line_info[1];
+      msg = line_info[1].toString();
       tag = line_info[2];
       if (tag.length > 1) {
         tag_list = tag.split(',');
@@ -518,14 +534,14 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
           await Future.delayed(Duration(milliseconds: 500));
           continue;
         }
-        if (tag == '词典') {
-          List _dt = dictionaryMap[msg];
-          _dt[1] = 'true';
-          dictionaryMap[msg] = _dt;
-          EasyLoading.showToast('解锁新词典$msg',
-              toastPosition: EasyLoadingToastPosition.bottom);
-          continue;
-        }
+        // if (tag == '词典') {
+        //   List _dt = dictionaryMap[msg];
+        //   _dt[1] = 'true';
+        //   dictionaryMap[msg] = _dt;
+        //   EasyLoading.showToast('解锁新词典$msg',
+        //       toastPosition: EasyLoadingToastPosition.bottom);
+        //   continue;
+        // }
         if (tag == '图鉴') {
           sendImgLeft(msg);
           await Future.delayed(Duration(seconds: 1));
@@ -534,27 +550,43 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
               toastPosition: EasyLoadingToastPosition.bottom);
           continue;
         }
-        if (tag == '图片') {
-          imageMap[msg] = true;
-          continue;
-        }
-        if (tag == '动态') {
-          sendTrend(msg, name);
-          imageMap[name] = true;
-          EasyLoading.showToast('解锁新图鉴$name',
-              toastPosition: EasyLoadingToastPosition.bottom);
-          sendMiddle('对方发布了一条新动态');
-          await Future.delayed(Duration(seconds: 1));
-          continue;
-        }
+        // if (tag == '图片') {
+        //   await Future.delayed(Duration(seconds: 1));
+        //   imageMap[msg] = true;
+        //   EasyLoading.showToast('解锁新图鉴$msg',
+        //       toastPosition: EasyLoadingToastPosition.bottom);
+        //   continue;
+        // }
+        // if (tag == '动态') {
+        //   sendTrend(msg, name);
+        //   imageMap[name] = true;
+        //   EasyLoading.showToast('解锁新图鉴$name',
+        //       toastPosition: EasyLoadingToastPosition.bottom);
+        //   sendMiddle('对方发布了一条新动态');
+        //   await Future.delayed(Duration(seconds: 1));
+        //   continue;
+        // }
       }
       //多标签
       if (tag_list != []) {
-        if (tag_list[0] == '词典') {
-          List _dt = dictionaryMap[msg];
-          _dt[1] = 'true';
-          dictionaryMap[msg] = _dt;
-          EasyLoading.showToast('解锁新词典',
+        if (tag_list[0] == '词典' && jump == 0) {
+          try {
+            List _dt = dictionaryMap[msg];
+            _dt[1] = 'true';
+            dictionaryMap[msg] = _dt;
+            EasyLoading.showToast('解锁新词典',
+                toastPosition: EasyLoadingToastPosition.bottom);
+            continue;
+          } catch (_) {
+            EasyLoading.showToast('解锁词典失败,请截图反馈',
+                toastPosition: EasyLoadingToastPosition.bottom);
+            continue;
+          }
+        }
+        if (tag_list[0] == '图片') {
+          await Future.delayed(Duration(seconds: 1));
+          imageMap[msg] = true;
+          EasyLoading.showToast('解锁新图鉴$msg',
               toastPosition: EasyLoadingToastPosition.bottom);
           continue;
         }
@@ -571,20 +603,19 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
           if (tag_list.length == 2) {
             //左,分支XX
             String str = tag_list[1];
-            try {
-              if (str.substring(0, 2) == '分支') {
-                be_jump = int.parse(str.substring(2, str.length));
-                if (be_jump == jump) {
-                  jump = 0;
-                  sendTextLeft(msg, name);
-                  await Future.delayed(Duration(
-                      seconds: waitTyping ? (msg.length / 4).ceil() : 1));
-                  continue;
-                }
+
+            if (str.substring(0, 2) == '分支') {
+              be_jump = int.parse(str.substring(2, str.length));
+              if (be_jump == jump) {
+                jump = 0;
+                sendTextLeft(msg, name);
+                await Future.delayed(Duration(
+                    seconds: waitTyping ? (msg.length / 4).ceil() : 1));
+                continue;
               }
-            } catch (error) {
+            } else {
               //左,XX
-              jump = int.parse(str);
+              jump = int.parse(tag_list[1]);
               sendTextLeft(msg, name);
               await Future.delayed(
                   Duration(seconds: waitTyping ? (msg.length / 4).ceil() : 1));
@@ -650,46 +681,44 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
             //中,XX,等待,XX
             if (tag_list[1] != 0 && jump == 0) {
               jump = int.parse(tag_list[1]);
-              // bool needToNewLine = false;
-              // for (int j = math.max(0, line - 100); j < line; j++) {
-              //   List li = story[j];
-              //   if (li[0] == '' && li[1] == '' && li[2] == '') {
-              //     continue;
-              //   }
-              //   String tg = li[2];
-              //   if (tg.length > 1) {
-              //     List tl = tg.split(',');
-              //     if (tl.isNotEmpty && tl.length == 2) {
-              //       String tlStr1 = tl[1]; //分支
-              //       int tlJp = int.parse(tlStr1.substring(2, tlStr1.length));
-              //       if (tl[0] == tag_list[0] && tlJp == jump) {
-              //         line = j;
-              //         needToNewLine = true;
-              //         break;
-              //       }
-              //     }
-              //   }
-              // }
-              // if (needToNewLine) {
-              //   continue;
-              // }
+              bool needToNewLine = false;
+              for (int j = math.max(0, line - 100); j < line; j++) {
+                List li = story[j];
+                if (li[0] == '' && li[1] == '' && li[2] == '') {
+                  continue;
+                }
+                String tg = li[2];
+                if (tg.length > 1) {
+                  List tl = tg.split(',');
+                  if (tl.isNotEmpty && tl.length == 2) {
+                    String tlStr1 = tl[1]; //分支
+                    int tlJp = int.parse(tlStr1.substring(2, tlStr1.length));
+                    if (tl[0] == tag_list[0] && tlJp == jump) {
+                      line = j;
+                      needToNewLine = true;
+                      break;
+                    }
+                  }
+                }
+              }
+              if (needToNewLine) {
+                continue;
+              }
+              startTime = waitOffline
+                  ? DateTime.now().millisecondsSinceEpoch +
+                      int.parse(tag_list[3]) * 60000
+                  : -1;
+              if (!waitOffline) {
+                continue;
+              } else {
+                Future.delayed(
+                    Duration(milliseconds: int.parse(tag_list[3]) * 60000),
+                    () async {
+                  await storyPlayer();
+                });
+                break;
+              }
             }
-            // else {
-            //   continue;
-            // }
-            startTime = waitOffline
-                ? DateTime.now().millisecondsSinceEpoch +
-                    int.parse(tag_list[3]) * 60000
-                : 0;
-            continue;
-            // Future.delayed(
-            //     Duration(
-            //         milliseconds: waitOffline
-            //             ? int.parse(tag_list[3]) * 60000
-            //             : 100), () async {
-            //   await storyPlayer();
-            // });
-            // break;
           }
           if (tag_list.length == 2) {
             //中,分支XX
@@ -705,5 +734,107 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
         }
       }
     } while (line < story.length);
+  }
+}
+
+class RenameDialog extends AlertDialog {
+  RenameDialog({required Widget contentWidget})
+      : super(
+          content: contentWidget,
+          contentPadding: EdgeInsets.zero,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+        );
+}
+
+// ignore: must_be_immutable
+class RenameDialogContent extends StatefulWidget {
+  String title;
+  String cancelBtnTitle;
+  String okBtnTitle;
+  VoidCallback cancelBtnTap;
+  VoidCallback okBtnTap;
+  TextEditingController vc;
+  RenameDialogContent(
+      {required this.title,
+      this.cancelBtnTitle = "Cancel",
+      this.okBtnTitle = "Ok",
+      required this.cancelBtnTap,
+      required this.okBtnTap,
+      required this.vc});
+
+  @override
+  _RenameDialogContentState createState() => _RenameDialogContentState();
+}
+
+class _RenameDialogContentState extends State<RenameDialogContent> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        margin: EdgeInsets.only(top: 20.h),
+        height: 170.h,
+        width: 1.sw,
+        alignment: Alignment.bottomCenter,
+        child: Column(
+          children: [
+            Container(
+                alignment: Alignment.center,
+                child: Text(
+                  widget.title,
+                  style: TextStyle(color: Colors.black, fontSize: 25.sp),
+                )),
+            Padding(
+              padding: EdgeInsets.fromLTRB(30.w, 0, 30.w, 0),
+              child: TextField(
+                textAlign: TextAlign.center,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                style: TextStyle(color: Colors.black, fontSize: 25.sp),
+                controller: widget.vc,
+                decoration:
+                    InputDecoration(contentPadding: EdgeInsets.only(top: 25.h)),
+              ),
+            ),
+            Container(
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          widget.vc.text = "";
+                          widget.cancelBtnTap();
+                          Navigator.of(context).pop();
+                        },
+                        child: Text(
+                          widget.cancelBtnTitle,
+                          style: TextStyle(fontSize: 20.sp, color: Colors.grey),
+                        ),
+                      ),
+                      TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            widget.okBtnTap();
+                            if (widget.vc.text.isNotEmpty) {
+                              int num = int.parse(widget.vc.text);
+                              if (num <= story.length && choose_one.isEmpty) {
+                                line = num;
+                              }
+                            }
+                            widget.vc.text = "";
+                          },
+                          child: Text(
+                            widget.okBtnTitle,
+                            style:
+                                TextStyle(fontSize: 20.sp, color: Colors.blue),
+                          )),
+                    ],
+                  ),
+                ],
+              ),
+            )
+          ],
+        ));
   }
 }
