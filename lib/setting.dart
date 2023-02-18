@@ -34,7 +34,7 @@ class SettingPageState extends State<SettingPage> {
     return Container(
         child: Stack(children: [
       Container(
-          color: Color.fromRGBO(13, 13, 13, 1), width: 540.w, height: 960.h),
+          color: Color.fromRGBO(13, 13, 13, 1), width: 1.sw, height: 1.sh),
       Padding(
           padding: EdgeInsets.only(top: 50.h, bottom: 10.h),
           child: ListView(children: [
@@ -697,8 +697,7 @@ class _MyAppInfoState extends State<MyAppInfo> {
                                                               child: Column(
                                                                   children: [
                                                                     Text(
-                                                                        result[
-                                                                            'version'],
+                                                                        '当前: $version  最新: ${result['version']}',
                                                                         style: TextStyle(
                                                                             fontSize:
                                                                                 35.sp,

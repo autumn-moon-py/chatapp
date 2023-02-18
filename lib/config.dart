@@ -34,6 +34,7 @@ final buttonplayer = AudioPlayer(); //按钮音效播放器
 late String version; //应用发布版本号
 bool isChange = false; //监听设置修改
 List<List<dynamic>> story = []; //剧本列表
+List<List<dynamic>> story_copy = []; //搜索剧本列表
 String nowChapter = '第一章'; //当前章节
 String chatName = "Miko"; //聊天对象名称
 int line = 0; //当前下标
@@ -1138,11 +1139,12 @@ packageInfoList() async {
 }
 
 //读取剧本
-loadCVS() async {
+loadCVS(String chapter) async {
   //报错检查csv编码是否为utf-8
   final rawData = await rootBundle.loadString(
-    "assets/story/$nowChapter.csv",
+    "assets/story/$chapter.csv",
   );
   List<List> listData = CsvToListConverter().convert(rawData, eol: '\r\n');
   story = listData;
+  story_copy = listData;
 }

@@ -1,11 +1,9 @@
-import 'package:chatapp/menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import "package:get/get.dart";
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 import 'chat.dart';
-import 'config.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -1,6 +1,8 @@
-// import 'dart:io';
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:animate_do/animate_do.dart';
-// import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -13,6 +15,7 @@ import 'dart:math' as math;
 import 'dart:async';
 import 'config.dart';
 import 'setting.dart';
+import 'search.dart';
 import 'trend.dart';
 import 'menu.dart';
 import 'send.dart';
@@ -32,6 +35,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
   String _chatName = "Miko";
   bool switchValue = false; //自娱自乐切换左右
   bool isPaused = false; //是否在后台
+  bool isStop = false;
 
   @override
   initState() {
@@ -42,8 +46,9 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
       backgroundMusic();
       buttonplayer.setAsset('assets/music/选项音效.mp3');
       packageInfoList();
-      // line = 510;
-      loadCVS().then((_) async {
+      // line = 1054;
+      upgrade();
+      loadCVS(nowChapter).then((_) async {
         await storyPlayer();
       });
     });
@@ -140,28 +145,33 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
           },
           child: Column(children: [
             Flexible(
-                child: SizeCacheWidget(
-                    estimateCount: 60,
-                    child: Padding(
-                        padding: EdgeInsets.only(
-                            top: 40.h, bottom: choose_one.isEmpty ? 0 : 80.h),
-                        child: ListView.builder(
-                          controller: _scrollController, //绑定控件
-                          scrollDirection: Axis.vertical, //垂直滑动
-                          reverse: false, //正序显示
-                          shrinkWrap: true, //内容适配
-                          physics: BouncingScrollPhysics(), //内容超过一屏 上拉有回弹效果
-                          itemBuilder: (_, int index) => messages[index],
-                          itemCount: messages.length,
-                        ))))
+                child: messages.length == 0
+                    ? Center(
+                        child: Text('加载中...',
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 40.r)))
+                    : SizeCacheWidget(
+                        estimateCount: 60,
+                        child: Padding(
+                            padding: EdgeInsets.only(
+                                top: 40.h,
+                                bottom: choose_one.isEmpty ? 0 : 80.h),
+                            child: ListView.builder(
+                              controller: _scrollController, //绑定控件
+                              scrollDirection: Axis.vertical, //垂直滑动
+                              reverse: false, //正序显示
+                              shrinkWrap: true, //内容适配
+                              physics: BouncingScrollPhysics(), //内容超过一屏 上拉有回弹效果
+                              itemBuilder: (_, int index) => messages[index],
+                              itemCount: messages.length,
+                            ))))
           ])),
       // Center(
       //     child: Wrap(children: [
       //   Text(
-      //       '当前行: $line 跳转: $jump \r\n分支: $be_jump 上线: $startTime \r\n等待上线: $waitOffline',
+      //       '当前行: $line 跳转: $jump \r\n分支: $be_jump 上线: $startTime \r\n等待上线: $waitOffline BE: $reast_line',
       //       style: TextStyle(color: Colors.red, fontSize: 40.r))
       // ])),
-      //
       //顶部状态栏
       Align(
         alignment: Alignment.topCenter,
@@ -171,11 +181,15 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
           width: 1.sw,
           height: 50.h,
           child: GestureDetector(
+              onDoubleTap: () {
+                Get.to(SearchPage());
+              },
               onTap: () {
                 if (choose_one.isNotEmpty && choose_two.isNotEmpty) {
-                  EasyLoading.showToast('不能在有选项时进入',
+                  EasyLoading.showToast('有选项时再进入',
                       toastPosition: EasyLoadingToastPosition.top);
                 } else {
+                  isStop = true;
                   showDialog(
                       barrierDismissible: false,
                       context: context,
@@ -478,6 +492,13 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     List tag_list = []; //多标签
     String tag = ''; //单标签
     do {
+      if (isStop) {
+        Future.delayed(Duration(seconds: 5), () async {
+          isStop = false;
+          await storyPlayer();
+        });
+        break;
+      }
       if (startTime > 0 && DateTime.now().millisecondsSinceEpoch < startTime) {
         continue;
       } else if (startTime > 0) {
@@ -504,13 +525,6 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
       }
       //单标签
       if (!tag.isEmpty && jump == 0) {
-        if (tag == 'BE') {
-          line = reast_line;
-          messages = [];
-          messagesInfo = [];
-          saveChat();
-          continue;
-        }
         if (tag == '无') {
           reast_line = line;
           continue;
@@ -534,56 +548,34 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
           await Future.delayed(Duration(milliseconds: 500));
           continue;
         }
-        // if (tag == '词典') {
-        //   List _dt = dictionaryMap[msg];
-        //   _dt[1] = 'true';
-        //   dictionaryMap[msg] = _dt;
-        //   EasyLoading.showToast('解锁新词典$msg',
-        //       toastPosition: EasyLoadingToastPosition.bottom);
-        //   continue;
-        // }
-        if (tag == '图鉴') {
-          sendImgLeft(msg);
+      }
+      //多标签
+      if (tag_list != []) {
+        if (tag_list[0] == '词典' && jump == 0) {
+          List _dt = dictionaryMap[msg];
+          _dt[1] = 'true';
+          dictionaryMap[msg] = _dt;
+          EasyLoading.showToast('解锁新词典',
+              toastPosition: EasyLoadingToastPosition.bottom);
+          continue;
+        }
+        if (tag_list[0] == 'BE') {
+          line = reast_line;
+          messages = [];
+          messagesInfo = [];
+          saveChat();
+          setState(() {});
+          continue;
+        }
+        if (tag_list[0] == '图片') {
           await Future.delayed(Duration(seconds: 1));
           imageMap[msg] = true;
           EasyLoading.showToast('解锁新图鉴$msg',
               toastPosition: EasyLoadingToastPosition.bottom);
           continue;
         }
-        // if (tag == '图片') {
-        //   await Future.delayed(Duration(seconds: 1));
-        //   imageMap[msg] = true;
-        //   EasyLoading.showToast('解锁新图鉴$msg',
-        //       toastPosition: EasyLoadingToastPosition.bottom);
-        //   continue;
-        // }
-        // if (tag == '动态') {
-        //   sendTrend(msg, name);
-        //   imageMap[name] = true;
-        //   EasyLoading.showToast('解锁新图鉴$name',
-        //       toastPosition: EasyLoadingToastPosition.bottom);
-        //   sendMiddle('对方发布了一条新动态');
-        //   await Future.delayed(Duration(seconds: 1));
-        //   continue;
-        // }
-      }
-      //多标签
-      if (tag_list != []) {
-        if (tag_list[0] == '词典' && jump == 0) {
-          try {
-            List _dt = dictionaryMap[msg];
-            _dt[1] = 'true';
-            dictionaryMap[msg] = _dt;
-            EasyLoading.showToast('解锁新词典',
-                toastPosition: EasyLoadingToastPosition.bottom);
-            continue;
-          } catch (_) {
-            EasyLoading.showToast('解锁词典失败,请截图反馈',
-                toastPosition: EasyLoadingToastPosition.bottom);
-            continue;
-          }
-        }
-        if (tag_list[0] == '图片') {
+        if (tag_list[0] == '图鉴') {
+          sendImgLeft(msg);
           await Future.delayed(Duration(seconds: 1));
           imageMap[msg] = true;
           EasyLoading.showToast('解锁新图鉴$msg',
@@ -619,7 +611,29 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
               sendTextLeft(msg, name);
               await Future.delayed(
                   Duration(seconds: waitTyping ? (msg.length / 4).ceil() : 1));
-              continue;
+              bool needToNewLine = false;
+              for (int j = math.max(0, line - 100); j < line; j++) {
+                List li = story[j];
+                if (li[0] == '' && li[1] == '' && li[2] == '') {
+                  continue;
+                }
+                String tg = li[2];
+                if (tg.length > 1) {
+                  List tl = tg.split(',');
+                  if (tl.isNotEmpty && tl.length == 2) {
+                    String tlStr1 = tl[1]; //分支
+                    int tlJp = int.parse(tlStr1.substring(2, tlStr1.length));
+                    if (tl[0] == tag_list[0] && tlJp == jump) {
+                      line = j;
+                      needToNewLine = true;
+                      break;
+                    }
+                  }
+                }
+              }
+              if (needToNewLine) {
+                continue;
+              }
             }
           }
           if (tag_list.length == 3) {
@@ -735,6 +749,27 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
       }
     } while (line < story.length);
   }
+
+  //检查更新
+  upgrade() async {
+    Map result = {'info': ''};
+    try {
+      var response =
+          await Dio().get("https://www.subrecovery.top/app/upgrade.json");
+      if (response.statusCode == HttpStatus.ok) {
+        result = jsonDecode(response.toString());
+      }
+    } catch (_) {}
+    if (result.length > 1) {
+      if (result['version'] != version) {
+        Get.defaultDialog(
+            title: '有新版本',
+            titleStyle:
+                TextStyle(overflow: TextOverflow.ellipsis, color: Colors.blue),
+            middleText: '请前往设置更新');
+      }
+    }
+  }
 }
 
 class RenameDialog extends AlertDialog {
@@ -820,6 +855,7 @@ class _RenameDialogContentState extends State<RenameDialogContent> {
                               int num = int.parse(widget.vc.text);
                               if (num <= story.length && choose_one.isEmpty) {
                                 line = num;
+                                setState(() {});
                               }
                             }
                             widget.vc.text = "";
