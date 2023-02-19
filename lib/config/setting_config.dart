@@ -21,6 +21,7 @@ bool buttonMusicSwitch = true; //音效
 double sliderValue = 10; //语音音量
 final buttonplayer = AudioPlayer(); //按钮音效播放器
 bool isChange = false; //监听设置修改
+bool isAutoUpgrade = true; //是否自动更新
 
 //Miko头像更换
 List mikoDropdownList = [
@@ -101,6 +102,7 @@ setting_config_save() async {
   await local?.setBool('buttonMusicSwitch', buttonMusicSwitch);
   await local?.setBool('isOldBgm', isOldBgm);
   await local?.setDouble('sliderValue', sliderValue);
+  await local?.setBool('isAutoUpgrade', isAutoUpgrade);
 }
 
 ///读取设置
@@ -117,4 +119,5 @@ setting_config_load() async {
   buttonMusicSwitch = local?.getBool('buttonMusicSwitch') ?? true;
   isOldBgm = local?.getBool('isOldBgm') ?? false;
   sliderValue = local?.getDouble('sliderValue') ?? 10;
+  isAutoUpgrade = local?.getBool('isAutoUpgrade') ?? true;
 }

@@ -23,6 +23,9 @@ loadCVS(String chapter) async {
   );
   List<List> listData = CsvToListConverter().convert(rawData, eol: '\r\n');
   story = listData;
+  if (story.length > 0) {
+    print('剧本加载完成');
+  }
   story_copy = listData;
 }
 

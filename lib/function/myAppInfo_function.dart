@@ -137,7 +137,8 @@ class UrlButton extends StatelessWidget {
                                           fontSize: 25.sp, color: Colors.white))
                                 ]),
                             Padding(
-                                padding: EdgeInsets.only(left: 350.w),
+                                padding: EdgeInsets.only(
+                                    left: (title.length == 2) ? 350.w : 300.w),
                                 child: ClipRRect(
                                     borderRadius: BorderRadius.circular(5),
                                     child: Container(

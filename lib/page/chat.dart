@@ -35,6 +35,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
   @override
   initState() {
     super.initState();
+    FlutterBackground.hasPermissions; //申请后台服务权限
     WidgetsBinding.instance.addObserver(this); //增加监听者
     message_load().then((_) {
       setting_config_save();
@@ -142,12 +143,11 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                               itemCount: messages.length,
                             ))))
           ])),
-      // Center(
-      //     child: Wrap(children: [
-      //   Text(
-      //       '当前行: $line 跳转: $jump \r\n分支: $be_jump 上线: $startTime \r\n等待上线: $waitOffline BE: $reast_line',
-      //       style: TextStyle(color: Colors.red, fontSize: 40.r))
-      // ])),
+      Center(
+          child: Wrap(children: [
+        Text('当前行: $line 跳转: $jump \r\n分支: $be_jump 上线: $startTime',
+            style: TextStyle(color: Colors.red, fontSize: 40.r))
+      ])),
       //顶部状态栏
       Align(
         alignment: Alignment.topCenter,
@@ -462,298 +462,292 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
 
   //播放器
   storyPlayer() async {
+    bool success = await FlutterBackground.initialize(
+        androidConfig: FlutterBackgroundAndroidConfig());
+    if (success) {
+      success = await FlutterBackground.enableBackgroundExecution();
+      if (success) {
+        storyWhile();
+      } else {
+        storyWhile();
+      }
+    } else {
+      storyWhile();
+    }
+  }
+
+  storyWhile() async {
     String msg = ''; //消息
     List tag_list = []; //多标签
     String tag = ''; //单标签
-    bool success = await FlutterBackground.hasPermissions;
-    if (success) {
-      success = await FlutterBackground.initialize(
-          androidConfig: FlutterBackgroundAndroidConfig());
-      if (success) {
-        success = await FlutterBackground.enableBackgroundExecution();
-        if (success) {
-          do {
-            if (isStop) {
-              Future.delayed(Duration(seconds: 5), () async {
-                isStop = false;
-                await storyPlayer();
-              });
-              break;
-            }
-            if (line == story.length - 2) {
-              for (int i = 0; i < imageMap.length; i++) {
-                if (imageMap['W1-0$i']) {
-                  continue;
-                } else {
-                  imageMap.update('W1-0$i', (value) => true);
-                  EasyLoading.showToast('解锁新图鉴W1-0$i',
-                      toastPosition: EasyLoadingToastPosition.bottom);
-                }
-              }
-            }
-            if (startTime > 0 &&
-                DateTime.now().millisecondsSinceEpoch < startTime) {
-              continue;
-            } else if (startTime > 0) {
-              int _waitTime = startTime - DateTime.now().millisecondsSinceEpoch;
-              Future.delayed(Duration(milliseconds: _waitTime), () async {
-                await storyPlayer();
-              });
-              break;
-            }
-            startTime = 0;
-            List line_info = story[line];
-            line++;
-            setState(() {});
-            //空行继续
-            if (line_info[0] == '' &&
-                line_info[1] == '' &&
-                line_info[2] == '') {
-              continue;
-            }
-            String name = line_info[0].toString();
-            msg = line_info[1].toString();
-            tag = line_info[2];
-            if (tag.length > 1) {
-              tag_list = tag.split(',');
-              tag = '';
-            }
-            //单标签
-            if (!tag.isEmpty && jump == 0) {
-              if (tag == '无') {
-                reast_line = line;
-                continue;
-              }
-              if (tag == '中') {
-                sendMiddle(msg);
-                await Future.delayed(
-                    Duration(milliseconds: waitTyping ? 500 : 0));
-                continue;
-              }
-              if (tag == '左') {
+    do {
+      if (isStop) {
+        Future.delayed(Duration(seconds: 5), () async {
+          isStop = false;
+          await storyPlayer();
+        });
+        break;
+      }
+      if (line == story.length - 2) {
+        for (int i = 0; i < imageMap.length; i++) {
+          if (imageMap['W1-0$i']) {
+            continue;
+          } else {
+            imageMap.update('W1-0$i', (value) => true);
+            EasyLoading.showToast('解锁新图鉴W1-0$i',
+                toastPosition: EasyLoadingToastPosition.bottom);
+            continue;
+          }
+        }
+      }
+      if (startTime > 0 && DateTime.now().millisecondsSinceEpoch < startTime) {
+        continue;
+      } else if (startTime > 0) {
+        int _waitTime = startTime - DateTime.now().millisecondsSinceEpoch;
+        Future.delayed(Duration(milliseconds: _waitTime), () async {
+          await storyPlayer();
+        });
+        break;
+      }
+      startTime = 0;
+      List line_info = story[line];
+      line++;
+      setState(() {});
+      //空行继续
+      if (line_info[0] == '' && line_info[1] == '' && line_info[2] == '') {
+        continue;
+      }
+      String name = line_info[0].toString();
+      msg = line_info[1].toString();
+      tag = line_info[2];
+      if (tag.length > 1) {
+        tag_list = tag.split(',');
+        tag = '';
+      }
+      //单标签
+      if (!tag.isEmpty && jump == 0) {
+        if (tag == '无') {
+          reast_line = line;
+          continue;
+        }
+        if (tag == '中') {
+          sendMiddle(msg);
+          await Future.delayed(Duration(milliseconds: waitTyping ? 500 : 0));
+          continue;
+        }
+        if (tag == '左') {
+          sendTextLeft(msg, name);
+          _chatName = '对方输入中...';
+          await Future.delayed(
+              Duration(seconds: waitTyping ? (msg.length / 4).ceil() : 0));
+          _chatName = name;
+          chatName = name;
+          continue;
+        }
+        if (tag == '右') {
+          sendRight(msg);
+          await Future.delayed(Duration(milliseconds: waitTyping ? 500 : 0));
+          continue;
+        }
+      }
+      //多标签
+      if (tag_list != []) {
+        if (tag_list[0] == '词典' && jump == 0) {
+          List _dt = dictionaryMap[msg];
+          _dt[1] = 'true';
+          dictionaryMap[msg] = _dt;
+          EasyLoading.showToast('解锁新词典',
+              toastPosition: EasyLoadingToastPosition.bottom);
+          continue;
+        }
+        if (tag_list[0] == 'BE' && jump == 0) {
+          line = reast_line;
+          messages = [];
+          messagesInfo = [];
+          message_save();
+          setState(() {});
+          continue;
+        }
+        if (tag_list[0] == '图片' && jump == 0) {
+          await Future.delayed(Duration(milliseconds: waitTyping ? 500 : 0));
+          imageMap[msg] = true;
+          EasyLoading.showToast('解锁新图鉴$msg',
+              toastPosition: EasyLoadingToastPosition.bottom);
+          continue;
+        }
+        if (tag_list[0] == '图鉴' && jump == 0) {
+          sendImgLeft(msg);
+          await Future.delayed(Duration(milliseconds: waitTyping ? 500 : 0));
+          imageMap[msg] = true;
+          EasyLoading.showToast('解锁新图鉴$msg',
+              toastPosition: EasyLoadingToastPosition.bottom);
+          continue;
+        }
+        if (tag_list[0] == '动态' && jump == 0) {
+          sendTrend(msg, name);
+          imageMap[name] = true;
+          EasyLoading.showToast('解锁新图鉴$name',
+              toastPosition: EasyLoadingToastPosition.bottom);
+          sendMiddle('对方发布了一条新动态');
+          await Future.delayed(Duration(milliseconds: waitTyping ? 500 : 0));
+          continue;
+        }
+        if (tag_list[0] == '左') {
+          if (tag_list.length == 2) {
+            //左,分支XX
+            String str = tag_list[1];
+            if (str.substring(0, 2) == '分支') {
+              be_jump = int.parse(str.substring(2, str.length));
+              if (be_jump == jump) {
+                jump = 0;
                 sendTextLeft(msg, name);
-                _chatName = '对方输入中...';
                 await Future.delayed(Duration(
                     seconds: waitTyping ? (msg.length / 4).ceil() : 0));
-                _chatName = name;
-                chatName = name;
                 continue;
               }
-              if (tag == '右') {
-                sendRight(msg);
-                await Future.delayed(
-                    Duration(milliseconds: waitTyping ? 500 : 0));
-                continue;
-              }
-            }
-            //多标签
-            if (tag_list != []) {
-              if (tag_list[0] == '词典' && jump == 0) {
-                List _dt = dictionaryMap[msg];
-                _dt[1] = 'true';
-                dictionaryMap[msg] = _dt;
-                EasyLoading.showToast('解锁新词典',
-                    toastPosition: EasyLoadingToastPosition.bottom);
-                continue;
-              }
-              if (tag_list[0] == 'BE' && jump == 0) {
-                line = reast_line;
-                messages = [];
-                messagesInfo = [];
-                message_save();
-                setState(() {});
-                continue;
-              }
-              if (tag_list[0] == '图片' && jump == 0) {
-                await Future.delayed(
-                    Duration(milliseconds: waitTyping ? 500 : 0));
-                imageMap[msg] = true;
-                EasyLoading.showToast('解锁新图鉴$msg',
-                    toastPosition: EasyLoadingToastPosition.bottom);
-                continue;
-              }
-              if (tag_list[0] == '图鉴' && jump == 0) {
-                sendImgLeft(msg);
-                await Future.delayed(
-                    Duration(milliseconds: waitTyping ? 500 : 0));
-                imageMap[msg] = true;
-                EasyLoading.showToast('解锁新图鉴$msg',
-                    toastPosition: EasyLoadingToastPosition.bottom);
-                continue;
-              }
-              if (tag_list[0] == '动态' && jump == 0) {
-                sendTrend(msg, name);
-                imageMap[name] = true;
-                EasyLoading.showToast('解锁新图鉴$name',
-                    toastPosition: EasyLoadingToastPosition.bottom);
-                sendMiddle('对方发布了一条新动态');
-                await Future.delayed(
-                    Duration(milliseconds: waitTyping ? 500 : 0));
-                continue;
-              }
-              if (tag_list[0] == '左') {
-                if (tag_list.length == 2) {
-                  //左,分支XX
-                  String str = tag_list[1];
-                  if (str.substring(0, 2) == '分支') {
-                    be_jump = int.parse(str.substring(2, str.length));
-                    if (be_jump == jump) {
-                      jump = 0;
-                      sendTextLeft(msg, name);
-                      await Future.delayed(Duration(
-                          seconds: waitTyping ? (msg.length / 4).ceil() : 0));
-                      continue;
-                    }
-                  } else if (jump == 0) {
-                    //左,XX
-                    jump = int.parse(tag_list[1]);
-                    sendTextLeft(msg, name);
-                    await Future.delayed(Duration(
-                        seconds: waitTyping ? (msg.length / 4).ceil() : 0));
-                    bool needToNewLine = false;
-                    for (int j = math.max(0, line - 100); j < line; j++) {
-                      List li = story[j];
-                      if (li[0] == '' && li[1] == '' && li[2] == '') {
-                        continue;
-                      }
-                      String tg = li[2];
-                      if (tg.length > 1) {
-                        List tl = tg.split(',');
-                        if (tl.isNotEmpty && tl.length == 2) {
-                          String tlStr1 = tl[1]; //分支
-                          int tlJp =
-                              int.parse(tlStr1.substring(2, tlStr1.length));
-                          if (tl[0] == tag_list[0] && tlJp == jump) {
-                            line = j;
-                            needToNewLine = true;
-                            break;
-                          }
-                        }
-                      }
-                    }
-                    if (needToNewLine) {
-                      continue;
-                    }
-                  }
-                }
-                if (tag_list.length == 3) {
-                  //左,XX,分支XX
-                  jump = int.parse(tag_list[1]);
-                  String str = tag_list[2];
-                  be_jump = int.parse(str.substring(2, str.length));
-                  if (be_jump == jump) {
-                    jump = 0;
-                    sendTextLeft(msg, name);
-                    await Future.delayed(Duration(
-                        seconds: waitTyping ? (msg.length / 4).ceil() : 0));
-                  }
-                  //上下搜索跳转分支
-                  sendTextLeft(msg, name);
-                  await Future.delayed(Duration(
-                      seconds: waitTyping ? (msg.length / 4).ceil() : 0));
-                  bool needToNewLine = false;
-                  for (int j = math.max(0, line - 100); j < line; j++) {
-                    List li = story[j];
-                    if (li[0] == '' && li[1] == '' && li[2] == '') {
-                      continue;
-                    }
-                    String tg = li[2];
-                    if (tg.length > 1) {
-                      List tl = tg.split(',');
-                      if (tl.isNotEmpty && tl.length == 2) {
-                        String tlStr1 = tl[1]; //分支
-                        int tlJp =
-                            int.parse(tlStr1.substring(2, tlStr1.length));
-                        if (tl[0] == tag_list[0] && tlJp == jump) {
-                          line = j;
-                          needToNewLine = true;
-                          break;
-                        }
-                      }
-                    }
-                  }
-                  if (needToNewLine) {
-                    continue;
-                  }
-                }
-              }
-              if (tag_list[0] == '右' && jump == 0) {
-                //右,选项,XX
-                if (tag_list[1] == '选项' && choose_one.isEmpty) {
-                  choose_one = msg;
-                  choose_one_jump = int.parse(tag_list[2]);
+            } else if (jump == 0) {
+              //左,XX
+              jump = int.parse(tag_list[1]);
+              sendTextLeft(msg, name);
+              await Future.delayed(
+                  Duration(seconds: waitTyping ? (msg.length / 4).ceil() : 0));
+              bool needToNewLine = false;
+              for (int j = math.max(0, line - 100); j < line; j++) {
+                List li = story[j];
+                if (li[0] == '' && li[1] == '' && li[2] == '') {
                   continue;
                 }
-                if (tag_list[1] == '选项' && choose_two.isEmpty) {
-                  choose_two = msg;
-                  choose_two_jump = int.parse(tag_list[2]);
-                  setState(() {});
-                  break;
-                }
-              }
-              if (tag_list[0] == '中') {
-                if (tag_list.length == 4) {
-                  //中,XX,等待,XX
-                  if (tag_list[1] != 0 && jump == 0) {
-                    jump = int.parse(tag_list[1]);
-                    bool needToNewLine = false;
-                    for (int j = math.max(0, line - 100); j < line; j++) {
-                      List li = story[j];
-                      if (li[0] == '' && li[1] == '' && li[2] == '') {
-                        continue;
-                      }
-                      String tg = li[2];
-                      if (tg.length > 1) {
-                        List tl = tg.split(',');
-                        if (tl.isNotEmpty && tl.length == 2) {
-                          String tlStr1 = tl[1]; //分支
-                          int tlJp =
-                              int.parse(tlStr1.substring(2, tlStr1.length));
-                          if (tl[0] == tag_list[0] && tlJp == jump) {
-                            line = j;
-                            needToNewLine = true;
-                            break;
-                          }
-                        }
-                      }
-                    }
-                    if (needToNewLine) {
-                      continue;
-                    }
-                    startTime = waitOffline
-                        ? DateTime.now().millisecondsSinceEpoch +
-                            int.parse(tag_list[3]) * 60000
-                        : -1;
-                    if (!waitOffline) {
-                      continue;
-                    } else {
-                      Future.delayed(
-                          Duration(
-                              milliseconds: int.parse(tag_list[3]) * 60000),
-                          () async {
-                        await storyPlayer();
-                      });
+                String tg = li[2];
+                if (tg.length > 1) {
+                  List tl = tg.split(',');
+                  if (tl.isNotEmpty && tl.length == 2) {
+                    String tlStr1 = tl[1]; //分支
+                    int tlJp = int.parse(tlStr1.substring(2, tlStr1.length));
+                    if (tl[0] == tag_list[0] && tlJp == jump) {
+                      line = j;
+                      needToNewLine = true;
                       break;
                     }
                   }
                 }
-                if (tag_list.length == 2) {
-                  //中,分支XX
-                  String str = tag_list[1];
-                  be_jump = int.parse(str.substring(2, str.length));
-                  if (be_jump == jump) {
-                    jump = 0;
-                    sendMiddle(msg);
-                    await Future.delayed(
-                        Duration(microseconds: waitTyping ? 500 : 0));
-                    continue;
+              }
+              if (needToNewLine) {
+                continue;
+              }
+            }
+          }
+          if (tag_list.length == 3) {
+            //左,XX,分支XX
+            jump = int.parse(tag_list[1]);
+            String str = tag_list[2];
+            be_jump = int.parse(str.substring(2, str.length));
+            if (be_jump == jump) {
+              jump = 0;
+              sendTextLeft(msg, name);
+              await Future.delayed(
+                  Duration(seconds: waitTyping ? (msg.length / 4).ceil() : 0));
+            }
+            //上下搜索跳转分支
+            sendTextLeft(msg, name);
+            await Future.delayed(
+                Duration(seconds: waitTyping ? (msg.length / 4).ceil() : 0));
+            bool needToNewLine = false;
+            for (int j = math.max(0, line - 100); j < line; j++) {
+              List li = story[j];
+              if (li[0] == '' && li[1] == '' && li[2] == '') {
+                continue;
+              }
+              String tg = li[2];
+              if (tg.length > 1) {
+                List tl = tg.split(',');
+                if (tl.isNotEmpty && tl.length == 2) {
+                  String tlStr1 = tl[1]; //分支
+                  int tlJp = int.parse(tlStr1.substring(2, tlStr1.length));
+                  if (tl[0] == tag_list[0] && tlJp == jump) {
+                    line = j;
+                    needToNewLine = true;
+                    break;
                   }
                 }
               }
             }
-          } while (line < story.length && line >= 0);
+            if (needToNewLine) {
+              continue;
+            }
+          }
+        }
+        if (tag_list[0] == '右' && jump == 0) {
+          //右,选项,XX
+          if (tag_list[1] == '选项' && choose_one.isEmpty) {
+            choose_one = msg;
+            choose_one_jump = int.parse(tag_list[2]);
+            continue;
+          }
+          if (tag_list[1] == '选项' && choose_two.isEmpty) {
+            choose_two = msg;
+            choose_two_jump = int.parse(tag_list[2]);
+            setState(() {});
+            break;
+          }
+        }
+        if (tag_list[0] == '中') {
+          if (tag_list.length == 4) {
+            //中,XX,等待,XX
+            if (tag_list[1] != 0 && jump == 0) {
+              jump = int.parse(tag_list[1]);
+              bool needToNewLine = false;
+              for (int j = math.max(0, line - 100); j < line; j++) {
+                List li = story[j];
+                if (li[0] == '' && li[1] == '' && li[2] == '') {
+                  continue;
+                }
+                String tg = li[2];
+                if (tg.length > 1) {
+                  List tl = tg.split(',');
+                  if (tl.isNotEmpty && tl.length == 2) {
+                    String tlStr1 = tl[1]; //分支
+                    int tlJp = int.parse(tlStr1.substring(2, tlStr1.length));
+                    if (tl[0] == tag_list[0] && tlJp == jump) {
+                      line = j;
+                      needToNewLine = true;
+                      break;
+                    }
+                  }
+                }
+              }
+              if (needToNewLine) {
+                continue;
+              }
+              startTime = waitOffline
+                  ? DateTime.now().millisecondsSinceEpoch +
+                      int.parse(tag_list[3]) * 60000
+                  : -1;
+              if (!waitOffline) {
+                continue;
+              } else {
+                Future.delayed(
+                    Duration(milliseconds: int.parse(tag_list[3]) * 60000),
+                    () async {
+                  await storyPlayer();
+                });
+                break;
+              }
+            }
+          }
+          if (tag_list.length == 2) {
+            //中,分支XX
+            String str = tag_list[1];
+            be_jump = int.parse(str.substring(2, str.length));
+            if (be_jump == jump) {
+              jump = 0;
+              sendMiddle(msg);
+              await Future.delayed(
+                  Duration(microseconds: waitTyping ? 500 : 0));
+              continue;
+            }
+          }
         }
       }
-    }
+    } while (line < story.length && line >= 0);
   }
 }

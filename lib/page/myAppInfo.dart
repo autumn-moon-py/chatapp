@@ -124,6 +124,9 @@ class _MyAppInfoState extends State<MyAppInfo> {
                                         greyLine(),
                                         UrlButton('投喂',
                                             'https://afdian.net/a/subrecovery'),
+                                        greyLine(),
+                                        UrlButton('感谢名单',
+                                            'https://afdian.net/dashboard/sponsors'),
                                       ])))
                         ],
                       )),

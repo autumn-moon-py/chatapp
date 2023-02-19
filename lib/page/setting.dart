@@ -8,10 +8,8 @@ import "package:get/get.dart";
 import 'package:cool_dropdown/cool_dropdown.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../config/chat_config.dart';
 import '../config/image_config.dart';
 import '../config/setting_config.dart';
-import '../function/chat_function.dart';
 import '../function/send.dart';
 import 'myAppInfo.dart';
 
@@ -162,6 +160,15 @@ class SettingPageState extends State<SettingPage> {
                             onChanged: (value) {
                               setting_config_save();
                               waitOffline = value;
+                              setState(() {});
+                            }),
+                        whiteLine(),
+                        SwitchButton(
+                            title: '自动更新',
+                            value: isAutoUpgrade,
+                            onChanged: (value) {
+                              isAutoUpgrade = value;
+                              setting_config_save();
                               setState(() {});
                             })
                       ]),

@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
-// ignore: unused_import
 import '../function/chat_function.dart';
-import 'chat.dart';
 import '../config/chat_config.dart';
 import 'menu.dart';
 

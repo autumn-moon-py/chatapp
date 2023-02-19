@@ -9,8 +9,8 @@ class NotificationService {
 
   NotificationService._internal() {
     final initializationSettings = InitializationSettings(
-      android: AndroidInitializationSettings('@mipmap/ic_launcher'),
-    );
+        android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+        iOS: DarwinInitializationSettings());
     plugin = FlutterLocalNotificationsPlugin();
     plugin.initialize(initializationSettings);
   }
@@ -21,16 +21,17 @@ class NotificationService {
     vibrationPattern[1] = 1000;
     vibrationPattern[2] = 5000;
     vibrationPattern[3] = 2000;
-    AndroidNotificationDetails androidNotificationDetails;
-    final channelName = 'Text messages';
-    androidNotificationDetails = AndroidNotificationDetails(
-        channelName, channelName,
-        importance: Importance.max,
-        priority: Priority.high,
-        vibrationPattern: vibration ? vibrationPattern : null,
-        enableVibration: vibration);
-    var notificationDetails =
-        NotificationDetails(android: androidNotificationDetails);
+    String channelName = '消息提示';
+    AndroidNotificationDetails androidNotificationDetails =
+        AndroidNotificationDetails(channelName, channelName,
+            importance: Importance.max,
+            priority: Priority.high,
+            vibrationPattern: vibration ? vibrationPattern : null,
+            enableVibration: vibration);
+    DarwinNotificationDetails darwinNotificationDetails =
+        DarwinNotificationDetails();
+    var notificationDetails = NotificationDetails(
+        android: androidNotificationDetails, iOS: darwinNotificationDetails);
 
     await plugin.show(0, title, msg, notificationDetails);
   }
