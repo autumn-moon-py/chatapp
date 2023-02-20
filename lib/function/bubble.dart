@@ -208,7 +208,7 @@ class MiddleMsg extends StatelessWidget {
     if (text == '网络连接中' || text == '对方已上线') {
       return Color.fromARGB(255, 0, 255, 8);
     }
-    if (text == '对方已下线') {
+    if (text == '对方已下线' || text == '信息未送达' || text == '对方账号不存在或已注销') {
       return Colors.red;
     } else {
       return Colors.white;

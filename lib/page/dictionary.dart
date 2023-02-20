@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:keframe/keframe.dart';
 
 import '../config/dictionary_config.dart';
@@ -34,27 +33,59 @@ class DictionaryPageState extends State<DictionaryPage> {
 
   //词典列表布局
   Widget buildDictionaryList() {
-    return SizeCacheWidget(
-        estimateCount: 60,
-        child: RefreshIndicator(
-            onRefresh: () async {
-              setState(() {
-                dictionary_map_load();
-              });
-            },
-            child: GridView.count(
-                crossAxisCount: 2,
-                childAspectRatio: 1 / 0.28,
-                padding: EdgeInsets.only(top: 38.h, right: 10.w),
-                children: dictionaryList.map((dictionaryName) {
-                  return buildDictionary(dictionaryName);
-                }).toList())));
+    return RefreshIndicator(
+        onRefresh: () async {
+          setState(() {
+            dictionary_map_load();
+          });
+        },
+        child: ListView(children: [
+          buildChapterTitle('第一章'),
+          buildChapterDic(0, 21),
+          buildChapterTitle('番外一'),
+          buildChapterDic(21, 1),
+          buildChapterTitle('第二章'),
+          buildChapterDic(22, 15),
+          buildChapterTitle('番外二'),
+          buildChapterDic(37, 4),
+          buildChapterTitle('第三章'),
+          buildChapterDic(41, 21),
+          buildChapterTitle('番外三'),
+          buildChapterDic(62, 14),
+          buildChapterTitle('第四章'),
+          buildChapterDic(76, 20),
+          buildChapterTitle('第五章'),
+          buildChapterDic(96, 15),
+          buildChapterTitle('第六章'),
+          buildChapterDic(111, 13),
+        ]));
+  }
+
+  Widget buildChapterTitle(String title) {
+    return Text(title,
+        textAlign: TextAlign.center,
+        style: TextStyle(color: Colors.white, fontSize: 30.sp));
+  }
+
+  Widget buildChapterDic(int start, int length) {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 1 / 0.28,
+      ),
+      padding: EdgeInsets.only(top: 10.h, right: 10.w, bottom: 10.h),
+      itemCount: length,
+      itemBuilder: (context, index) {
+        return buildDictionary(dictionaryList[index + start]);
+      },
+    );
   }
 
   //单个词典
   Widget buildDictionary(dictionaryName) {
     List _dtlist = dictionaryMap[dictionaryName];
-    String chapter = _dtlist[0];
     String unlock = _dtlist[1];
     String dictionaryMean = _dtlist[2];
     if (unlock == 'false') {
@@ -68,16 +99,8 @@ class DictionaryPageState extends State<DictionaryPage> {
             ),
           ),
           child: Container(
-              child: Stack(children: [
-            GestureDetector(
-                onTap: () {
-                  EasyLoading.showToast(chapter,
-                      toastPosition: EasyLoadingToastPosition.bottom);
-                },
-                child: Padding(
-                    padding: EdgeInsets.only(left: 10.w),
-                    child: Image.asset('assets/词典/未解锁词典.png')))
-          ])));
+              padding: EdgeInsets.only(left: 10.w),
+              child: Image.asset('assets/词典/未解锁词典.png')));
     }
 
     //单个列表词典构造

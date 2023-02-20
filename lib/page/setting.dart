@@ -10,7 +10,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../config/image_config.dart';
 import '../config/setting_config.dart';
-import '../function/send.dart';
+import '../function/bubble.dart';
 import 'myAppInfo.dart';
 
 class SettingPage extends StatefulWidget {

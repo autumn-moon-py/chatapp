@@ -76,8 +76,8 @@ class _SearchPageState extends State<SearchPage> {
               resultWidth: 160.w,
               dropdownList: [
                 {'label': '第一章', 'value': '第一章'},
-                // {'label': '番外一', 'value': '番外一'},
-                // {'label': '第二章', 'value': '第二章'},
+                {'label': '番外一', 'value': '番外一'},
+                {'label': '第二章', 'value': '第二章'},
                 // {'label': '番外二', 'value': '番外二'},
                 // {'label': '第三章', 'value': '第三章'},
                 // {'label': '番外三', 'value': '番外三'},

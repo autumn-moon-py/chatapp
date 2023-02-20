@@ -21,7 +21,7 @@ import 'setting.dart';
 import 'search.dart';
 import 'trend.dart';
 import 'menu.dart';
-import '../function/send.dart';
+import '../function/bubble.dart';
 
 class ChatPage extends StatefulWidget {
   @override
@@ -42,8 +42,11 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
       backgroundMusic();
       buttonplayer.setAsset('assets/music/选项音效.mp3');
       packageInfoList();
-      // line = 43;
-      // waitOffline = true;
+      // line = 1445;
+      // jump = 80;
+      // nowChapter = '第二章';
+      // waitOffline = false;
+      // waitTyping = false;
       autoUpgrade();
       loadCVS(nowChapter).then((_) async {
         await storyPlayer();
@@ -157,6 +160,9 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
           width: 1.sw,
           height: 50.h,
           child: GestureDetector(
+              onLongPress: () {
+                storyWhile();
+              },
               onDoubleTap: () {
                 Get.to(SearchPage());
               },
@@ -621,12 +627,17 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                 if (tg.length > 1) {
                   List tl = tg.split(',');
                   if (tl.isNotEmpty && tl.length == 2) {
-                    String tlStr1 = tl[1]; //分支
-                    int tlJp = int.parse(tlStr1.substring(2, tlStr1.length));
-                    if (tl[0] == tag_list[0] && tlJp == jump) {
-                      line = j;
-                      needToNewLine = true;
-                      break;
+                    //左/中,分支XX
+                    String tlStr = tl[1];
+                    if (tlStr.substring(0, 2) == '分支') {
+                      String tlBeJump = tl[1];
+                      int tlJp =
+                          int.parse(tlBeJump.substring(2, tlBeJump.length));
+                      if (tl[0] == tag_list[0] && tlJp == jump) {
+                        line = j;
+                        needToNewLine = true;
+                        break;
+                      }
                     }
                   }
                 }
@@ -676,7 +687,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
             }
           }
         }
-        if (tag_list[0] == '右' && jump == 0) {
+        if (tag_list[0] == '右' && jump == 0 && tag_list.length == 3) {
           //右,选项,XX
           if (tag_list[1] == '选项' && choose_one.isEmpty) {
             choose_one = msg;
@@ -697,20 +708,20 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
               jump = int.parse(tag_list[1]);
               bool needToNewLine = false;
               for (int j = math.max(0, line - 100); j < line; j++) {
-                List li = story[j];
-                if (li[0] == '' && li[1] == '' && li[2] == '') {
-                  continue;
-                }
-                String tg = li[2];
-                if (tg.length > 1) {
-                  List tl = tg.split(',');
-                  if (tl.isNotEmpty && tl.length == 2) {
-                    String tlStr1 = tl[1]; //分支
-                    int tlJp = int.parse(tlStr1.substring(2, tlStr1.length));
-                    if (tl[0] == tag_list[0] && tlJp == jump) {
-                      line = j;
-                      needToNewLine = true;
-                      break;
+                List _line = story[j];
+                String _tag = _line[2];
+                if (_tag.length > 1) {
+                  List _tag_list = _tag.split(',');
+                  if (_tag_list.length == 2) {
+                    String tlStr1 = _tag_list[1];
+                    if (tlStr1.substring(0, 2) == '分支') {
+                      //左/中,分支XX
+                      int tlJp = int.parse(tlStr1.substring(2, tlStr1.length));
+                      if (_tag_list[0] == tag_list[0] && tlJp == jump) {
+                        line = j;
+                        needToNewLine = true;
+                        break;
+                      }
                     }
                   }
                 }
@@ -744,6 +755,41 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
               await Future.delayed(
                   Duration(microseconds: waitTyping ? 500 : 0));
               continue;
+            }
+          }
+          if (tag_list.length == 3) {
+            //中,XX,分支XX
+            String str = tag_list[2];
+            be_jump = int.parse(str.substring(2, str.length));
+            if (jump == be_jump) {
+              str = tag_list[1];
+              jump = int.parse(str);
+              sendMiddle(msg);
+              await Future.delayed(
+                  Duration(microseconds: waitTyping ? 500 : 0));
+              bool needToNewLine = false;
+              for (int j = math.max(0, line - 100); j < line; j++) {
+                List li = story[j];
+                if (li[0] == '' && li[1] == '' && li[2] == '') {
+                  continue;
+                }
+                String tg = li[2];
+                if (tg.length > 1) {
+                  List tl = tg.split(',');
+                  if (tl.isNotEmpty && tl.length == 2) {
+                    String tlStr1 = tl[1]; //分支
+                    int tlJp = int.parse(tlStr1.substring(2, tlStr1.length));
+                    if (tl[0] == tag_list[0] && tlJp == jump) {
+                      line = j;
+                      needToNewLine = true;
+                      break;
+                    }
+                  }
+                }
+              }
+              if (needToNewLine) {
+                continue;
+              }
             }
           }
         }

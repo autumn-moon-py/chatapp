@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'config.dart';
-import '../function/send.dart';
+import '../function/bubble.dart';
 
 FocusNode userFocusNode = FocusNode(); //输入框焦点控件
 final TextEditingController textController = TextEditingController(); //输入框状态控件
@@ -35,6 +35,7 @@ story_save() async {
   local?.setInt('jump', jump);
   local?.setInt('be_jump', be_jump);
   local?.setInt('reast_line', reast_line);
+  local?.setString('nowChapter', nowChapter);
 }
 
 ///读取播放器配置
@@ -45,6 +46,7 @@ story_load() async {
   jump = local?.getInt('jump') ?? 0;
   be_jump = local?.getInt('be_jump') ?? 0;
   reast_line = local?.getInt('reast_line') ?? 0;
+  nowChapter = local?.getString('nowChapter') ?? '第一章';
 }
 
 ///保存历史消息
