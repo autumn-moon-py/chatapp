@@ -16,6 +16,7 @@ import '../config/setting_config.dart';
 import '../config/image_config.dart';
 import '../function/chat_function.dart';
 import '../function/notification_service.dart';
+import '../function/setting_funvtion.dart';
 import 'myAppInfo.dart';
 import 'setting.dart';
 import 'search.dart';
@@ -39,14 +40,14 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this); //增加监听者
     message_load().then((_) {
       setting_config_save();
+      pushSetup();
       backgroundMusic();
       buttonplayer.setAsset('assets/music/选项音效.mp3');
       packageInfoList();
-      // line = 1445;
-      // jump = 80;
+      // line = 1675;
       // nowChapter = '第二章';
       // waitOffline = false;
-      // waitTyping = false;
+      // waitTyping = true;
       autoUpgrade();
       loadCVS(nowChapter).then((_) async {
         await storyPlayer();
@@ -471,15 +472,9 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     bool success = await FlutterBackground.initialize(
         androidConfig: FlutterBackgroundAndroidConfig());
     if (success) {
-      success = await FlutterBackground.enableBackgroundExecution();
-      if (success) {
-        storyWhile();
-      } else {
-        storyWhile();
-      }
-    } else {
-      storyWhile();
+      await FlutterBackground.enableBackgroundExecution();
     }
+    storyWhile();
   }
 
   storyWhile() async {
@@ -493,18 +488,6 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
           await storyPlayer();
         });
         break;
-      }
-      if (line == story.length - 2) {
-        for (int i = 0; i < imageMap.length; i++) {
-          if (imageMap['W1-0$i']) {
-            continue;
-          } else {
-            imageMap.update('W1-0$i', (value) => true);
-            EasyLoading.showToast('解锁新图鉴W1-0$i',
-                toastPosition: EasyLoadingToastPosition.bottom);
-            continue;
-          }
-        }
       }
       if (startTime > 0 && DateTime.now().millisecondsSinceEpoch < startTime) {
         continue;
@@ -538,7 +521,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
         }
         if (tag == '中') {
           sendMiddle(msg);
-          await Future.delayed(Duration(milliseconds: waitTyping ? 500 : 0));
+          await Future.delayed(Duration(milliseconds: waitTyping ? 500 : 100));
           continue;
         }
         if (tag == '左') {
@@ -552,7 +535,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
         }
         if (tag == '右') {
           sendRight(msg);
-          await Future.delayed(Duration(milliseconds: waitTyping ? 500 : 0));
+          await Future.delayed(Duration(milliseconds: waitTyping ? 500 : 100));
           continue;
         }
       }
@@ -575,7 +558,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
           continue;
         }
         if (tag_list[0] == '图片' && jump == 0) {
-          await Future.delayed(Duration(milliseconds: waitTyping ? 500 : 0));
+          await Future.delayed(Duration(milliseconds: waitTyping ? 500 : 100));
           imageMap[msg] = true;
           EasyLoading.showToast('解锁新图鉴$msg',
               toastPosition: EasyLoadingToastPosition.bottom);
@@ -583,7 +566,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
         }
         if (tag_list[0] == '图鉴' && jump == 0) {
           sendImgLeft(msg);
-          await Future.delayed(Duration(milliseconds: waitTyping ? 500 : 0));
+          await Future.delayed(Duration(milliseconds: waitTyping ? 500 : 100));
           imageMap[msg] = true;
           EasyLoading.showToast('解锁新图鉴$msg',
               toastPosition: EasyLoadingToastPosition.bottom);
@@ -595,7 +578,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
           EasyLoading.showToast('解锁新图鉴$name',
               toastPosition: EasyLoadingToastPosition.bottom);
           sendMiddle('对方发布了一条新动态');
-          await Future.delayed(Duration(milliseconds: waitTyping ? 500 : 0));
+          await Future.delayed(Duration(milliseconds: waitTyping ? 500 : 100));
           continue;
         }
         if (tag_list[0] == '左') {
@@ -753,7 +736,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
               jump = 0;
               sendMiddle(msg);
               await Future.delayed(
-                  Duration(microseconds: waitTyping ? 500 : 0));
+                  Duration(microseconds: waitTyping ? 500 : 100));
               continue;
             }
           }
@@ -766,7 +749,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
               jump = int.parse(str);
               sendMiddle(msg);
               await Future.delayed(
-                  Duration(microseconds: waitTyping ? 500 : 0));
+                  Duration(microseconds: waitTyping ? 500 : 100));
               bool needToNewLine = false;
               for (int j = math.max(0, line - 100); j < line; j++) {
                 List li = story[j];

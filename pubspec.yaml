@@ -3,7 +3,7 @@ description: A new Flutter project.
 
 publish_to: 'none' 
 
-version: 1.0.14
+version: 1.0.15
 
 environment:
   sdk: '>=2.18.6 <3.0.0'
@@ -38,6 +38,8 @@ dependencies:
   flutter_app_update: ^2.0.2 #下载apk https://pub.dev/packages/flutter_app_update
   flutter_local_notifications: ^13.0.0 #本地通知 https://pub.dev/packages/flutter_local_notifications 
   flutter_background: ^1.2.0 #后台运行 https://pub.dev/packages/flutter_background
+  mobcommonlib: ^1.1.4
+  mobpush_plugin: ^1.2.4
 
 dev_dependencies:
   flutter_test:

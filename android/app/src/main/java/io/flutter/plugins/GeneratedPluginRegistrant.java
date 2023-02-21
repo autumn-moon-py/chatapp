@@ -56,6 +56,16 @@ public final class GeneratedPluginRegistrant {
       Log.e(TAG, "Error registering plugin just_audio, com.ryanheise.just_audio.JustAudioPlugin", e);
     }
     try {
+      flutterEngine.getPlugins().add(new com.mob.flutter.mobcommonlib.MobcommonlibPlugin());
+    } catch(Exception e) {
+      Log.e(TAG, "Error registering plugin mobcommonlib, com.mob.flutter.mobcommonlib.MobcommonlibPlugin", e);
+    }
+    try {
+      flutterEngine.getPlugins().add(new com.mob.flutter.mobpush.MobpushPlugin());
+    } catch(Exception e) {
+      Log.e(TAG, "Error registering plugin mobpush_plugin, com.mob.flutter.mobpush.MobpushPlugin", e);
+    }
+    try {
       flutterEngine.getPlugins().add(new dev.fluttercommunity.plus.packageinfo.PackageInfoPlugin());
     } catch(Exception e) {
       Log.e(TAG, "Error registering plugin package_info_plus, dev.fluttercommunity.plus.packageinfo.PackageInfoPlugin", e);

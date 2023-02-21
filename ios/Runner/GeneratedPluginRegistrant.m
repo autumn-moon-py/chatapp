@@ -42,6 +42,18 @@
 @import just_audio;
 #endif
 
+#if __has_include(<mobcommonlib/MobcommonlibPlugin.h>)
+#import <mobcommonlib/MobcommonlibPlugin.h>
+#else
+@import mobcommonlib;
+#endif
+
+#if __has_include(<mobpush_plugin/MobpushPlugin.h>)
+#import <mobpush_plugin/MobpushPlugin.h>
+#else
+@import mobpush_plugin;
+#endif
+
 #if __has_include(<package_info_plus/FLTPackageInfoPlusPlugin.h>)
 #import <package_info_plus/FLTPackageInfoPlusPlugin.h>
 #else
@@ -87,6 +99,8 @@
   [ImageGallerySaverPlugin registerWithRegistrar:[registry registrarForPlugin:@"ImageGallerySaverPlugin"]];
   [FLTImagePickerPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTImagePickerPlugin"]];
   [JustAudioPlugin registerWithRegistrar:[registry registrarForPlugin:@"JustAudioPlugin"]];
+  [MobcommonlibPlugin registerWithRegistrar:[registry registrarForPlugin:@"MobcommonlibPlugin"]];
+  [MobpushPlugin registerWithRegistrar:[registry registrarForPlugin:@"MobpushPlugin"]];
   [FLTPackageInfoPlusPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTPackageInfoPlusPlugin"]];
   [PathProviderPlugin registerWithRegistrar:[registry registrarForPlugin:@"PathProviderPlugin"]];
   [PermissionHandlerPlugin registerWithRegistrar:[registry registrarForPlugin:@"PermissionHandlerPlugin"]];

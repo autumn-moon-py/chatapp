@@ -104,3 +104,10 @@ dependencies {
 	implementation 'androidx.window:window:1.0.0'
     implementation 'androidx.window:window-java:1.0.0'
 }
+// 导入MobSDK
+apply plugin: 'com.mob.sdk'
+MobSDK {
+   appKey "377e4a6bcc5cc"
+   appSecret "70b17c99a408d6689015190a3c833187"
+   MobPush {}
+}

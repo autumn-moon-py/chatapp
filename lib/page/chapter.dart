@@ -59,7 +59,11 @@ class ChapterPageState extends State<ChapterPage> {
         onTap: () {
           if (chapterName == nowChapter) {
             Get.back();
-          } else if (chapterName == '番外一' || chapterName == '第一章'||chapterName == '第二章') {
+          } else if (chapterName == '番外一' ||
+              chapterName == '第一章' ||
+              chapterName == '第二章' ||
+              chapterName == '番外二' ||
+              chapterName == '第三章') {
             // EasyLoading.showToast('不可游玩,待更新',
             //     toastPosition: EasyLoadingToastPosition.bottom);
             showDialog(

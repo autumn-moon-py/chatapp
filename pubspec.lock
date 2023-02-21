@@ -424,6 +424,22 @@ packages:
       url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
     source: hosted
     version: "1.8.0"
+  mobcommonlib:
+    dependency: "direct main"
+    description:
+      name: mobcommonlib
+      sha256: eaa0585e484ee75abf499824b69f16b67b5fc832b0fd14efc34ceee34b0fea3a
+      url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
+    source: hosted
+    version: "1.1.4"
+  mobpush_plugin:
+    dependency: "direct main"
+    description:
+      name: mobpush_plugin
+      sha256: e51e1574fc5c25ecd5c2fa2354e0ee2c8c1198a9b901e06f9a756d57f88d5dfd
+      url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
+    source: hosted
+    version: "1.2.4"
   octo_image:
     dependency: transitive
     description:
