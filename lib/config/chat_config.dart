@@ -3,6 +3,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'config.dart';
 import '../function/bubble.dart';
+import 'dictionary_config.dart';
+import 'image_config.dart';
 
 FocusNode userFocusNode = FocusNode(); //输入框焦点控件
 final TextEditingController textController = TextEditingController(); //输入框状态控件
@@ -53,6 +55,8 @@ message_save() async {
   local = await SharedPreferences.getInstance();
   local?.setStringList('messagesInfo', messagesInfo);
   story_save();
+  image_map_save();
+  dictionary_map_save();
 }
 
 ///读取历史消息

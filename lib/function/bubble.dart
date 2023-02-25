@@ -302,7 +302,7 @@ class VoiceMsg extends StatelessWidget {
                   },
                   child: Container(
                       margin: EdgeInsets.only(top: 5.h),
-                      width: voice.length * 8,
+                      width: voice.length == 4 ? 60 : voice.length * 8,
                       padding: EdgeInsets.only(
                           top: 10.h, bottom: 10.h, left: 10.w), //容器内边距
                       //圆角

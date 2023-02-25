@@ -3,6 +3,7 @@ import 'package:chatapp/function/setting_funvtion.dart';
 import 'package:chatapp/page/dictionary.dart';
 import 'package:chatapp/page/chat.dart';
 import 'package:chatapp/page/image.dart';
+import 'package:chatapp/page/search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import "package:get/get.dart";
@@ -12,7 +13,6 @@ import 'package:image_picker/image_picker.dart';
 import '../config/image_config.dart';
 import '../config/setting_config.dart';
 import '../function/bubble.dart';
-import '../function/chat_function.dart';
 import 'myAppInfo.dart';
 
 class SettingPage extends StatefulWidget {
@@ -121,6 +121,59 @@ class SettingPageState extends State<SettingPage> {
                                   setState(() {});
                                 }),
                             whiteLine(),
+                            GestureDetector(
+                                onTap: () async {
+                                  Get.to(SearchPage());
+                                },
+                                child: Padding(
+                                  padding:
+                                      EdgeInsets.only(left: 10.w, right: 10.w),
+                                  child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(20),
+                                      child: Container(
+                                          color: Color.fromRGBO(38, 38, 38, 1),
+                                          child: Column(
+                                            children: [
+                                              Padding(
+                                                  padding: EdgeInsets.only(
+                                                      top: 10.h,
+                                                      left: 10.w,
+                                                      bottom: 10.h),
+                                                  child: Row(children: [
+                                                    Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text('搜索剧本',
+                                                              style: TextStyle(
+                                                                  fontSize:
+                                                                      25.sp,
+                                                                  color: Colors
+                                                                      .white))
+                                                        ]),
+                                                    Padding(
+                                                        padding:
+                                                            EdgeInsets.only(
+                                                                left: 325.w),
+                                                        child: ClipRRect(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        5),
+                                                            child: Container(
+                                                                child: Icon(
+                                                                    Icons
+                                                                        .chevron_right,
+                                                                    color: Colors
+                                                                        .white,
+                                                                    size: 50
+                                                                        .r)))),
+                                                  ]))
+                                            ],
+                                          ))),
+                                )),
+                            whiteLine(),
                             SwitchButtonWithSubtitle(
                                 title: 'AI图鉴',
                                 subtitle:
@@ -141,64 +194,6 @@ class SettingPageState extends State<SettingPage> {
                             Padding(
                                 padding: EdgeInsets.only(top: 10.h),
                                 child: whiteLine()),
-                            SwitchButtonWithSubtitle(
-                                title: '自娱自乐',
-                                subtitle: '自己跟Miko(也是你)聊天,开关都会清理聊天记录',
-                                value: scrolling,
-                                onChanged: (value) {
-                                  if (!value) {
-                                    setState(() {
-                                      scrolling = value;
-                                    });
-                                    clean_message();
-                                    Get.to(ChatPage());
-                                  }
-                                  if (value) {
-                                    showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return AlertDialog(
-                                            content: Container(
-                                                height: 120.h,
-                                                child: Column(children: [
-                                                  Text('提示',
-                                                      style: TextStyle(
-                                                          fontSize: 40.sp,
-                                                          color: Colors.red)),
-                                                  Padding(
-                                                      padding: EdgeInsets.only(
-                                                          top: 10.h),
-                                                      child: Text(
-                                                        '此操作会清除当前游玩进度',
-                                                        style: TextStyle(
-                                                            fontSize: 25.sp),
-                                                      ))
-                                                ])),
-                                            actions: [
-                                              TextButton(
-                                                child: Text("取消"),
-                                                onPressed: () {
-                                                  Navigator.pop(
-                                                      context, 'Cancle');
-                                                },
-                                              ),
-                                              TextButton(
-                                                  child: Text("确定"),
-                                                  onPressed: () {
-                                                    Navigator.pop(
-                                                        context, 'Ok');
-                                                    setState(() {
-                                                      scrolling = value;
-                                                    });
-                                                    clean_message();
-                                                    Get.to(ChatPage());
-                                                  })
-                                            ],
-                                          );
-                                        });
-                                  }
-                                }),
-                            whiteLine(),
                             SwitchButtonWithSubtitle(
                                 title: '打字时间',
                                 subtitle: '关闭则对方直接发送消息',

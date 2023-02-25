@@ -18,7 +18,6 @@ import '../function/notification_service.dart';
 import '../function/setting_funvtion.dart';
 import 'myAppInfo.dart';
 import 'setting.dart';
-import 'search.dart';
 import 'trend.dart';
 import 'menu.dart';
 import '../function/bubble.dart';
@@ -43,19 +42,17 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
       buttonplayer.setAsset('assets/music/选项音效.mp3');
       packageInfoList();
       backgroundMusic();
-      // line = 5;
-      // nowChapter = '番外一';
+      // line = 105;
+      // nowChapter = '番外三';
       // waitOffline = false;
       // waitTyping = false;
       autoUpgrade();
       backSetup();
       IsOnChatPage = true;
       scrollController = ScrollController();
-      if (!scrolling) {
-        loadCVS(nowChapter).then((_) async {
-          await storyWhile();
-        });
-      }
+      loadCVS(nowChapter).then((_) async {
+        await storyWhile();
+      });
     });
   }
 
@@ -64,6 +61,11 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     super.dispose();
     //页面销毁时，移出监听者
     WidgetsBinding.instance.removeObserver(this);
+    if (choose_one.isNotEmpty) {
+      choose_one = '';
+      choose_two = '';
+      line -= 2;
+    }
     message_save();
   }
 
@@ -88,6 +90,11 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
         break;
       //当前页面即将退出
       case AppLifecycleState.detached:
+        if (choose_one.isNotEmpty) {
+          choose_one = '';
+          choose_two = '';
+          line -= 2;
+        }
         message_save();
         break;
       // 后台
@@ -130,7 +137,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                     Flexible(
                         child: messages.length == 0
                             ? Center(
-                                child: Text(scrolling ? '' : '加载中...',
+                                child: Text('加载中...',
                                     style: TextStyle(
                                         color: Colors.white, fontSize: 40.r)))
                             : SizeCacheWidget(
@@ -160,7 +167,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                 Text(
                     !isDebug
                         ? ''
-                        : '不完全稳定,此调试信息保留 \r\n当前行: $line 跳转: $jump \r\n分支: $be_jump 上线: ${startTime != 0 ? DateTime.fromMillisecondsSinceEpoch(startTime) : 0} 章节: $nowChapter',
+                        : '无法立刻隐藏/显示 \r\n当前行: $line 跳转: $jump \r\n分支: $be_jump 上线: ${startTime != 0 ? DateTime.fromMillisecondsSinceEpoch(startTime) : 0} 章节: $nowChapter',
                     style: TextStyle(color: Colors.red, fontSize: 40.r))
               ])),
               //顶部状态栏
@@ -173,8 +180,14 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                   height: 50.h,
                   child: GestureDetector(
                       onDoubleTap: () {
-                        IsOnChatPage = false;
-                        Get.to(SearchPage());
+                        if (choose_one.isEmpty) {
+                          EasyLoading.showToast('开始播放',
+                              toastPosition: EasyLoadingToastPosition.top);
+                          storyWhile();
+                        } else {
+                          EasyLoading.showToast('有选项时无法触发',
+                              toastPosition: EasyLoadingToastPosition.top);
+                        }
                       },
                       onTap: () {
                         setState(() {
@@ -209,9 +222,9 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
               //选项按钮
               Align(alignment: FractionalOffset(0.5, 1), child: chooseButton()),
               //输入框
-              Align(
-                  alignment: Alignment.bottomCenter,
-                  child: buildTextComposer()),
+              // Align(
+              //     alignment: Alignment.bottomCenter,
+              //     child: buildTextComposer()),
               //菜单按钮
               GestureDetector(
                   onTap: () {
@@ -251,10 +264,12 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
 
   //选项按钮布局
   chooseButton() {
-    if (choose_one.isEmpty && choose_two.isEmpty || scrolling) {
+    if (choose_one.isEmpty && choose_two.isEmpty) {
       return Container();
     }
-    // scrollController.jumpTo(scrollController.position.maxScrollExtent);
+    try {
+      scrollController.jumpTo(scrollController.position.maxScrollExtent);
+    } catch (_) {}
     return FadeInUp(
         child: Container(
       width: 1.sw,
@@ -313,79 +328,79 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
   }
 
   //输入框和发送按钮布局
-  Widget buildTextComposer() {
-    if (scrolling == false) {
-      return Container();
-    }
-    return Container(
-        width: 1.sw, //底部宽
-        height: 75.h, //底部高
-        color: Colors.black, //底部背景颜色
-        child: Padding(
-            padding: EdgeInsets.only(top: 10.h),
-            child: Wrap(
-              crossAxisAlignment: WrapCrossAlignment.center,
-              children: [
-                //输入框容器
-                Container(
-                  width: 370.w,
-                  height: 50.h, //输入框高
-                  margin: EdgeInsets.only(left: 10.w), //外边距
-                  decoration: BoxDecoration(
-                      color: Color.fromRGBO(26, 26, 26, 1), //输入框背景色
-                      borderRadius:
-                          BorderRadius.all(Radius.circular(5.0)) //圆角角度
-                      ),
-                  child: TextField(
-                    //如果输入框字符大于0判断为输入中
-                    onChanged: (String text) {
-                      setState(() {
-                        isComposing = text.length > 0;
-                      });
-                    },
-                    controller: textController, //输入框控件
-                    onSubmitted: handleSubmitted, //回车调用发送消息
-                    focusNode: userFocusNode, //输入框焦点控制
-                    style: TextStyle(
-                        height: 1.5.h, fontSize: 20.sp, color: Colors.white),
-                    decoration: InputDecoration(
-                        enabledBorder: UnderlineInputBorder(
-                            borderSide:
-                                BorderSide(color: Colors.black)), //输入框下划线颜色
-                        contentPadding: EdgeInsets.only(left: 10.w)),
-                  ),
-                ),
-                Switch(
-                  onChanged: (value) {
-                    switchValue = !switchValue;
-                    setState(() {});
-                  },
-                  value: switchValue,
-                  activeColor: Colors.white,
-                  activeTrackColor: Color.fromRGBO(0, 102, 203, 1),
-                  inactiveTrackColor: Color.fromRGBO(60, 60, 60, 1),
-                ),
-                GestureDetector(
-                    onTap: isComposing
-                        ? () => handleSubmitted(textController.text)
-                        : null,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(5),
-                      child: Container(
-                        alignment: Alignment.center,
-                        width: 68.w,
-                        height: 40.h,
-                        color: Color.fromRGBO(0, 101, 202, 1),
-                        child: Text(
-                          "发送",
-                          style:
-                              TextStyle(color: Colors.white, fontSize: 20.sp),
-                        ),
-                      ),
-                    )),
-              ],
-            )));
-  }
+  // Widget buildTextComposer() {
+  //   if (!scrolling) {
+  //     return Container();
+  //   }
+  //   return Container(
+  //       width: 1.sw, //底部宽
+  //       height: 75.h, //底部高
+  //       color: Colors.black, //底部背景颜色
+  //       child: Padding(
+  //           padding: EdgeInsets.only(top: 10.h),
+  //           child: Wrap(
+  //             crossAxisAlignment: WrapCrossAlignment.center,
+  //             children: [
+  //               //输入框容器
+  //               Container(
+  //                 width: 370.w,
+  //                 height: 50.h, //输入框高
+  //                 margin: EdgeInsets.only(left: 10.w), //外边距
+  //                 decoration: BoxDecoration(
+  //                     color: Color.fromRGBO(26, 26, 26, 1), //输入框背景色
+  //                     borderRadius:
+  //                         BorderRadius.all(Radius.circular(5.0)) //圆角角度
+  //                     ),
+  //                 child: TextField(
+  //                   //如果输入框字符大于0判断为输入中
+  //                   onChanged: (String text) {
+  //                     setState(() {
+  //                       isComposing = text.length > 0;
+  //                     });
+  //                   },
+  //                   controller: textController, //输入框控件
+  //                   onSubmitted: handleSubmitted, //回车调用发送消息
+  //                   focusNode: userFocusNode, //输入框焦点控制
+  //                   style: TextStyle(
+  //                       height: 1.5.h, fontSize: 20.sp, color: Colors.white),
+  //                   decoration: InputDecoration(
+  //                       enabledBorder: UnderlineInputBorder(
+  //                           borderSide:
+  //                               BorderSide(color: Colors.black)), //输入框下划线颜色
+  //                       contentPadding: EdgeInsets.only(left: 10.w)),
+  //                 ),
+  //               ),
+  //               Switch(
+  //                 onChanged: (value) {
+  //                   switchValue = !switchValue;
+  //                   setState(() {});
+  //                 },
+  //                 value: switchValue,
+  //                 activeColor: Colors.white,
+  //                 activeTrackColor: Color.fromRGBO(0, 102, 203, 1),
+  //                 inactiveTrackColor: Color.fromRGBO(60, 60, 60, 1),
+  //               ),
+  //               GestureDetector(
+  //                   onTap: isComposing
+  //                       ? () => handleSubmitted(textController.text)
+  //                       : null,
+  //                   child: ClipRRect(
+  //                     borderRadius: BorderRadius.circular(5),
+  //                     child: Container(
+  //                       alignment: Alignment.center,
+  //                       width: 68.w,
+  //                       height: 40.h,
+  //                       color: Color.fromRGBO(0, 101, 202, 1),
+  //                       child: Text(
+  //                         "发送",
+  //                         style:
+  //                             TextStyle(color: Colors.white, fontSize: 20.sp),
+  //                       ),
+  //                     ),
+  //                   )),
+  //             ],
+  //           )));
+  // }
 
   //发送右消息
   sendRight(String choose_text) async {
@@ -529,8 +544,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
         startTime = 0;
         continue;
       } else if (startTime > 0) {
-        int _waitTime = startTime - DateTime.now().millisecondsSinceEpoch;
-        Future.delayed(Duration(milliseconds: _waitTime), () async {
+        Future.delayed(Duration(minutes: 1), () async {
           await storyWhile();
         });
         break;
@@ -769,6 +783,8 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                   ? DateTime.now().millisecondsSinceEpoch +
                       int.parse(tag_list[3]) * 60000
                   : -1;
+              EasyLoading.showToast('如果上线时间到了仍未上线则双击顶部名称',
+                  toastPosition: EasyLoadingToastPosition.bottom);
               if (!waitOffline) {
                 continue;
               } else {
