@@ -6,11 +6,10 @@ import '../function/bubble.dart';
 
 FocusNode userFocusNode = FocusNode(); //输入框焦点控件
 final TextEditingController textController = TextEditingController(); //输入框状态控件
-ScrollController scrollController = ScrollController(); //动态列表控件
+late ScrollController scrollController; //动态列表控件
 bool isComposing = false; //输入状态
 bool switchValue = false; //自娱自乐切换左右
 bool isPaused = false; //是否在后台
-bool isStop = false; //暂停播放器
 List messages = []; //消息容器列表
 List<String> messagesInfo = []; //消息信息列表
 List<List<dynamic>> story = []; //剧本列表
@@ -67,9 +66,9 @@ message_load() async {
     for (int i = 0; i < messagesInfo.length; i++) {
       _messagesInfo[i] = fromJsonString(messagesInfo[i]);
     }
-    if (_messagesInfo.length >= 60) {
-      num = _messagesInfo.length - 60;
-    }
+    // if (_messagesInfo.length >= 60) {
+    //   num = _messagesInfo.length - 60;
+    // }
     if (messages.length < _messagesInfo.length) {
       for (int i = num; i < messagesInfo.length;) {
         Map messageMap = _messagesInfo[i];
@@ -90,6 +89,11 @@ message_load() async {
             messages.add(message);
             i++;
           }
+        }
+        if (messageMap['位置'] == '语音') {
+          VoiceMsg message = VoiceMsg(voice: messageMap['voice']);
+          messages.add(message);
+          i++;
         }
         if (messageMap['位置'] == '中') {
           MiddleMsg message = MiddleMsg(text: messageMap['text']);

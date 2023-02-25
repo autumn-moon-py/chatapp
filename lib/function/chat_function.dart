@@ -50,8 +50,7 @@ clean_message() async {
   messages = [];
   messagesInfo = [];
   story = [];
-  choose_one = '';
-  choose_two = '';
+  line = 0;
   keys.forEach((key) {
     key_list.forEach((element) {
       if (key == element) {
@@ -75,6 +74,7 @@ autoUpgrade() async {
       if (result['version'] != version) {
         EasyLoading.showToast('有新版本,开始自动更新',
             toastPosition: EasyLoadingToastPosition.bottom);
+        EasyLoading.showInfo(result['info']);
         UpdateModel model = UpdateModel(
             'https://www.subrecovery.top/app/app-release.apk',
             "app-release.apk",

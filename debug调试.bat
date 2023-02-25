@@ -1,2 +1,1 @@
-flutter -v run
-pause
+flutter -v run --debug

@@ -1,8 +1,10 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:keframe/keframe.dart';
 import 'package:photo_view/photo_view.dart';
 import 'dart:convert';
@@ -34,7 +36,12 @@ class LeftTextMsg extends StatelessWidget {
                     children: <Widget>[
                   GestureDetector(
                       onTap: () {
-                        Get.to(TrendPage());
+                        if (who == 'Miko') {
+                          Get.to(TrendPage());
+                        } else {
+                          EasyLoading.showToast('未解锁该功能',
+                              toastPosition: EasyLoadingToastPosition.bottom);
+                        }
                       },
                       child: Container(
                           //头像容器
@@ -205,7 +212,7 @@ class MiddleMsg extends StatelessWidget {
   final String text; //消息气泡内文本
 
   textColor() {
-    if (text == '网络连接中' || text == '对方已上线') {
+    if (text == '对方已上线') {
       return Color.fromARGB(255, 0, 255, 8);
     }
     if (text == '对方已下线' || text == '信息未送达' || text == '对方账号不存在或已注销') {
@@ -243,6 +250,84 @@ class MiddleMsg extends StatelessWidget {
                         TextStyle(fontSize: 20.sp, color: textColor()), //文本样式
                   )),
             ]));
+  }
+}
+
+class VoiceMsg extends StatelessWidget {
+  final String voice;
+  final voiceplayer = AudioPlayer();
+
+  VoiceMsg({required this.voice});
+  toJsonString() {
+    final jsonString = jsonEncode({'位置': '语音', 'voice': voice});
+    return jsonString;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        margin: EdgeInsets.only(top: 10.h),
+        child: FadeInLeft(
+            child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start, //垂直顶部对齐
+                mainAxisAlignment: MainAxisAlignment.start, //水平左对齐
+                children: <Widget>[
+              GestureDetector(
+                  onTap: () {
+                    Get.to(TrendPage());
+                  },
+                  child: Container(
+                      //头像容器
+                      margin:
+                          EdgeInsets.only(left: 10.w, right: 4.5.w), //头像和气泡间距
+                      child: CircleAvatar(
+                          backgroundColor: Colors.black,
+                          //头像图标
+                          radius: 30.r, //头像尺寸
+                          child: Image.asset(whoAvater('Miko')) //加载左边头像
+                          ))),
+              // 消息气泡容器
+              GestureDetector(
+                  onTap: () {
+                    voiceplayer.setAsset('assets/music/$voice.mp3');
+                    voiceplayer.setLoopMode(LoopMode.off);
+                    voiceplayer.setVolume(0.1);
+                    if (voiceIsStop) {
+                      voiceIsStop = true;
+                      voiceplayer.play();
+                    } else if (!voiceIsStop || !IsOnChatPage) {
+                      voiceIsStop = false;
+                      voiceplayer.pause();
+                    }
+                  },
+                  child: Container(
+                      margin: EdgeInsets.only(top: 5.h),
+                      width: voice.length * 8,
+                      padding: EdgeInsets.only(
+                          top: 10.h, bottom: 10.h, left: 10.w), //容器内边距
+                      //圆角
+                      decoration: BoxDecoration(
+                          color: Color.fromRGBO(38, 38, 38, 1), //容器背景颜色
+                          borderRadius:
+                              BorderRadius.all(Radius.circular(7))), //圆角角度
+                      //语音
+                      child: Row(
+                        children: [
+                          Padding(
+                              padding: EdgeInsets.only(right: 3.w),
+                              child: Text('${(voice.length / 4).ceil()}\'\'',
+                                  style: TextStyle(
+                                      fontSize: 25.sp, color: Colors.white))),
+                          RotatedBox(
+                              quarterTurns: 1,
+                              child: Icon(
+                                Icons.wifi,
+                                size: 30.r,
+                                color: Colors.grey,
+                              )),
+                        ],
+                      )))
+            ])));
   }
 }
 

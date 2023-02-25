@@ -1,3 +1,4 @@
+import 'package:chatapp/page/chat.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import "package:get/get.dart";
@@ -13,7 +14,9 @@ float1() {
   return Container(
     child: FloatingActionButton(
       onPressed: () {
-        Get.back();
+        IsOnChatPage = true;
+        // Get.back();
+        Get.to(ChatPage());
       },
       heroTag: "btn1",
       tooltip: '聊天',
@@ -61,22 +64,24 @@ class _MenuPageState extends State<MenuPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        child: Stack(children: [
-      PageView(
-        controller: menuController,
-        onPageChanged: (value) {
-          nowPage = value;
-          setState(() {});
-        },
-        children: <Widget>[
-          ImagePage(),
-          DictionaryPage(),
-          ChapterPage(),
-        ],
-      ),
-      buildMenu()
-    ]));
+    return Scaffold(
+        body: Container(
+            padding: EdgeInsets.only(top: topHeight),
+            child: Stack(children: [
+              PageView(
+                controller: menuController,
+                onPageChanged: (value) {
+                  nowPage = value;
+                  setState(() {});
+                },
+                children: <Widget>[
+                  ImagePage(),
+                  DictionaryPage(),
+                  ChapterPage(),
+                ],
+              ),
+              buildMenu()
+            ])));
   }
 
   buildMenu() {

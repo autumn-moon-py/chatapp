@@ -23,6 +23,7 @@ class DictionaryPageState extends State<DictionaryPage> {
         floatingActionButton: floatButton('词典'),
         body: Stack(children: [
           Container(
+            width: 1.sw,
             height: 1.sh,
             child: Image.asset('assets/images/菜单背景.png', fit: BoxFit.cover),
           ),
@@ -39,26 +40,34 @@ class DictionaryPageState extends State<DictionaryPage> {
             dictionary_map_load();
           });
         },
-        child: ListView(children: [
-          buildChapterTitle('第一章'),
-          buildChapterDic(0, 21),
-          buildChapterTitle('番外一'),
-          buildChapterDic(21, 1),
-          buildChapterTitle('第二章'),
-          buildChapterDic(22, 15),
-          buildChapterTitle('番外二'),
-          buildChapterDic(37, 4),
-          buildChapterTitle('第三章'),
-          buildChapterDic(41, 21),
-          buildChapterTitle('番外三'),
-          buildChapterDic(62, 14),
-          buildChapterTitle('第四章'),
-          buildChapterDic(76, 20),
-          buildChapterTitle('第五章'),
-          buildChapterDic(96, 15),
-          buildChapterTitle('第六章'),
-          buildChapterDic(111, 13),
-        ]));
+        child: SizeCacheWidget(
+            estimateCount: 60,
+            child: Scrollbar(
+                radius: Radius.circular(20),
+                thickness: 8,
+                interactive: true,
+                child: ListView(children: [
+                  Padding(
+                      padding: EdgeInsets.only(top: 10.h),
+                      child: buildChapterTitle('第一章')),
+                  buildChapterDic(0, 21),
+                  buildChapterTitle('番外一'),
+                  buildChapterDic(21, 1),
+                  buildChapterTitle('第二章'),
+                  buildChapterDic(22, 15),
+                  buildChapterTitle('番外二'),
+                  buildChapterDic(37, 4),
+                  buildChapterTitle('第三章'),
+                  buildChapterDic(41, 21),
+                  buildChapterTitle('番外三'),
+                  buildChapterDic(62, 14),
+                  buildChapterTitle('第四章'),
+                  buildChapterDic(76, 20),
+                  buildChapterTitle('第五章'),
+                  buildChapterDic(96, 15),
+                  buildChapterTitle('第六章'),
+                  buildChapterDic(111, 13),
+                ]))));
   }
 
   Widget buildChapterTitle(String title) {

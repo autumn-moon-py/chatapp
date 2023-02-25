@@ -1,11 +1,13 @@
 import 'dart:math';
 
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'config.dart';
 import 'image_config.dart';
 
+bool isDebug = false; //调试信息
 bool isNewImage = false; //AI图鉴
 bool scrolling = false; //自娱自乐模式
 bool waitOffline = true; //是否等待下线
@@ -19,9 +21,12 @@ bool isOldBgm = false; //新旧BGM
 final bgmplayer = AudioPlayer();
 bool buttonMusicSwitch = true; //音效
 double sliderValue = 10; //语音音量
-final buttonplayer = AudioPlayer(); //按钮音效播放器
+bool voiceIsStop = true;
+bool IsOnChatPage = true;
+final buttonplayer = AudioPlayer();
 bool isChange = false; //监听设置修改
 bool isAutoUpgrade = true; //是否自动更新
+double topHeight = ScreenUtil().statusBarHeight; //状态栏高度
 
 //Miko头像更换
 List mikoDropdownList = [
@@ -69,23 +74,23 @@ buttonMusic() {
 voice(double volume) {
   int res = Random().nextInt(2);
   final voiceplayer = AudioPlayer();
-  voiceplayer.setAsset('assets/music/喂.mp3');
-  final voiceplayer1 = AudioPlayer();
-  voiceplayer1.setAsset('assets/music/我在哦.mp3');
-  final voiceplayer2 = AudioPlayer();
-  voiceplayer2.setAsset('assets/music/听得见吗.mp3');
   voiceplayer.setLoopMode(LoopMode.off);
-  voiceplayer1.setLoopMode(LoopMode.off);
-  voiceplayer2.setLoopMode(LoopMode.off);
   voiceplayer.setVolume(volume / 10);
   if (res == 0) {
+    voiceplayer.stop();
+    voiceplayer.setAsset('assets/music/喂.mp3');
     voiceplayer.play();
   }
   if (res == 1) {
-    voiceplayer1.play();
+    voiceplayer.stop();
+    voiceplayer.setAsset('assets/music/我在哦.mp3');
+    voiceplayer.play();
   }
-  if (res == 2) {}
-  voiceplayer2.play();
+  if (res == 2) {
+    voiceplayer.stop();
+    voiceplayer.setAsset('assets/music/听得见吗.mp3');
+    voiceplayer.play();
+  }
 }
 
 ///保存设置

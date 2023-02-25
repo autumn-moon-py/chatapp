@@ -1,3 +1,4 @@
+import 'package:chatapp/page/chat.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -35,6 +36,7 @@ class ChapterPageState extends State<ChapterPage> {
         floatingActionButton: floatButton('章节'),
         body: Stack(children: [
           Container(
+            width: 1.sw,
             height: 1.sh,
             child: Image.asset('assets/images/菜单背景.png', fit: BoxFit.cover),
           ),
@@ -87,13 +89,10 @@ class ChapterPageState extends State<ChapterPage> {
                       TextButton(
                           child: Text("确定"),
                           onPressed: () {
-                            clean_message();
                             Navigator.pop(context, 'Ok');
-                            isStop = true;
-                            Get.back();
-                            line = 0;
-                            loadCVS(chapterName);
-                            setState(() {});
+                            clean_message();
+                            nowChapter = chapterName;
+                            Get.to(ChatPage());
                           })
                     ],
                   );

@@ -28,14 +28,15 @@ class ImagePageState extends State<ImagePage> {
         body: Stack(children: [
           //页面背景
           Container(
+            width: 1.sw,
             height: 1.sh,
             child: Image.asset('assets/images/菜单背景.png', fit: BoxFit.cover),
           ),
           //图鉴布局列表
           Padding(
-              padding: EdgeInsets.only(top: 10.h),
+              padding: EdgeInsets.only(top: 15.h),
               child: SizeCacheWidget(
-                  estimateCount: 20,
+                  estimateCount: 25,
                   child: RefreshIndicator(
                       onRefresh: () async {
                         setState(() {
@@ -48,15 +49,19 @@ class ImagePageState extends State<ImagePage> {
 
   //图鉴列表
   Widget buildImageList() {
-    return GridView.count(
-        crossAxisCount: 3, // 一行最多显示3张图片
-        crossAxisSpacing: 10,
-        childAspectRatio: 1 / 1.6,
-        padding: EdgeInsets.only(top: 38.h, left: 10.w, right: 10.w),
-        //遍历图鉴列表生成布局
-        children: imageList.map((imageName) {
-          return buildImage(imageName);
-        }).toList());
+    return Scrollbar(
+        radius: Radius.circular(20),
+        thickness: 8,
+        interactive: true,
+        child: GridView.count(
+            crossAxisCount: 3, // 一行最多显示3张图片
+            crossAxisSpacing: 10,
+            childAspectRatio: 1 / 1.6,
+            padding: EdgeInsets.only(top: 38.h, left: 10.w, right: 10.w),
+            //遍历图鉴列表生成布局
+            children: imageList.map((imageName) {
+              return buildImage(imageName);
+            }).toList()));
   }
 
   //单个图片构成

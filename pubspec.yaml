@@ -3,7 +3,7 @@ description: A new Flutter project.
 
 publish_to: 'none' 
 
-version: 1.0.15
+version: 6.0.3
 
 environment:
   sdk: '>=2.18.6 <3.0.0'
@@ -38,8 +38,9 @@ dependencies:
   flutter_app_update: ^2.0.2 #下载apk https://pub.dev/packages/flutter_app_update
   flutter_local_notifications: ^13.0.0 #本地通知 https://pub.dev/packages/flutter_local_notifications 
   flutter_background: ^1.2.0 #后台运行 https://pub.dev/packages/flutter_background
-  mobcommonlib: ^1.1.4
-  mobpush_plugin: ^1.2.4
+  mobcommonlib: ^1.1.4 #推送依赖
+  mobpush_plugin: ^1.2.4 #推送
+  # rive: ^0.9.1 #动画
 
 dev_dependencies:
   flutter_test:
@@ -51,9 +52,14 @@ dev_dependencies:
 flutter:
 
   uses-material-design: true
+  fonts:
+    - family: YuGothic
+      fonts:
+        - asset: fonts/YuGothic.ttf
 
   assets:
     - assets/
+    - assets/live2d/
     - assets/images/
     - assets/music/
     - assets/词典/

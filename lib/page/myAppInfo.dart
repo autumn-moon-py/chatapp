@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '../config/setting_config.dart';
 import '../function/myAppInfo_function.dart';
 
 late String version; //应用发布版本号
@@ -24,7 +25,9 @@ class _MyAppInfoState extends State<MyAppInfo> {
   Widget build(BuildContext context) {
     return ProgressHUD(
         child: Builder(
-            builder: (context) => Stack(children: [
+            builder: (context) => Padding(
+                padding: EdgeInsets.only(top: topHeight),
+                child: Stack(children: [
                   Container(
                     width: 540.w,
                     height: 960.h,
@@ -153,6 +156,6 @@ class _MyAppInfoState extends State<MyAppInfo> {
                             child: Icon(Icons.chevron_left,
                                 color: Colors.white, size: 50.r)),
                       ])),
-                ])));
+                ]))));
   }
 }
