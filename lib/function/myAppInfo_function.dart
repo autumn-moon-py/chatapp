@@ -50,7 +50,9 @@ checkUpgrade(BuildContext context) async {
         toastPosition: EasyLoadingToastPosition.bottom);
   }
   if (result.length > 1) {
-    if (result['version'] != version) {
+    int _nowVersion = int.parse(version);
+    int _newVersion = int.parse(result['version']);
+    if (_newVersion > _nowVersion) {
       showDialog(
           context: context,
           builder: (context) {

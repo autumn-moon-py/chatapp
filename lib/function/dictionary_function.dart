@@ -23,7 +23,16 @@ buildDictionaryView(dictionaryName, dictionaryMean) {
             Text(dictionaryName,
                 style: TextStyle(fontSize: 30.sp, color: Colors.white)),
             Padding(
-                padding: EdgeInsets.only(top: 20.h, left: 10.w),
+                padding: EdgeInsets.only(top: 10.h),
+                child: Divider(
+                  color: Colors.white,
+                  height: 0,
+                  indent: 100.w,
+                  endIndent: 100.w,
+                  thickness: 1,
+                )),
+            Padding(
+                padding: EdgeInsets.only(top: 10.h, left: 10.w),
                 child: Container(
                     width: 370.w,
                     child: Text(dictionaryMean,

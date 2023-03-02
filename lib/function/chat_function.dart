@@ -71,10 +71,14 @@ autoUpgrade() async {
       result = jsonDecode(response.toString());
     }
     if (result.length > 1) {
-      if (result['version'] != version) {
+      int _nowVersion = int.parse(version);
+      int _newVersion = int.parse(result['version']);
+      if (_newVersion > _nowVersion) {
         EasyLoading.showToast('有新版本,开始自动更新',
             toastPosition: EasyLoadingToastPosition.bottom);
-        EasyLoading.showInfo(result['info']);
+        if (result['info'] != '') {
+          EasyLoading.showInfo(result['info']);
+        }
         UpdateModel model = UpdateModel(
             'https://www.subrecovery.top/app/app-release.apk',
             "app-release.apk",

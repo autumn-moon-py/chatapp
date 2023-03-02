@@ -42,7 +42,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
       buttonplayer.setAsset('assets/music/选项音效.mp3');
       packageInfoList();
       backgroundMusic();
-      // line = 105;
+      // line = 42;
       // nowChapter = '番外三';
       // waitOffline = false;
       // waitTyping = false;
@@ -61,11 +61,6 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     super.dispose();
     //页面销毁时，移出监听者
     WidgetsBinding.instance.removeObserver(this);
-    if (choose_one.isNotEmpty) {
-      choose_one = '';
-      choose_two = '';
-      line -= 2;
-    }
     message_save();
   }
 
@@ -90,11 +85,6 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
         break;
       //当前页面即将退出
       case AppLifecycleState.detached:
-        if (choose_one.isNotEmpty) {
-          choose_one = '';
-          choose_two = '';
-          line -= 2;
-        }
         message_save();
         break;
       // 后台
@@ -183,6 +173,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                         if (choose_one.isEmpty) {
                           EasyLoading.showToast('开始播放',
                               toastPosition: EasyLoadingToastPosition.top);
+                          startTime = 0;
                           storyWhile();
                         } else {
                           EasyLoading.showToast('有选项时无法触发',
@@ -191,9 +182,11 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                       },
                       onTap: () {
                         setState(() {
-                          choose_one = '';
-                          choose_two = '';
-                          line -= 2;
+                          if (choose_one.isNotEmpty) {
+                            choose_one = '';
+                            choose_two = '';
+                            line -= 2;
+                          }
                           message_save();
                         });
                         showDialog(
@@ -461,6 +454,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     messages.add(message);
     messagesInfo.add(message.toJsonString());
     message_save();
+    image_map_save();
     if (isPaused) {
       await NotificationService().newNotification('Miko', '[图片]', false);
     }
@@ -475,6 +469,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     Trend trend = Trend(trendText: trendText, trendImg: trendImg);
     trends.add(trend);
     trendsInfo.add(trend.toJsonString());
+    image_map_save();
     if (isPaused) {
       await NotificationService().newNotification('Miko', '对方发布了一条动态', false);
     }
@@ -543,11 +538,6 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
       if (startTime > 0 && DateTime.now().millisecondsSinceEpoch < startTime) {
         startTime = 0;
         continue;
-      } else if (startTime > 0) {
-        Future.delayed(Duration(minutes: 1), () async {
-          await storyWhile();
-        });
-        break;
       }
       List line_info = story[line];
       line++;
@@ -570,6 +560,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
           continue;
         }
         if (tag == '中') {
+if(name!=''){_chatName=name;}
           sendMiddle(msg);
           await Future.delayed(Duration(milliseconds: waitTyping ? 500 : 200));
           continue;
@@ -603,6 +594,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
             dictionaryMap[msg] = _dt;
             EasyLoading.showToast('解锁新词典',
                 toastPosition: EasyLoadingToastPosition.bottom);
+            dictionary_map_save();
             continue;
           } catch (error) {
             EasyLoading.showToast('解锁$msg失败,报错$error',

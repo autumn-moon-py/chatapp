@@ -31,6 +31,11 @@ int choose_two_jump = 0; //选项二跳转
 story_save() async {
   local = await SharedPreferences.getInstance();
   local?.setStringList('messagesInfo', messagesInfo);
+  if (choose_one.isNotEmpty) {
+    choose_one = '';
+    choose_two = '';
+    line -= 2;
+  }
   local?.setInt('line', line);
   local?.setInt('startTime', startTime);
   local?.setInt('jump', jump);
@@ -55,8 +60,6 @@ message_save() async {
   local = await SharedPreferences.getInstance();
   local?.setStringList('messagesInfo', messagesInfo);
   story_save();
-  image_map_save();
-  dictionary_map_save();
 }
 
 ///读取历史消息
@@ -70,9 +73,6 @@ message_load() async {
     for (int i = 0; i < messagesInfo.length; i++) {
       _messagesInfo[i] = fromJsonString(messagesInfo[i]);
     }
-    // if (_messagesInfo.length >= 60) {
-    //   num = _messagesInfo.length - 60;
-    // }
     if (messages.length < _messagesInfo.length) {
       for (int i = num; i < messagesInfo.length;) {
         Map messageMap = _messagesInfo[i];

@@ -212,7 +212,7 @@ class MiddleMsg extends StatelessWidget {
   final String text; //消息气泡内文本
 
   textColor() {
-    if (text == '对方已上线') {
+    if (text == '对方已上线'||text=='切换对象中') {
       return Color.fromARGB(255, 0, 255, 8);
     }
     if (text == '对方已下线' || text == '信息未送达' || text == '对方账号不存在或已注销') {
