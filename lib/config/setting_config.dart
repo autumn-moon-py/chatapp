@@ -1,13 +1,12 @@
-import 'dart:math';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'config.dart';
 import 'image_config.dart';
 
+bool isNew = true; //最新版
 bool isDebug = false; //调试信息
 bool isNewImage = false; //AI图鉴
-// bool scrolling = false; //自娱自乐模式
 bool waitOffline = true; //是否等待下线
 bool waitTyping = true; //打字时间
 int nowMikoAvater = 1; //miko当前头像
@@ -69,33 +68,32 @@ buttonMusic() {
 }
 
 //语音彩蛋
-voice(double volume) {
-  int res = Random().nextInt(2);
-  final voiceplayer = AudioPlayer();
-  voiceplayer.setLoopMode(LoopMode.off);
-  voiceplayer.setVolume(volume / 10);
-  if (res == 0) {
-    voiceplayer.stop();
-    voiceplayer.setAsset('assets/music/喂.mp3');
-    voiceplayer.play();
-  }
-  if (res == 1) {
-    voiceplayer.stop();
-    voiceplayer.setAsset('assets/music/我在哦.mp3');
-    voiceplayer.play();
-  }
-  if (res == 2) {
-    voiceplayer.stop();
-    voiceplayer.setAsset('assets/music/听得见吗.mp3');
-    voiceplayer.play();
-  }
-}
+// voice(double volume) {
+//   int res = Random().nextInt(2);
+//   final voiceplayer = AudioPlayer();
+//   voiceplayer.setLoopMode(LoopMode.off);
+//   voiceplayer.setVolume(volume / 10);
+//   if (res == 0) {
+//     voiceplayer.stop();
+//     voiceplayer.setAsset('assets/music/喂.mp3');
+//     voiceplayer.play();
+//   }
+//   if (res == 1) {
+//     voiceplayer.stop();
+//     voiceplayer.setAsset('assets/music/我在哦.mp3');
+//     voiceplayer.play();
+//   }
+//   if (res == 2) {
+//     voiceplayer.stop();
+//     voiceplayer.setAsset('assets/music/听得见吗.mp3');
+//     voiceplayer.play();
+//   }
+// }
 
 ///保存设置
 setting_config_save() async {
   local = await SharedPreferences.getInstance();
   await local?.setBool('isNewImage', isNewImage);
-  // await local?.setBool('scrolling', scrolling);
   await local?.setInt('nowMikoAvater', nowMikoAvater);
   await local?.setBool('waitOffline', waitOffline);
   await local?.setBool('waitTyping', waitTyping);
@@ -112,7 +110,6 @@ setting_config_save() async {
 setting_config_load() async {
   local = await SharedPreferences.getInstance();
   isNewImage = local?.getBool('isNewImage') ?? false;
-  // scrolling = local?.getBool('scrolling') ?? false;
   nowMikoAvater = local?.getInt('nowMikoAvater') ?? 1;
   waitOffline = local?.getBool('waitOffline') ?? true;
   waitTyping = local?.getBool('waitTyping') ?? true;

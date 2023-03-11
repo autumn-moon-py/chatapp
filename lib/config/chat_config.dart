@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../page/trend.dart';
 import 'config.dart';
 import '../function/bubble.dart';
-import 'dictionary_config.dart';
-import 'image_config.dart';
 
 FocusNode userFocusNode = FocusNode(); //输入框焦点控件
-final TextEditingController textController = TextEditingController(); //输入框状态控件
-late ScrollController scrollController; //动态列表控件
+TextEditingController textController = TextEditingController(); //输入框状态控件
+ScrollController scrollController = ScrollController(); //动态列表控件
 bool isComposing = false; //输入状态
 bool switchValue = false; //自娱自乐切换左右
 bool isPaused = false; //是否在后台
@@ -60,11 +59,13 @@ message_save() async {
   local = await SharedPreferences.getInstance();
   local?.setStringList('messagesInfo', messagesInfo);
   story_save();
+  trend_save();
 }
 
 ///读取历史消息
 message_load() async {
   story_load();
+  trend_load();
   local = await SharedPreferences.getInstance();
   messagesInfo = local?.getStringList('messagesInfo') ?? [];
   Map _messagesInfo = {};
@@ -74,6 +75,9 @@ message_load() async {
       _messagesInfo[i] = fromJsonString(messagesInfo[i]);
     }
     if (messages.length < _messagesInfo.length) {
+      if (_messagesInfo.length > 60) {
+        num = _messagesInfo.length - 60;
+      }
       for (int i = num; i < messagesInfo.length;) {
         Map messageMap = _messagesInfo[i];
         if (messageMap['位置'] == '左') {

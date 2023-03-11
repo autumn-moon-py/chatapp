@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -53,6 +52,9 @@ buildImageView(String imageName, BuildContext context) {
             color: Colors.black,
             width: 540.w,
             height: 50.h,
+            alignment: Alignment.center,
+            child: Text(imageName,
+                style: TextStyle(color: Colors.white, fontSize: 25.sp)),
           ),
           //返回图标
           GestureDetector(
@@ -72,11 +74,7 @@ downloadImage(imageName) async {
       duration: Duration(seconds: 2));
   String imgUrl =
       "https://cdn.486486486.xyz/miko-storage/Dimension/ver0.1/$imageName.png";
-  if (Platform.isAndroid) {
-    checkPermission(Permission.storage);
-  } else {
-    checkPermission(Permission.photos);
-  }
+  checkPermission(Permission.storage);
   var response = await Dio()
       .get(imgUrl, options: Options(responseType: ResponseType.bytes));
   final result = await ImageGallerySaver.saveImage(

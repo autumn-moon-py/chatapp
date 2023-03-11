@@ -178,10 +178,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_app_update
-      sha256: "3a6d0bfe847ce46ba118157daea6bb974d96477e88a4f09815a217aac1719441"
+      sha256: "6d799645336921cd12ec10fa91e685b035d8cbb467fe16ee7148a5ae950bcd19"
       url: "https://mirrors.tuna.tsinghua.edu.cn/dart-pub/"
     source: hosted
-    version: "2.0.2"
+    version: "2.1.0"
   flutter_background:
     dependency: "direct main"
     description:
@@ -473,7 +473,7 @@ packages:
     source: hosted
     version: "1.8.2"
   path_provider:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: path_provider
       sha256: dcea5feb97d8abf90cab9e9030b497fb7c3cbf26b7a1fe9e3ef7dcb0a1ddec95

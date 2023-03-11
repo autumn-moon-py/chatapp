@@ -1,19 +1,18 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobpush_plugin/mobpush_plugin.dart';
 
+import '../page/myAppInfo.dart';
+
 Widget roundCard(Widget child) {
-  return Column(children: [
-    Padding(
-        padding:
-            EdgeInsets.only(left: 10.w, right: 10.w, bottom: 5.h, top: 5.h),
-        child: ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child:
-                Container(color: Color.fromRGBO(38, 38, 38, 1), child: child)))
-  ]);
+  return Padding(
+      padding: EdgeInsets.only(left: 10.w, right: 10.w, bottom: 5.h, top: 5.h),
+      child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: Container(
+              // margin: EdgeInsets.fromLTRB(10.w, 10.h, 10.w, 10.h),
+              color: Color.fromRGBO(38, 38, 38, 1),
+              child: child)));
 }
 
 class SwitchButton extends StatelessWidget {
@@ -27,6 +26,7 @@ class SwitchButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SwitchListTile(
+        contentPadding: EdgeInsets.only(left: 20.w, right: 10.w),
         title:
             Text(title, style: TextStyle(fontSize: 25.sp, color: Colors.white)),
         value: value,
@@ -52,6 +52,7 @@ class SwitchButtonWithSubtitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SwitchListTile(
+        contentPadding: EdgeInsets.only(left: 20.w, right: 10.w),
         title:
             Text(title, style: TextStyle(fontSize: 25.sp, color: Colors.white)),
         subtitle: Text(subtitle,
@@ -69,7 +70,7 @@ whiteLine() {
     color: Colors.white,
     height: 0,
     indent: 20.w,
-    endIndent: 30.w,
+    endIndent: 20.w,
     thickness: 1,
   );
 }
@@ -77,17 +78,10 @@ whiteLine() {
 pushSetup() {
   //设置隐私协议授权状态
   MobpushPlugin.updatePrivacyPermissionStatus(true);
-//设置远程推送环境，向用户授权（仅 iOS）
-  if (Platform.isIOS) {
-    MobpushPlugin.setCustomNotification();
-    // 开发环境 false, 线上环境 true
-    MobpushPlugin.setAPNsForProduction(false);
-  }
 //获取注册的设备id， 这个可以不初始化
   MobpushPlugin.getRegistrationId().then((Map<String, dynamic> ridMap) {
-    print(ridMap);
-    String regId = ridMap['res'].toString();
-    print('------>#### registrationId: ' + regId);
+    regId = ridMap['res'].toString();
+    print(regId);
   });
 //设置别名，注意，每个别名只能存在一台设备，后者会覆盖前者。厂商通道，会根据后者来进行推送
   MobpushPlugin.setAlias("别名").then((Map<String, dynamic> aliasMap) {

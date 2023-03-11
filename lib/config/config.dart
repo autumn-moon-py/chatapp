@@ -38,13 +38,3 @@ fromJsonString(String jsonString) {
   final Info = jsonDecode(jsonString);
   return Info;
 }
-
-///第一次运行
-firstTime() async {
-  local = await SharedPreferences.getInstance();
-  List<String> keys = local?.getKeys().toList() ?? [];
-  if (keys == []) {
-    return true;
-  }
-  return false;
-}

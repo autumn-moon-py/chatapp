@@ -84,6 +84,20 @@ class _MenuPageState extends State<MenuPage> {
             ])));
   }
 
+  Widget menuButton(int num, String name, BottonColor) {
+    return MaterialButton(
+        splashColor: Color.fromRGBO(255, 255, 255, 0),
+        highlightColor: Color.fromRGBO(255, 255, 255, 0),
+        padding: EdgeInsets.only(bottom: 20.h),
+        minWidth: (1 / 3).sw,
+        onPressed: () {
+          menuController.animateToPage(num,
+              duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+        },
+        child:
+            Text(name, style: TextStyle(color: BottonColor, fontSize: 25.sp)));
+  }
+
   buildMenu() {
     Color imageBottonColor = Colors.grey;
     Color dictionaryBottonColor = Colors.grey;
@@ -107,44 +121,9 @@ class _MenuPageState extends State<MenuPage> {
               height: 40.h,
             )),
         Row(children: [
-          MaterialButton(
-              splashColor: Color.fromRGBO(255, 255, 255, 0),
-              highlightColor: Color.fromRGBO(255, 255, 255, 0),
-              padding: EdgeInsets.only(bottom: 20.h),
-              minWidth: (1 / 3).sw,
-              onPressed: () {
-                menuController.animateToPage(0,
-                    duration: Duration(milliseconds: 500),
-                    curve: Curves.easeInOut);
-              },
-              child: Text('图鉴',
-                  style: TextStyle(color: imageBottonColor, fontSize: 25.sp))),
-          MaterialButton(
-              padding: EdgeInsets.only(bottom: 20.h),
-              splashColor: Color.fromRGBO(255, 255, 255, 0),
-              highlightColor: Color.fromRGBO(255, 255, 255, 0),
-              minWidth: (1 / 3).sw,
-              onPressed: () {
-                menuController.animateToPage(1,
-                    duration: Duration(milliseconds: 500),
-                    curve: Curves.easeInOut);
-              },
-              child: Text('词典',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: dictionaryBottonColor, fontSize: 25.sp))),
-          MaterialButton(
-              padding: EdgeInsets.only(bottom: 20.h),
-              splashColor: Color.fromRGBO(255, 255, 255, 0),
-              highlightColor: Color.fromRGBO(255, 255, 255, 0),
-              minWidth: (1 / 3).sw,
-              onPressed: () {
-                menuController.animateToPage(2,
-                    duration: Duration(milliseconds: 500),
-                    curve: Curves.easeInOut);
-              },
-              child: Text('章节',
-                  style: TextStyle(color: chapterButtonColor, fontSize: 25.sp)))
+          menuButton(0, '图鉴', imageBottonColor),
+          menuButton(1, '词典', dictionaryBottonColor),
+          menuButton(2, '章节', chapterButtonColor)
         ])
       ],
     );

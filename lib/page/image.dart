@@ -43,7 +43,14 @@ class ImagePageState extends State<ImagePage> {
                           image_map_load();
                         });
                       },
-                      child: buildImageList())))
+                      child: buildImageList()))),
+          Padding(
+              padding: EdgeInsets.only(bottom: 100),
+              child: Center(
+                  child: Wrap(children: [
+                Text(isDebug ? '$imageMap' : '',
+                    style: TextStyle(color: Colors.red, fontSize: 25.r))
+              ]))),
         ]));
   }
 

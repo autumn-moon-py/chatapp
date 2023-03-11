@@ -38,18 +38,22 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this); //增加监听者
     message_load().then((_) {
       setting_config_load();
+      // waitOffline = false;
+      // nowChapter = '第二章';
+      // imageList = imageList2;
+      // line = 457;
+      // isDebug = true;
+      // waitTyping = false;
+      // isAutoUpgrade = false;
       pushSetup();
       buttonplayer.setAsset('assets/music/选项音效.mp3');
       packageInfoList();
       backgroundMusic();
-      // line = 42;
-      // nowChapter = '番外三';
-      // waitOffline = false;
-      // waitTyping = false;
-      autoUpgrade();
+      if (isAutoUpgrade) {
+        Upgrade();
+      }
       backSetup();
       IsOnChatPage = true;
-      scrollController = ScrollController();
       loadCVS(nowChapter).then((_) async {
         await storyWhile();
       });
@@ -106,81 +110,64 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
             padding: EdgeInsets.only(top: topHeight),
             child: Stack(children: [
               Container(
-                width: 1.sw,
-                height: 1.sh,
                 color: Colors.black,
                 child: Center(
-                    child: Text('加载中...',
-                        style: TextStyle(color: Colors.white, fontSize: 40.r))),
+                    child: CircularProgressIndicator(color: Colors.white)),
               ),
-              GestureDetector(
-                  onTap: () {
-                    userFocusNode.unfocus(); //点击聊天窗口丢失焦点
-                  },
-                  child: Image.asset('assets/images/聊天背景.png',
-                      height: 1.sh, fit: BoxFit.cover)),
-              GestureDetector(
-                  onTap: () {
-                    userFocusNode.unfocus(); //点击聊天窗口丢失焦点
-                  },
-                  child: Column(children: [
-                    Flexible(
-                        child: messages.length == 0
-                            ? Center(
-                                child: Text('加载中...',
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 40.r)))
-                            : SizeCacheWidget(
-                                estimateCount: 60,
-                                child: Padding(
-                                    padding: EdgeInsets.only(
-                                        top: 25.h,
-                                        bottom:
-                                            choose_one.isEmpty ? 10.h : 80.h),
-                                    child: Scrollbar(
-                                        radius: Radius.circular(20),
-                                        thickness: 8,
-                                        interactive: true,
-                                        child: ListView.builder(
-                                          controller: scrollController,
-                                          scrollDirection: Axis.vertical,
-                                          reverse: false,
-                                          shrinkWrap: true,
-                                          physics: BouncingScrollPhysics(),
-                                          itemBuilder: (_, int index) =>
-                                              messages[index],
-                                          itemCount: messages.length,
-                                        )))))
-                  ])),
+              Image.asset('assets/images/聊天背景.png',
+                  height: 1.sh, fit: BoxFit.cover),
+              Column(children: [
+                Flexible(
+                    child: messages.length == 0
+                        ? Center(
+                            child:
+                                CircularProgressIndicator(color: Colors.white))
+                        : SizeCacheWidget(
+                            estimateCount: 60,
+                            child: Padding(
+                                padding: EdgeInsets.only(
+                                    top: 25.h,
+                                    bottom: choose_one.isEmpty ? 10.h : 80.h),
+                                child: ListView.builder(
+                                  controller: scrollController,
+                                  scrollDirection: Axis.vertical,
+                                  reverse: false,
+                                  shrinkWrap: true,
+                                  physics: BouncingScrollPhysics(),
+                                  itemBuilder: (_, int index) =>
+                                      messages[index],
+                                  itemCount: messages.length,
+                                ))))
+              ]),
               Center(
                   child: Wrap(children: [
                 Text(
                     !isDebug
                         ? ''
-                        : '无法立刻隐藏/显示 \r\n当前行: $line 跳转: $jump \r\n分支: $be_jump 上线: ${startTime != 0 ? DateTime.fromMillisecondsSinceEpoch(startTime) : 0} 章节: $nowChapter',
+                        : '当前行: $line 跳转: $jump \r\n分支: $be_jump 章节: $nowChapter',
                     style: TextStyle(color: Colors.red, fontSize: 40.r))
               ])),
               //顶部状态栏
-              Align(
+              Container(
                 alignment: Alignment.topCenter,
-                child: Container(
-                  padding: EdgeInsets.only(top: 10.h),
-                  color: Colors.black,
-                  width: 1.sw,
-                  height: 50.h,
-                  child: GestureDetector(
-                      onDoubleTap: () {
-                        if (choose_one.isEmpty) {
-                          EasyLoading.showToast('开始播放',
-                              toastPosition: EasyLoadingToastPosition.top);
-                          startTime = 0;
-                          storyWhile();
-                        } else {
-                          EasyLoading.showToast('有选项时无法触发',
-                              toastPosition: EasyLoadingToastPosition.top);
-                        }
-                      },
-                      onTap: () {
+                padding: EdgeInsets.only(top: 10.h),
+                color: Colors.black,
+                width: 1.sw,
+                height: 50.h,
+                child: GestureDetector(
+                    onDoubleTap: () {
+                      if (choose_one.isEmpty) {
+                        EasyLoading.showToast('开始播放',
+                            toastPosition: EasyLoadingToastPosition.top);
+                        startTime = 0;
+                        storyWhile();
+                      } else {
+                        EasyLoading.showToast('有选项时无法触发',
+                            toastPosition: EasyLoadingToastPosition.top);
+                      }
+                    },
+                    onTap: () {
+                      if (isDebug) {
                         setState(() {
                           if (choose_one.isNotEmpty) {
                             choose_one = '';
@@ -204,20 +191,16 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                                 ),
                               );
                             });
-                      },
-                      child: Text(
-                        _chatName,
-                        style: TextStyle(fontSize: 30.sp, color: Colors.white),
-                        textAlign: TextAlign.center,
-                      )),
-                ),
+                      }
+                    },
+                    child: Text(
+                      _chatName,
+                      style: TextStyle(fontSize: 30.sp, color: Colors.white),
+                      textAlign: TextAlign.center,
+                    )),
               ),
               //选项按钮
               Align(alignment: FractionalOffset(0.5, 1), child: chooseButton()),
-              //输入框
-              // Align(
-              //     alignment: Alignment.bottomCenter,
-              //     child: buildTextComposer()),
               //菜单按钮
               GestureDetector(
                   onTap: () {
@@ -320,81 +303,6 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     ));
   }
 
-  //输入框和发送按钮布局
-  // Widget buildTextComposer() {
-  //   if (!scrolling) {
-  //     return Container();
-  //   }
-  //   return Container(
-  //       width: 1.sw, //底部宽
-  //       height: 75.h, //底部高
-  //       color: Colors.black, //底部背景颜色
-  //       child: Padding(
-  //           padding: EdgeInsets.only(top: 10.h),
-  //           child: Wrap(
-  //             crossAxisAlignment: WrapCrossAlignment.center,
-  //             children: [
-  //               //输入框容器
-  //               Container(
-  //                 width: 370.w,
-  //                 height: 50.h, //输入框高
-  //                 margin: EdgeInsets.only(left: 10.w), //外边距
-  //                 decoration: BoxDecoration(
-  //                     color: Color.fromRGBO(26, 26, 26, 1), //输入框背景色
-  //                     borderRadius:
-  //                         BorderRadius.all(Radius.circular(5.0)) //圆角角度
-  //                     ),
-  //                 child: TextField(
-  //                   //如果输入框字符大于0判断为输入中
-  //                   onChanged: (String text) {
-  //                     setState(() {
-  //                       isComposing = text.length > 0;
-  //                     });
-  //                   },
-  //                   controller: textController, //输入框控件
-  //                   onSubmitted: handleSubmitted, //回车调用发送消息
-  //                   focusNode: userFocusNode, //输入框焦点控制
-  //                   style: TextStyle(
-  //                       height: 1.5.h, fontSize: 20.sp, color: Colors.white),
-  //                   decoration: InputDecoration(
-  //                       enabledBorder: UnderlineInputBorder(
-  //                           borderSide:
-  //                               BorderSide(color: Colors.black)), //输入框下划线颜色
-  //                       contentPadding: EdgeInsets.only(left: 10.w)),
-  //                 ),
-  //               ),
-  //               Switch(
-  //                 onChanged: (value) {
-  //                   switchValue = !switchValue;
-  //                   setState(() {});
-  //                 },
-  //                 value: switchValue,
-  //                 activeColor: Colors.white,
-  //                 activeTrackColor: Color.fromRGBO(0, 102, 203, 1),
-  //                 inactiveTrackColor: Color.fromRGBO(60, 60, 60, 1),
-  //               ),
-  //               GestureDetector(
-  //                   onTap: isComposing
-  //                       ? () => handleSubmitted(textController.text)
-  //                       : null,
-  //                   child: ClipRRect(
-  //                     borderRadius: BorderRadius.circular(5),
-  //                     child: Container(
-  //                       alignment: Alignment.center,
-  //                       width: 68.w,
-  //                       height: 40.h,
-  //                       color: Color.fromRGBO(0, 101, 202, 1),
-  //                       child: Text(
-  //                         "发送",
-  //                         style:
-  //                             TextStyle(color: Colors.white, fontSize: 20.sp),
-  //                       ),
-  //                     ),
-  //                   )),
-  //             ],
-  //           )));
-  // }
-
   //发送右消息
   sendRight(String choose_text) async {
     if (choose_text.isEmpty) {
@@ -406,7 +314,6 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     messages.add(message);
     messagesInfo.add(message.toJsonString());
     message_save();
-    _chatName = '对方输入中...';
     setState(() {});
     Future.delayed(Duration(milliseconds: waitTyping ? 1000 : 200))
         .then((_) async => await storyWhile());
@@ -470,6 +377,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     trends.add(trend);
     trendsInfo.add(trend.toJsonString());
     image_map_save();
+    trend_save();
     if (isPaused) {
       await NotificationService().newNotification('Miko', '对方发布了一条动态', false);
     }
@@ -489,40 +397,6 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     Future.delayed(Duration(milliseconds: 100), () {
       scrollController.jumpTo(scrollController.position.maxScrollExtent);
     });
-  }
-
-  //输入框发送消息
-  Future<void> handleSubmitted(String text) async {
-    if (text.isEmpty) {
-      userFocusNode.unfocus(); //丢失输入框焦点,收起软键盘
-      return null; //不发送空消息
-    }
-    textController.clear(); //清除输入框
-    isComposing = false;
-    userFocusNode.unfocus(); //丢失输入框焦点
-    if (switchValue) {
-      RightMsg message = RightMsg(text: text);
-      messages.add(message);
-    } else {
-      LeftTextMsg message = LeftTextMsg(
-        who: 'Miko',
-        text: text,
-      );
-      messages.add(message);
-    }
-    setState(() {});
-    Future.delayed(Duration(milliseconds: 100), () {
-      _chatName = chatName;
-      scrollController.jumpTo(scrollController.position.maxScrollExtent);
-    });
-  }
-
-  backSetup() async {
-    bool success = await FlutterBackground.initialize(
-        androidConfig: FlutterBackgroundAndroidConfig());
-    if (success) {
-      await FlutterBackground.enableBackgroundExecution();
-    }
   }
 
   //播放器
@@ -560,7 +434,9 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
           continue;
         }
         if (tag == '中') {
-if(name!=''){_chatName=name;}
+          if (name != '') {
+            _chatName = name;
+          }
           sendMiddle(msg);
           await Future.delayed(Duration(milliseconds: waitTyping ? 500 : 200));
           continue;
@@ -609,15 +485,10 @@ if(name!=''){_chatName=name;}
           setState(() {});
           continue;
         }
-        if (tag_list[0] == '图片' && jump == 0) {
-          await Future.delayed(Duration(milliseconds: waitTyping ? 500 : 200));
-          imageMap[msg] = true;
-          EasyLoading.showToast('解锁新图鉴$msg',
-              toastPosition: EasyLoadingToastPosition.bottom);
-          continue;
-        }
         if (tag_list[0] == '图鉴' && jump == 0) {
-          sendImgLeft(msg);
+          if (msg.substring(5, 7) != '-n' && msg.substring(0, 1) != 'W') {
+            sendImgLeft(msg);
+          }
           await Future.delayed(Duration(milliseconds: waitTyping ? 500 : 200));
           imageMap[msg] = true;
           EasyLoading.showToast('解锁新图鉴$msg',
@@ -627,6 +498,11 @@ if(name!=''){_chatName=name;}
         if (tag_list[0] == '动态' && jump == 0) {
           sendTrend(msg, name);
           imageMap[name] = true;
+          try {
+            imageMap['$name-n'] = true;
+          } catch (e) {
+            print('$e');
+          }
           EasyLoading.showToast('解锁新图鉴$name',
               toastPosition: EasyLoadingToastPosition.bottom);
           sendMiddle('对方发布了一条新动态');
@@ -689,43 +565,37 @@ if(name!=''){_chatName=name;}
           if (tag_list.length == 3) {
             //左,XX,分支XX
             _chatName = '对方输入中...';
-            jump = int.parse(tag_list[1]);
             String str = tag_list[2];
             be_jump = int.parse(str.substring(2, str.length));
             if (be_jump == jump) {
-              jump = 0;
+              jump = int.parse(tag_list[1]);
               sendTextLeft(msg, name);
               await Future.delayed(
                   Duration(seconds: waitTyping ? (msg.length / 4).ceil() : 1));
               _chatName = name;
-            }
-            //上下搜索跳转分支
-            sendTextLeft(msg, name);
-            await Future.delayed(
-                Duration(seconds: waitTyping ? (msg.length / 4).ceil() : 1));
-            _chatName = name;
-            bool needToNewLine = false;
-            for (int j = math.max(0, line - 100); j < line; j++) {
-              List li = story[j];
-              if (li[0] == '' && li[1] == '' && li[2] == '') {
-                continue;
-              }
-              String tg = li[2];
-              if (tg.length > 1) {
-                List tl = tg.split(',');
-                if (tl.isNotEmpty && tl.length == 2) {
-                  String tlStr1 = tl[1]; //分支
-                  int tlJp = int.parse(tlStr1.substring(2, tlStr1.length));
-                  if (tl[0] == tag_list[0] && tlJp == jump) {
-                    line = j;
-                    needToNewLine = true;
-                    break;
+              bool needToNewLine = false;
+              for (int j = math.max(0, line - 100); j < line; j++) {
+                List li = story[j];
+                if (li[0] == '' && li[1] == '' && li[2] == '') {
+                  continue;
+                }
+                String tg = li[2];
+                if (tg.length > 1) {
+                  List tl = tg.split(',');
+                  if (tl.isNotEmpty && tl.length == 2) {
+                    String tlStr1 = tl[1]; //分支
+                    int tlJp = int.parse(tlStr1.substring(2, tlStr1.length));
+                    if (tl[0] == tag_list[0] && tlJp == jump) {
+                      line = j;
+                      needToNewLine = true;
+                      break;
+                    }
                   }
                 }
               }
-            }
-            if (needToNewLine) {
-              continue;
+              if (needToNewLine) {
+                continue;
+              }
             }
           }
         }

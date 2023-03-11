@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:chatapp/config/setting_config.dart';
 import 'package:csv/csv.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app_update/azhon_app_update.dart';
 import 'package:flutter_app_update/update_model.dart';
+import 'package:flutter_background/flutter_background.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -45,6 +47,7 @@ clean_message() async {
     'choose_one_jump',
     'choose_two_jump'
   ];
+  scrollController = ScrollController();
   local = await SharedPreferences.getInstance();
   List<String> keys = local?.getKeys().toList() ?? [];
   messages = [];
@@ -61,8 +64,8 @@ clean_message() async {
   });
 }
 
-//自动检查更新
-autoUpgrade() async {
+//更新
+Upgrade() async {
   Map result = {'info': ''};
   try {
     var response =
@@ -71,9 +74,7 @@ autoUpgrade() async {
       result = jsonDecode(response.toString());
     }
     if (result.length > 1) {
-      int _nowVersion = int.parse(version);
-      int _newVersion = int.parse(result['version']);
-      if (_newVersion > _nowVersion) {
+      if (version != result['version']) {
         EasyLoading.showToast('有新版本,开始自动更新',
             toastPosition: EasyLoadingToastPosition.bottom);
         if (result['info'] != '') {
@@ -85,10 +86,13 @@ autoUpgrade() async {
             "ic_launcher",
             result['info']);
         AzhonAppUpdate.update(model);
+        isNew = false;
+      } else {
+        isNew = true;
       }
     }
-  } catch (_) {
-    EasyLoading.showToast('自动更新失败',
+  } catch (e) {
+    EasyLoading.showToast('更新失败: $e',
         toastPosition: EasyLoadingToastPosition.bottom);
   }
 }
@@ -194,5 +198,13 @@ class _RenameDialogContentState extends State<RenameDialogContent> {
             )
           ],
         ));
+  }
+}
+
+backSetup() async {
+  bool success = await FlutterBackground.initialize(
+      androidConfig: FlutterBackgroundAndroidConfig());
+  if (success) {
+    await FlutterBackground.enableBackgroundExecution();
   }
 }

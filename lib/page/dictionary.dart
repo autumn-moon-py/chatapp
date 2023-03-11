@@ -28,7 +28,8 @@ class DictionaryPageState extends State<DictionaryPage> {
             child: Image.asset('assets/images/菜单背景.png', fit: BoxFit.cover),
           ),
           Padding(
-              padding: EdgeInsets.only(top: 10.h), child: buildDictionaryList())
+              padding: EdgeInsets.only(top: 10.h),
+              child: buildDictionaryList()),
         ]));
   }
 

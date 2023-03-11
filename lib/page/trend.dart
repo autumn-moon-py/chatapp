@@ -60,84 +60,72 @@ class TrendPageState extends State<TrendPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: Padding(
-            padding: EdgeInsets.only(top: topHeight),
-            child: Stack(
-              children: [
-                Container(
-                    color: Color.fromRGBO(25, 25, 25, 1),
-                    width: 1.sw,
-                    height: 1.sh),
+    return Padding(
+        padding: EdgeInsets.only(top: topHeight),
+        child: Stack(
+          children: [
+            Container(
+              color: Color.fromRGBO(25, 25, 25, 1),
+            ),
+            Column(children: [
+              Flexible(
+                  child: ListView(children: [
                 Column(children: [
-                  Flexible(
-                      child: ListView(children: [
-                    Column(children: [
-                      Stack(children: [
-                        Padding(
-                            padding: EdgeInsets.only(bottom: 20.h),
-                            child: Image.asset('assets/images/聊天背景.png',
-                                width: 1.sw,
-                                height: 0.8.sw,
-                                fit: BoxFit.cover)),
-                        Positioned(
-                            right: 15.w,
-                            bottom: 0,
-                            child: Image.asset(
-                                'assets/icon/头像$nowMikoAvater.png',
-                                width: 60.r,
-                                height: 60.r))
-                      ]),
-                      Padding(
-                        padding: EdgeInsets.only(left: 10.w, bottom: 20.h),
-                        child: ListView.builder(
-                          controller: _scrollController, //绑定控件
-                          scrollDirection: Axis.vertical, //垂直滑动
-                          reverse: true, //正序显示
-                          shrinkWrap: true, //内容适配
-                          physics: BouncingScrollPhysics(), //内容超过一屏 上拉有回弹效果
-                          itemBuilder: (_, int index) => trends[index],
-                          itemCount: trends.length, //item数量
-                        ),
-                      )
-                    ]),
-                  ]))
+                  Stack(children: [
+                    Padding(
+                        padding: EdgeInsets.only(bottom: 20.h),
+                        child: Image.asset('assets/images/聊天背景.png',
+                            width: 1.sw, height: 0.8.sw, fit: BoxFit.cover)),
+                    Positioned(
+                        right: 15.w,
+                        bottom: 0,
+                        child: Image.asset('assets/icon/头像$nowMikoAvater.png',
+                            width: 60.r, height: 60.r))
+                  ]),
+                  Padding(
+                    padding: EdgeInsets.only(left: 10.w, bottom: 20.h),
+                    child: ListView.builder(
+                      controller: _scrollController, //绑定控件
+                      scrollDirection: Axis.vertical, //垂直滑动
+                      reverse: true, //正序显示
+                      shrinkWrap: true, //内容适配
+                      physics: BouncingScrollPhysics(), //内容超过一屏 上拉有回弹效果
+                      itemBuilder: (_, int index) => trends[index],
+                      itemCount: trends.length, //item数量
+                    ),
+                  )
                 ]),
-                // Center(
-                //     child: TextButton(
-                //   child: Text('发送', style: TextStyle(color: Colors.white)),
-                //   onPressed: () {
-                //     sendTrend('你好', 'S1-01');
-                //   },
-                // )),
-                GestureDetector(
-                    //返回按钮
-                    onTap: () {
-                      Get.back();
-                    },
-                    child: Container(
-                        alignment: Alignment.topLeft,
-                        child: Stack(children: [
-                          Container(
-                            //标题栏
-                            color: Colors.black,
-                            width: 540.w,
-                            height: 50.h,
-                          ),
-                          Padding(
-                              padding: EdgeInsets.only(top: 15.h),
-                              child: Align(
-                                alignment: FractionalOffset(0.5, 0),
-                                child: Text('动态',
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 25.sp)),
-                              )),
-                          //返回图标
-                          Icon(Icons.chevron_left,
-                              color: Colors.white, size: 50.r),
-                        ]))),
-              ],
-            )));
+              ]))
+            ]),
+            // Center(
+            //     child: TextButton(
+            //   child: Text('发送', style: TextStyle(color: Colors.white)),
+            //   onPressed: () {
+            //     sendTrend('你好', 'S1-01');
+            //   },
+            // )),
+            Container(
+                alignment: Alignment.topCenter,
+                child: Stack(children: [
+                  Container(
+                    //标题栏
+                    color: Colors.black,
+                    width: 540.w,
+                    height: 50.h,
+                    alignment: Alignment.center,
+                    child: Text('动态',
+                        style: TextStyle(color: Colors.white, fontSize: 25.sp)),
+                  ),
+                  //返回图标
+                  GestureDetector(
+                      onTap: () {
+                        Get.back();
+                      },
+                      child: Icon(Icons.chevron_left,
+                          color: Colors.white, size: 50.r))
+                ])),
+          ],
+        ));
   }
 }
 
@@ -157,8 +145,7 @@ class Trend extends StatelessWidget {
       children: [
         Padding(
             padding: EdgeInsets.only(top: 20.h),
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            child: Column(children: [
               Row(children: [
                 Image.asset('assets/icon/头像$nowMikoAvater.png',
                     width: 55.r, height: 55.r),

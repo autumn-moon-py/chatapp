@@ -5,9 +5,11 @@ import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../config/setting_config.dart';
+import '../function/chat_function.dart';
 import '../function/myAppInfo_function.dart';
 
 late String version; //应用发布版本号
+late String regId; //Mob设备ID
 
 ///查询应用信息
 packageInfoList() async {
@@ -29,13 +31,11 @@ class _MyAppInfoState extends State<MyAppInfo> {
                 padding: EdgeInsets.only(top: topHeight),
                 child: Stack(children: [
                   Container(
-                    width: 540.w,
-                    height: 960.h,
                     color: Color.fromRGBO(13, 13, 13, 1),
                   ),
                   Container(
-                      padding: EdgeInsets.only(top: 80.h),
-                      width: 540.w,
+                      padding: EdgeInsets.only(top: 60.h),
+                      width: 1.sw,
                       child: Column(
                         children: [
                           ClipRRect(
@@ -45,76 +45,58 @@ class _MyAppInfoState extends State<MyAppInfo> {
                                 width: 100.w,
                                 height: 100.h,
                               )),
+                          Container(
+                              padding: EdgeInsets.only(top: 10.h),
+                              child: Text('异次元通讯 - 次元复苏',
+                                  style: TextStyle(
+                                      color: Colors.grey, fontSize: 25.sp))),
                           GestureDetector(
                               onDoubleTap: () {
                                 easterEgg();
                               },
                               child: Container(
-                                  padding: EdgeInsets.only(top: 10.h),
-                                  child: Text('异次元通讯 - 次元复苏',
-                                      style: TextStyle(
-                                          color: Colors.grey,
-                                          fontSize: 25.sp)))),
+                                  padding:
+                                      EdgeInsets.only(top: 10.h, bottom: 10.h),
+                                  child: Text('V $version',
+                                      style: TextStyle(color: Colors.grey)))),
                           Container(
-                              padding: EdgeInsets.only(top: 10.h, bottom: 10.h),
-                              child: Text('V $version',
+                              padding: EdgeInsets.only(bottom: 10.h),
+                              child: Text(regId,
                                   style: TextStyle(color: Colors.grey))),
-                          ClipRRect(
-                              borderRadius: BorderRadius.circular(20),
-                              child: Container(
-                                  width: 500.w,
-                                  color: Color.fromRGBO(38, 38, 38, 1),
-                                  child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        GestureDetector(
-                                            onTap: () async {
-                                              checkUpgrade(context);
-                                            },
-                                            child: Padding(
-                                              padding: EdgeInsets.only(
-                                                  left: 10.w, right: 10.w),
-                                              child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
-                                                  child: Container(
-                                                      color: Color.fromRGBO(
-                                                          38, 38, 38, 1),
-                                                      child: Column(
-                                                        children: [
-                                                          Padding(
-                                                              padding: EdgeInsets
-                                                                  .only(
-                                                                      top: 10.h,
-                                                                      left:
-                                                                          20.w,
-                                                                      bottom:
-                                                                          10.h),
-                                                              child: Row(
-                                                                  children: [
-                                                                    Column(
-                                                                        crossAxisAlignment:
-                                                                            CrossAxisAlignment.start,
-                                                                        children: [
-                                                                          Text(
-                                                                              '检查更新',
-                                                                              style: TextStyle(fontSize: 25.sp, color: Colors.white))
-                                                                        ]),
-                                                                    Padding(
-                                                                        padding: EdgeInsets.only(
-                                                                            left: 300
-                                                                                .w),
-                                                                        child: ClipRRect(
-                                                                            borderRadius:
-                                                                                BorderRadius.circular(5),
-                                                                            child: Container(child: Icon(Icons.chevron_right, color: Colors.white, size: 50.r)))),
-                                                                  ]))
-                                                        ],
-                                                      ))),
-                                            )),
+                          Padding(
+                              padding: EdgeInsets.only(left: 10.w, right: 10.w),
+                              child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(20),
+                                  child: Container(
+                                      color: Color.fromRGBO(38, 38, 38, 1),
+                                      child: Column(children: [
+                                        Padding(
+                                            padding: EdgeInsets.fromLTRB(
+                                                20.w, 10.h, 10.w, 10.h),
+                                            child: GestureDetector(
+                                                onTap: () {
+                                                  if (isNew) {
+                                                    Upgrade();
+                                                  }
+                                                },
+                                                child: Row(children: [
+                                                  Expanded(
+                                                      child: Text('检查更新',
+                                                          style: TextStyle(
+                                                              fontSize: 25.sp,
+                                                              color: Colors
+                                                                  .white))),
+                                                  Text(isNew ? '有新版本' : '',
+                                                      style: TextStyle(
+                                                          fontSize: 25.sp,
+                                                          color: Color.fromARGB(
+                                                              255, 0, 255, 8))),
+                                                  Container(
+                                                      child: Icon(
+                                                          Icons.chevron_right,
+                                                          color: Colors.white,
+                                                          size: 50.r)),
+                                                ]))),
                                         greyLine(),
                                         UrlButton('官网',
                                             'https://www.subrecovery.top'),
@@ -126,11 +108,8 @@ class _MyAppInfoState extends State<MyAppInfo> {
                                             'https://jq.qq.com/?_wv=1027&k=YTPhqrNW'),
                                         greyLine(),
                                         UrlButton('投喂',
-                                            'https://afdian.net/a/subrecovery'),
-                                        greyLine(),
-                                        UrlButton('感谢名单',
-                                            'https://afdian.net/dashboard/sponsors'),
-                                      ])))
+                                            'https://afdian.net/a/subrecovery')
+                                      ]))))
                         ],
                       )),
                   Container(
@@ -140,15 +119,11 @@ class _MyAppInfoState extends State<MyAppInfo> {
                           color: Colors.black,
                           width: 1.sw,
                           height: 50.h,
+                          alignment: Alignment.center,
+                          child: Text('关于异次元通讯',
+                              style: TextStyle(
+                                  color: Colors.white, fontSize: 25.sp)),
                         ),
-                        Align(
-                            alignment: Alignment.topCenter,
-                            child: Padding(
-                                padding: EdgeInsets.only(top: 10.h),
-                                child: Text('关于异次元通讯',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 25.sp)))),
                         GestureDetector(
                             onTap: () {
                               Get.back();
