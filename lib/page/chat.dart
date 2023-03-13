@@ -1,5 +1,6 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app_update/azhon_app_update.dart';
 import 'package:flutter_background/flutter_background.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -30,6 +31,7 @@ class ChatPage extends StatefulWidget {
 //聊天页面布局
 class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
   String _chatName = "Miko";
+  String download = '';
 
   @override
   initState() {
@@ -39,21 +41,20 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     message_load().then((_) {
       setting_config_load();
       // waitOffline = false;
-      // nowChapter = '第二章';
+      // nowChapter = '第一章';
       // imageList = imageList2;
-      // line = 457;
+      // line = 42;
+      // be_jump = 328;
       // isDebug = true;
       // waitTyping = false;
       // isAutoUpgrade = false;
       pushSetup();
-      buttonplayer.setAsset('assets/music/选项音效.mp3');
+      buttonMusic();
       packageInfoList();
       backgroundMusic();
-      if (isAutoUpgrade) {
-        Upgrade();
-      }
       backSetup();
       IsOnChatPage = true;
+      Upgrade();
       loadCVS(nowChapter).then((_) async {
         await storyWhile();
       });
@@ -105,15 +106,20 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
   //聊天窗口布局
   @override
   Widget build(BuildContext context) {
+    AzhonAppUpdate.listener((map) {
+      download = map['type'];
+      setState(() {});
+    });
     return Scaffold(
         body: Padding(
             padding: EdgeInsets.only(top: topHeight),
             child: Stack(children: [
               Container(
-                color: Colors.black,
-                child: Center(
-                    child: CircularProgressIndicator(color: Colors.white)),
-              ),
+                  color: Colors.black,
+                  child: Center(
+                    child: Text('加载中...',
+                        style: TextStyle(color: Colors.white, fontSize: 40.r)),
+                  )),
               Image.asset('assets/images/聊天背景.png',
                   height: 1.sh, fit: BoxFit.cover),
               Column(children: [
@@ -126,7 +132,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                             estimateCount: 60,
                             child: Padding(
                                 padding: EdgeInsets.only(
-                                    top: 25.h,
+                                    top: 10.h,
                                     bottom: choose_one.isEmpty ? 10.h : 80.h),
                                 child: ListView.builder(
                                   controller: scrollController,
@@ -218,7 +224,7 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                     Get.to(MenuPage());
                   },
                   child: Container(
-                    padding: EdgeInsets.only(top: 5.h, left: 10.w),
+                    padding: EdgeInsets.only(top: 10.h, left: 10.w),
                     alignment: Alignment.topLeft,
                     child: Icon(Icons.menu, color: Colors.white, size: 40.r),
                   )),
@@ -229,12 +235,31 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                     Get.to(SettingPage('chat'));
                   },
                   child: Container(
-                    width: 1.sw,
-                    padding: EdgeInsets.only(top: 3.h, right: 5.w),
+                    padding: EdgeInsets.only(top: 10.h, right: 10.w),
                     alignment: Alignment.topRight,
                     child:
                         Icon(Icons.settings, color: Colors.white, size: 40.r),
-                  ))
+                  )),
+              download == 'downloading'
+                  ? Stack(children: [
+                      Container(color: Color.fromARGB(150, 0, 0, 0)),
+                      Align(
+                          alignment: Alignment.center,
+                          child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                CircularProgressIndicator(color: Colors.white),
+                                Padding(
+                                    padding: EdgeInsets.only(top: 10.h),
+                                    child: Text(
+                                        '更新时禁止操作\r\n下载时剧情暂停\r\n更新完重进\r\n或双击顶部名称即可继续播放',
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 30.r),
+                                        textAlign: TextAlign.center))
+                              ]))
+                    ])
+                  : Container()
             ])));
   }
 
@@ -267,11 +292,15 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                 child: Text(
                   choose_one.toString(),
                   softWrap: true,
-                  style: TextStyle(color: Colors.white, fontSize: 20.sp),
+                  style: TextStyle(color: Colors.white, fontSize: 25.sp),
                 )),
           ),
           onTap: () {
-            buttonMusic();
+            if (buttonMusicSwitch) {
+              buttonplayer.play();
+            } else {
+              buttonplayer.pause();
+            }
             jump = choose_one_jump;
             sendRight(choose_one.toString());
           },
@@ -290,11 +319,15 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
                 child: Text(
                   choose_two.toString(),
                   softWrap: true,
-                  style: TextStyle(color: Colors.white, fontSize: 20.sp),
+                  style: TextStyle(color: Colors.white, fontSize: 25.sp),
                 )),
           ),
           onTap: () {
-            buttonMusic();
+            if (buttonMusicSwitch) {
+              buttonplayer.play();
+            } else {
+              buttonplayer.pause();
+            }
             jump = choose_two_jump;
             sendRight(choose_two.toString());
           },
@@ -406,11 +439,15 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
     String tag = ''; //单标签
     do {
       if (choose_one.isNotEmpty && choose_two.isNotEmpty) {
-        print('有选项退出');
         break;
       }
-      if (startTime > 0 && DateTime.now().millisecondsSinceEpoch < startTime) {
+      if (startTime > 0 && DateTime.now().millisecondsSinceEpoch > startTime) {
         startTime = 0;
+        continue;
+      } else if (startTime > 0 &&
+          DateTime.now().millisecondsSinceEpoch < startTime) {
+        await Future.delayed(Duration(
+            milliseconds: (startTime - DateTime.now().millisecondsSinceEpoch)));
         continue;
       }
       List line_info = story[line];
@@ -641,69 +678,68 @@ class ChatPageState extends State<ChatPage> with WidgetsBindingObserver {
               if (needToNewLine) {
                 continue;
               }
-              startTime = waitOffline
-                  ? DateTime.now().millisecondsSinceEpoch +
-                      int.parse(tag_list[3]) * 60000
-                  : -1;
-              EasyLoading.showToast('如果上线时间到了仍未上线则双击顶部名称',
-                  toastPosition: EasyLoadingToastPosition.bottom);
-              if (!waitOffline) {
+            }
+            startTime = waitOffline
+                ? DateTime.now().millisecondsSinceEpoch +
+                    int.parse(tag_list[3]) * 60000
+                : -1;
+            EasyLoading.showToast('如果上线时间到了仍未上线则双击顶部名称',
+                toastPosition: EasyLoadingToastPosition.bottom);
+            if (waitOffline) {
+              Future.delayed(
+                  Duration(milliseconds: int.parse(tag_list[3]) * 60000),
+                  () async {
+                await storyWhile();
+              });
+              break;
+            }
+            continue;
+          }
+        }
+        if (tag_list.length == 2) {
+          //中,分支XX
+          String str = tag_list[1];
+          be_jump = int.parse(str.substring(2, str.length));
+          if (be_jump == jump) {
+            jump = 0;
+            sendMiddle(msg);
+            await Future.delayed(
+                Duration(microseconds: waitTyping ? 500 : 200));
+            continue;
+          }
+        }
+        if (tag_list.length == 3) {
+          //中,XX,分支XX
+          String str = tag_list[2];
+          be_jump = int.parse(str.substring(2, str.length));
+          if (jump == be_jump) {
+            str = tag_list[1];
+            jump = int.parse(str);
+            sendMiddle(msg);
+            await Future.delayed(
+                Duration(microseconds: waitTyping ? 500 : 200));
+            bool needToNewLine = false;
+            for (int j = math.max(0, line - 100); j < line; j++) {
+              List li = story[j];
+              if (li[0] == '' && li[1] == '' && li[2] == '') {
                 continue;
-              } else {
-                Future.delayed(
-                    Duration(milliseconds: int.parse(tag_list[3]) * 60000),
-                    () async {
-                  await storyWhile();
-                });
-                break;
               }
-            }
-          }
-          if (tag_list.length == 2) {
-            //中,分支XX
-            String str = tag_list[1];
-            be_jump = int.parse(str.substring(2, str.length));
-            if (be_jump == jump) {
-              jump = 0;
-              sendMiddle(msg);
-              await Future.delayed(
-                  Duration(microseconds: waitTyping ? 500 : 200));
-              continue;
-            }
-          }
-          if (tag_list.length == 3) {
-            //中,XX,分支XX
-            String str = tag_list[2];
-            be_jump = int.parse(str.substring(2, str.length));
-            if (jump == be_jump) {
-              str = tag_list[1];
-              jump = int.parse(str);
-              sendMiddle(msg);
-              await Future.delayed(
-                  Duration(microseconds: waitTyping ? 500 : 200));
-              bool needToNewLine = false;
-              for (int j = math.max(0, line - 100); j < line; j++) {
-                List li = story[j];
-                if (li[0] == '' && li[1] == '' && li[2] == '') {
-                  continue;
-                }
-                String tg = li[2];
-                if (tg.length > 1) {
-                  List tl = tg.split(',');
-                  if (tl.isNotEmpty && tl.length == 2) {
-                    String tlStr1 = tl[1]; //分支
-                    int tlJp = int.parse(tlStr1.substring(2, tlStr1.length));
-                    if (tl[0] == tag_list[0] && tlJp == jump) {
-                      line = j;
-                      needToNewLine = true;
-                      break;
-                    }
+              String tg = li[2];
+              if (tg.length > 1) {
+                List tl = tg.split(',');
+                if (tl.isNotEmpty && tl.length == 2) {
+                  String tlStr1 = tl[1]; //分支
+                  int tlJp = int.parse(tlStr1.substring(2, tlStr1.length));
+                  if (tl[0] == tag_list[0] && tlJp == jump) {
+                    line = j;
+                    needToNewLine = true;
+                    break;
                   }
                 }
               }
-              if (needToNewLine) {
-                continue;
-              }
+            }
+            if (needToNewLine) {
+              continue;
             }
           }
         }

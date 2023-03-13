@@ -3,7 +3,7 @@ description: A new Flutter project.
 
 publish_to: 'none' 
 
-version: 6.0.22
+version: 6.0.26
 
 environment:
   sdk: '>=2.18.6 <3.0.0'
@@ -33,7 +33,6 @@ dependencies:
   csv: ^5.0.1 #读取CSV https://pub.dev/packages/csv
   animate_do: ^3.0.2 #动画 https://pub.dev/packages/animate_do
   dio: ^5.0.0 #网络请求 https://pub.dev/packages/dio
-  flutter_progress_hud: ^2.0.2 #屏幕加载 https://pub.dev/packages/flutter_progress_hud
   flutter_local_notifications: ^13.0.0 #本地通知 https://pub.dev/packages/flutter_local_notifications 
   flutter_background: ^1.2.0 #后台运行 https://pub.dev/packages/flutter_background
   mobcommonlib: ^1.1.4 #推送依赖

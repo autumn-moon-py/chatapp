@@ -201,6 +201,7 @@ class _RenameDialogContentState extends State<RenameDialogContent> {
   }
 }
 
+///后台运行设置
 backSetup() async {
   bool success = await FlutterBackground.initialize(
       androidConfig: FlutterBackgroundAndroidConfig());

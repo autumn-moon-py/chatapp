@@ -13,11 +13,11 @@ import '../config/setting_config.dart';
 import '../page/trend.dart';
 import 'dart:io';
 
-//左消息文本气泡
+///左消息文本气泡
 class LeftTextMsg extends StatelessWidget {
   LeftTextMsg({required this.text, required this.who});
-  final String text; //消息气泡内文本
-  final String who; //头像
+  final String text;
+  final String who;
 
   toJsonString() {
     final jsonString = jsonEncode({'位置': '左', 'text': text, 'who': who});
@@ -28,11 +28,11 @@ class LeftTextMsg extends StatelessWidget {
   Widget build(BuildContext context) {
     return FrameSeparateWidget(
         child: Container(
-            margin: EdgeInsets.only(top: 10.h), //消息间隔
+            margin: EdgeInsets.only(top: 10.h),
             child: FadeInLeft(
                 child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start, //垂直顶部对齐
-                    mainAxisAlignment: MainAxisAlignment.start, //水平左对齐
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
                   GestureDetector(
                       onTap: () {
@@ -44,47 +44,37 @@ class LeftTextMsg extends StatelessWidget {
                         }
                       },
                       child: Container(
-                          //头像容器
-                          margin: EdgeInsets.only(
-                              left: 10.w, right: 4.5.w), //头像和气泡间距
+                          margin: EdgeInsets.only(left: 10.w, right: 4.5.w),
                           child: CircleAvatar(
                               backgroundColor: Colors.black,
-                              //头像图标
-                              radius: 30.r, //头像尺寸
-                              child: Image.asset(whoAvater(who)) //加载左边头像
-                              ))),
-                  // 消息气泡容器
+                              radius: 30.r,
+                              child: Image.asset(whoAvater(who))))),
                   Container(
                       margin: EdgeInsets.only(top: 5.h),
-                      constraints: BoxConstraints(maxWidth: 420.w), //限制容器最大宽度
-                      padding: EdgeInsets.all(10.r), //容器内边距
-                      //圆角
+                      constraints: BoxConstraints(maxWidth: 420.w),
+                      padding: EdgeInsets.all(10.r),
                       decoration: BoxDecoration(
-                          color: Color.fromRGBO(38, 38, 38, 1), //容器背景颜色
-                          borderRadius:
-                              BorderRadius.all(Radius.circular(7))), //圆角角度
-                      //消息文本
+                          color: Color.fromRGBO(38, 38, 38, 1),
+                          borderRadius: BorderRadius.all(Radius.circular(7))),
                       child: Text(
                         text,
-                        softWrap: true, //自动换行
-                        style: TextStyle(
-                            fontSize: 25.sp, color: Colors.white), //文本样式
+                        softWrap: true,
+                        style: TextStyle(fontSize: 25.sp, color: Colors.white),
                       ))
                 ]))));
   }
 }
 
-//左消息图片气泡
+///左消息图片气泡
 class LeftImgMsg extends StatelessWidget {
   LeftImgMsg({required this.img});
-  final String img; //图片名称
+  final String img;
 
   toJsonString() {
     final jsonString = jsonEncode({'位置': '左', 'img': img});
     return jsonString;
   }
 
-  //图片查看
   buildImageView(imageName) {
     return Container(
         child: Stack(children: [
@@ -92,7 +82,6 @@ class LeftImgMsg extends StatelessWidget {
           imageProvider: NetworkImage(
               'https://cdn.486486486.xyz/miko-storage/Dimension/ver0.1/$imageName.png')),
       GestureDetector(
-          //返回按钮
           onTap: () {
             Get.back();
           },
@@ -100,12 +89,10 @@ class LeftImgMsg extends StatelessWidget {
               alignment: Alignment.topLeft,
               child: Stack(children: [
                 Container(
-                  //标题栏
                   color: Colors.black,
                   width: 430.w,
                   height: 50.h,
                 ),
-                //返回图标
                 Icon(Icons.chevron_left, color: Colors.white, size: 50.r),
               ])))
     ]));
@@ -114,25 +101,21 @@ class LeftImgMsg extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        margin: EdgeInsets.only(top: 10.h), //消息间隔
+        margin: EdgeInsets.only(top: 10.h),
         child: FadeInLeft(
             child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start, //垂直顶部对齐
-                mainAxisAlignment: MainAxisAlignment.start, //水平左对齐
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-              //头像容器
               GestureDetector(
                   onTap: () {
                     Get.to(TrendPage());
                   },
                   child: Container(
-                      margin: EdgeInsets.only(left: 10.w, right: 5.w), //头像和气泡间距
+                      margin: EdgeInsets.only(left: 10.w, right: 5.w),
                       child: CircleAvatar(
-                          //头像图标
-                          radius: 30.r, //头像尺寸
-                          child: Image.asset(whoAvater('Miko')) //加载左边头像
-                          ))),
-              //消息图片
+                          radius: 30.r,
+                          child: Image.asset(whoAvater('Miko'))))),
               GestureDetector(
                   onTap: () {
                     Get.to(buildImageView(img));
@@ -156,9 +139,9 @@ class LeftImgMsg extends StatelessWidget {
   }
 }
 
-//右消息气泡
+///右消息气泡
 class RightMsg extends StatelessWidget {
-  final String text; //消息气泡内文本
+  final String text;
   RightMsg({required this.text});
 
   toJsonString() {
@@ -170,44 +153,36 @@ class RightMsg extends StatelessWidget {
   Widget build(BuildContext context) {
     return FrameSeparateWidget(
         child: Container(
-            margin: EdgeInsets.only(top: 10.h), //消息间隔
+            margin: EdgeInsets.only(top: 10.h),
             child: FadeInRight(
                 child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start, //垂直顶部对齐
-                    mainAxisAlignment: MainAxisAlignment.end, //水平右对齐
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: <Widget>[
-                  // 消息气泡容器
                   Container(
                       margin: EdgeInsets.only(top: 10.h),
-                      constraints: BoxConstraints(maxWidth: 420.w), //限制容器最大宽度
-                      padding: EdgeInsets.all(10.r), //容器内边距
-                      //圆角
+                      constraints: BoxConstraints(maxWidth: 420.w),
+                      padding: EdgeInsets.all(10.r),
                       decoration: BoxDecoration(
-                          color: Color.fromRGBO(38, 38, 38, 1), //容器背景颜色
-                          borderRadius:
-                              BorderRadius.all(Radius.circular(7))), //圆角角度
-                      //消息文本
+                          color: Color.fromRGBO(38, 38, 38, 1),
+                          borderRadius: BorderRadius.all(Radius.circular(7))),
                       child: Text(
                         text,
-                        softWrap: true, //自动换行
-                        textAlign: TextAlign.left, //文本左对齐
-                        style: TextStyle(
-                            fontSize: 25.sp, color: Colors.white), //文本样式
+                        softWrap: true,
+                        textAlign: TextAlign.left,
+                        style: TextStyle(fontSize: 25.sp, color: Colors.white),
                       )),
                   Container(
-                      //头像容器
-                      margin:
-                          EdgeInsets.only(right: 10.w, left: 10.h), //头像和气泡间距
-                      child: ClipOval(child: playerAvater() //加载右边头像
-                          )),
+                      margin: EdgeInsets.only(right: 10.w, left: 10.h),
+                      child: ClipOval(child: playerAvater())),
                 ]))));
   }
 }
 
-//系统消息
+///系统消息
 class MiddleMsg extends StatelessWidget {
   MiddleMsg({required this.text});
-  final String text; //消息气泡内文本
+  final String text;
 
   textColor() {
     if (text == '对方已上线' || text == '切换对象中') {
@@ -228,29 +203,24 @@ class MiddleMsg extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        margin: EdgeInsets.only(top: 10.h), //消息间隔
-        child: Row(
-            mainAxisAlignment: MainAxisAlignment.center, //水平居中对齐
-            children: <Widget>[
-              // 消息气泡容器
-              Container(
-                  padding: EdgeInsets.all(10.r), //容器内边距
-                  //圆角
-                  decoration: BoxDecoration(
-                      color: Color.fromRGBO(38, 38, 38, 1), //容器背景颜色
-                      borderRadius:
-                          BorderRadius.all(Radius.circular(7))), //圆角角度
-                  //消息文本
-                  child: Text(
-                    text,
-                    textAlign: TextAlign.center, //文本居中对齐
-                    style:
-                        TextStyle(fontSize: 20.sp, color: textColor()), //文本样式
-                  )),
-            ]));
+        margin: EdgeInsets.only(top: 10.h),
+        child:
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+          Container(
+              padding: EdgeInsets.all(10.r),
+              decoration: BoxDecoration(
+                  color: Color.fromRGBO(38, 38, 38, 1),
+                  borderRadius: BorderRadius.all(Radius.circular(7))),
+              child: Text(
+                text,
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 20.sp, color: textColor()),
+              )),
+        ]));
   }
 }
 
+///语音消息
 class VoiceMsg extends StatelessWidget {
   final String voice;
   final voiceplayer = AudioPlayer();
@@ -329,7 +299,7 @@ class VoiceMsg extends StatelessWidget {
   }
 }
 
-//头像验证
+//左头像验证
 whoAvater(String name) {
   if (name == 'Miko') {
     return "assets/icon/头像$nowMikoAvater.png";
@@ -344,6 +314,7 @@ whoAvater(String name) {
   }
 }
 
+///玩家头像
 Widget playerAvater() {
   if (playerAvatarSet != "默认") {
     try {

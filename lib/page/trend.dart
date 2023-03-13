@@ -108,7 +108,6 @@ class TrendPageState extends State<TrendPage> {
                 alignment: Alignment.topCenter,
                 child: Stack(children: [
                   Container(
-                    //标题栏
                     color: Colors.black,
                     width: 540.w,
                     height: 50.h,
@@ -116,7 +115,6 @@ class TrendPageState extends State<TrendPage> {
                     child: Text('动态',
                         style: TextStyle(color: Colors.white, fontSize: 25.sp)),
                   ),
-                  //返回图标
                   GestureDetector(
                       onTap: () {
                         Get.back();

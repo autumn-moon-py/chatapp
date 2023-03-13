@@ -10,13 +10,13 @@ checkPermission(Permission permission) async {
   if (status.isGranted) {
     //权限通过
   } else if (status.isDenied) {
-    //权限拒绝， 需要区分IOS和Android，二者不一样
+    //权限拒绝
     requestPermission(permission);
   } else if (status.isPermanentlyDenied) {
-    //权限永久拒绝，且不在提示，需要进入设置界面，IOS和Android不同
+    //权限永久拒绝，且不在提示，需要进入设置界面
     openAppSettings();
   } else if (status.isRestricted) {
-    //活动限制（例如，设置了家长控件，仅在iOS以上受支持。
+    //活动限制
     openAppSettings();
   } else {
     //第一次申请

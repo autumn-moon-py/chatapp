@@ -28,8 +28,7 @@ class DictionaryPageState extends State<DictionaryPage> {
             child: Image.asset('assets/images/菜单背景.png', fit: BoxFit.cover),
           ),
           Padding(
-              padding: EdgeInsets.only(top: 10.h),
-              child: buildDictionaryList()),
+              padding: EdgeInsets.only(top: 5.h), child: buildDictionaryList()),
         ]));
   }
 
@@ -44,13 +43,9 @@ class DictionaryPageState extends State<DictionaryPage> {
         child: SizeCacheWidget(
             estimateCount: 60,
             child: Scrollbar(
-                radius: Radius.circular(20),
-                thickness: 8,
                 interactive: true,
                 child: ListView(children: [
-                  Padding(
-                      padding: EdgeInsets.only(top: 10.h),
-                      child: buildChapterTitle('第一章')),
+                  buildChapterTitle('第一章'),
                   buildChapterDic(0, 21),
                   buildChapterTitle('番外一'),
                   buildChapterDic(21, 1),
@@ -85,7 +80,7 @@ class DictionaryPageState extends State<DictionaryPage> {
         crossAxisCount: 2,
         childAspectRatio: 1 / 0.28,
       ),
-      padding: EdgeInsets.only(top: 10.h, right: 10.w, bottom: 10.h),
+      padding: EdgeInsets.only(top: 10.h, right: 10.w, bottom: 0.h),
       itemCount: length,
       itemBuilder: (context, index) {
         return buildDictionary(dictionaryList[index + start]);
@@ -100,14 +95,9 @@ class DictionaryPageState extends State<DictionaryPage> {
     String dictionaryMean = _dtlist[2];
     if (unlock == 'false') {
       return FrameSeparateWidget(
-          placeHolder: Text(
-            "加载中...",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 20.sp,
-              color: Colors.white,
-            ),
-          ),
+          placeHolder: Container(
+              alignment: Alignment.center,
+              child: CircularProgressIndicator(color: Colors.white)),
           child: Container(
               padding: EdgeInsets.only(left: 10.w),
               child: Image.asset('assets/词典/未解锁词典.png')));
@@ -115,35 +105,28 @@ class DictionaryPageState extends State<DictionaryPage> {
 
     //单个列表词典构造
     return FrameSeparateWidget(
-        placeHolder: Text(
-          "加载中...",
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 20.sp, color: Colors.white),
-        ),
-        child: Container(
-          padding: EdgeInsets.only(bottom: 20.h),
-          child: GestureDetector(
-              onTap: () {
-                Get.to(buildDictionaryView(dictionaryName, dictionaryMean));
-              },
-              child: Padding(
-                  padding: EdgeInsets.only(left: 10.w),
-                  child: Container(
-                      color: Color.fromRGBO(0, 0, 0, 0),
-                      child: Row(children: [
-                        Container(
-                            padding: EdgeInsets.only(right: 5.w),
-                            child: Image.asset(
-                              'assets/词典/词典.png',
-                              width: 42.5.r,
-                              height: 42.5.r,
-                            )),
-                        Text(
-                          dictionaryName,
-                          style:
-                              TextStyle(color: Colors.white, fontSize: 25.sp),
-                        )
-                      ])))),
-        ));
+      placeHolder: Container(
+          alignment: Alignment.center,
+          child: CircularProgressIndicator(color: Colors.white)),
+      child: GestureDetector(
+          onTap: () {
+            Get.to(buildDictionaryView(dictionaryName, dictionaryMean));
+          },
+          child: Container(
+            padding: EdgeInsets.only(left: 10.w),
+            color: Color.fromRGBO(0, 0, 0, 0),
+            child: Row(children: [
+              Container(
+                  padding: EdgeInsets.only(right: 5.w),
+                  child: Image.asset(
+                    'assets/词典/词典.png',
+                    width: 42.5.r,
+                    height: 42.5.r,
+                  )),
+              Text(dictionaryName,
+                  style: TextStyle(color: Colors.white, fontSize: 25.sp))
+            ]),
+          )),
+    );
   }
 }

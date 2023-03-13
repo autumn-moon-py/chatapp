@@ -15,7 +15,6 @@ float1() {
     child: FloatingActionButton(
       onPressed: () {
         IsOnChatPage = true;
-        // Get.back();
         Get.to(ChatPage());
       },
       heroTag: "btn1",

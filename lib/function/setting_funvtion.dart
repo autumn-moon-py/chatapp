@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mobpush_plugin/mobpush_plugin.dart';
 
-import '../page/myAppInfo.dart';
-
 Widget roundCard(Widget child) {
   return Padding(
       padding: EdgeInsets.only(left: 10.w, right: 10.w, bottom: 5.h, top: 5.h),
@@ -78,11 +76,6 @@ whiteLine() {
 pushSetup() {
   //设置隐私协议授权状态
   MobpushPlugin.updatePrivacyPermissionStatus(true);
-//获取注册的设备id， 这个可以不初始化
-  MobpushPlugin.getRegistrationId().then((Map<String, dynamic> ridMap) {
-    regId = ridMap['res'].toString();
-    print(regId);
-  });
 //设置别名，注意，每个别名只能存在一台设备，后者会覆盖前者。厂商通道，会根据后者来进行推送
   MobpushPlugin.setAlias("别名").then((Map<String, dynamic> aliasMap) {
     String res = aliasMap['res'];

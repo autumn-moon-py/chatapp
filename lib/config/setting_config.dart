@@ -2,7 +2,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'config.dart';
-import 'image_config.dart';
 
 bool isNew = true; //最新版
 bool isDebug = false; //调试信息
@@ -12,7 +11,6 @@ bool waitTyping = true; //打字时间
 int nowMikoAvater = 1; //miko当前头像
 String playerAvatarSet = '默认'; //玩家头像
 int playerNowAvater = 0; //玩家头像下拉框默认值
-List<String> imageList = imageList1; //图鉴列表
 bool backgroundMusicSwitch = true; //音乐
 bool isOldBgm = false; //新旧BGM
 final bgmplayer = AudioPlayer();
@@ -22,7 +20,6 @@ bool voiceIsStop = true;
 bool IsOnChatPage = true;
 final buttonplayer = AudioPlayer();
 bool isChange = false; //监听设置修改
-bool isAutoUpgrade = true; //是否自动更新
 double topHeight = ScreenUtil().statusBarHeight; //状态栏高度
 
 //Miko头像更换
@@ -56,39 +53,12 @@ backgroundMusic() {
   }
 }
 
-///播放按钮音效
+///按钮音效设置
 buttonMusic() {
+  buttonplayer.setAsset('assets/music/选项音效.mp3');
   buttonplayer.setVolume(1);
   buttonplayer.setLoopMode(LoopMode.off);
-  if (buttonMusicSwitch) {
-    buttonplayer.play();
-  } else {
-    buttonplayer.pause();
-  }
 }
-
-//语音彩蛋
-// voice(double volume) {
-//   int res = Random().nextInt(2);
-//   final voiceplayer = AudioPlayer();
-//   voiceplayer.setLoopMode(LoopMode.off);
-//   voiceplayer.setVolume(volume / 10);
-//   if (res == 0) {
-//     voiceplayer.stop();
-//     voiceplayer.setAsset('assets/music/喂.mp3');
-//     voiceplayer.play();
-//   }
-//   if (res == 1) {
-//     voiceplayer.stop();
-//     voiceplayer.setAsset('assets/music/我在哦.mp3');
-//     voiceplayer.play();
-//   }
-//   if (res == 2) {
-//     voiceplayer.stop();
-//     voiceplayer.setAsset('assets/music/听得见吗.mp3');
-//     voiceplayer.play();
-//   }
-// }
 
 ///保存设置
 setting_config_save() async {
@@ -103,7 +73,6 @@ setting_config_save() async {
   await local?.setBool('buttonMusicSwitch', buttonMusicSwitch);
   await local?.setBool('isOldBgm', isOldBgm);
   await local?.setDouble('sliderValue', sliderValue);
-  await local?.setBool('isAutoUpgrade', isAutoUpgrade);
 }
 
 ///读取设置
@@ -119,5 +88,4 @@ setting_config_load() async {
   buttonMusicSwitch = local?.getBool('buttonMusicSwitch') ?? true;
   isOldBgm = local?.getBool('isOldBgm') ?? false;
   sliderValue = local?.getDouble('sliderValue') ?? 10;
-  isAutoUpgrade = local?.getBool('isAutoUpgrade') ?? true;
 }

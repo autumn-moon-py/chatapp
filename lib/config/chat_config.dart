@@ -8,11 +8,9 @@ import '../function/bubble.dart';
 FocusNode userFocusNode = FocusNode(); //输入框焦点控件
 TextEditingController textController = TextEditingController(); //输入框状态控件
 ScrollController scrollController = ScrollController(); //动态列表控件
-bool isComposing = false; //输入状态
-bool switchValue = false; //自娱自乐切换左右
 bool isPaused = false; //是否在后台
 List messages = []; //消息容器列表
-List<String> messagesInfo = []; //消息信息列表
+List<String> messagesInfo = []; //历史消息列表
 List<List<dynamic>> story = []; //剧本列表
 String nowChapter = '第一章'; //当前章节
 String chatName = "Miko"; //聊天对象名称

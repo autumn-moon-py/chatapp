@@ -47,13 +47,15 @@ class ChapterPageState extends State<ChapterPage> {
   }
 
   buildChapterList() {
-    return GridView.count(
-        crossAxisCount: 1,
-        padding: EdgeInsets.only(top: 27.4.h),
-        childAspectRatio: 1 / 0.43,
-        children: chapterList.map((chapterName) {
-          return buildChapter(chapterName);
-        }).toList());
+    return Scrollbar(
+        interactive: true,
+        child: GridView.count(
+            crossAxisCount: 1,
+            padding: EdgeInsets.only(top: 27.4.h),
+            childAspectRatio: 1 / 0.43,
+            children: chapterList.map((chapterName) {
+              return buildChapter(chapterName);
+            }).toList()));
   }
 
   Widget buildChapter(chapterName) {

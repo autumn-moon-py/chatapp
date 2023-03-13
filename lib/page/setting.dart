@@ -1,6 +1,5 @@
 import 'package:chatapp/config/chat_config.dart';
 import 'package:chatapp/function/setting_funvtion.dart';
-import 'package:chatapp/page/dictionary.dart';
 import 'package:chatapp/page/chat.dart';
 import 'package:chatapp/page/search.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +8,6 @@ import "package:get/get.dart";
 import 'package:cool_dropdown/cool_dropdown.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../config/image_config.dart';
 import '../config/setting_config.dart';
 import '../function/bubble.dart';
 import 'menu.dart';
@@ -22,7 +20,6 @@ class SettingPage extends StatefulWidget {
   SettingPageState createState() => SettingPageState(where);
 }
 
-//设置页面布局
 class SettingPageState extends State<SettingPage> {
   late final String where;
 
@@ -108,9 +105,7 @@ class SettingPageState extends State<SettingPage> {
                                         ]))),
                               )
                             : Container(),
-                        Padding(
-                            padding: EdgeInsets.only(bottom: 5.h),
-                            child: whiteLine()),
+                        whiteLine(),
                         SwitchButtonWithSubtitle(
                             title: 'AI图鉴',
                             subtitle:
@@ -118,12 +113,6 @@ class SettingPageState extends State<SettingPage> {
                             value: isNewImage,
                             onChanged: (value) {
                               setting_config_save();
-                              //判断新旧图鉴
-                              if (value) {
-                                imageList = imageList2;
-                              } else {
-                                imageList = imageList1;
-                              }
                               isChange = true;
                               isNewImage = value;
                               setState(() {});
@@ -153,129 +142,123 @@ class SettingPageState extends State<SettingPage> {
                               }
                               setState(() {});
                             }),
-                        whiteLine(),
-                        SwitchButton(
-                            title: '自动更新',
-                            value: isAutoUpgrade,
-                            onChanged: (value) {
-                              isAutoUpgrade = value;
-                              setting_config_save();
-                              setState(() {});
-                            })
                       ]),
                     ),
-                    ClipRRect(
-                        borderRadius: BorderRadius.circular(40),
-                        child: Container(
-                            height: 150.h,
-                            padding:
-                                EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 10.h),
-                            margin: EdgeInsets.fromLTRB(10.w, 5.h, 10.w, 5.h),
-                            color: Color.fromRGBO(38, 38, 38, 1),
-                            child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: Text('Miko头像更换',
-                                            style: TextStyle(
-                                                fontSize: 25.sp,
-                                                color: Colors.white)),
+                    Container(
+                      padding: EdgeInsets.fromLTRB(10.w, 5.h, 10.w, 5.h),
+                      child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Container(
+                              padding:
+                                  EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 10.h),
+                              color: Color.fromRGBO(38, 38, 38, 1),
+                              child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text('Miko头像更换',
+                                              style: TextStyle(
+                                                  fontSize: 25.sp,
+                                                  color: Colors.white)),
+                                        ),
+                                        Row(children: [
+                                          Image.asset(
+                                              'assets/icon/头像$nowMikoAvater.png',
+                                              width: 50.r,
+                                              height: 50.r),
+                                          CoolDropdown(
+                                            dropdownList: mikoDropdownList,
+                                            onChange: (dropdownItem) {
+                                              setState(() {
+                                                setting_config_save();
+                                                isChange = true;
+                                                nowMikoAvater =
+                                                    dropdownItem['value'];
+                                              });
+                                            },
+                                            defaultValue: mikoDropdownList[
+                                                nowMikoAvater - 1],
+                                          ),
+                                        ]),
+                                      ],
+                                    ),
+                                    Container(
+                                      padding: EdgeInsets.only(
+                                          top: 10.h, bottom: 5.h),
+                                      child: Divider(
+                                        color: Colors.white,
+                                        height: 0,
+                                        thickness: 1,
                                       ),
-                                      Row(children: [
-                                        Image.asset(
-                                            'assets/icon/头像$nowMikoAvater.png',
-                                            width: 50.r,
-                                            height: 50.r),
-                                        CoolDropdown(
-                                          dropdownList: mikoDropdownList,
-                                          onChange: (dropdownItem) {
-                                            setState(() {
-                                              setting_config_save();
-                                              isChange = true;
-                                              nowMikoAvater =
-                                                  dropdownItem['value'];
-                                            });
-                                          },
-                                          defaultValue: mikoDropdownList[
-                                              nowMikoAvater - 1],
-                                        ),
-                                      ]),
-                                    ],
-                                  ),
-                                  Divider(
-                                    color: Colors.white,
-                                    height: 0,
-                                    thickness: 1,
-                                  ),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                          child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                            Text('玩家头像更换',
-                                                style: TextStyle(
-                                                    fontSize: 25.sp,
-                                                    color: Colors.white)),
-                                            Container(
-                                                padding:
-                                                    EdgeInsets.only(top: 5.h),
-                                                child: Text('不要删除图片或移动位置',
-                                                    style: TextStyle(
-                                                        fontSize: 15.sp,
-                                                        color: Colors.grey))),
-                                          ])),
-                                      Row(children: [
-                                        Container(
-                                            child: CircleAvatar(
-                                                radius: 30.r,
-                                                backgroundColor:
-                                                    Color.fromRGBO(0, 0, 0, 1),
-                                                child: playerAvater()),
-                                            width: 50.r,
-                                            height: 50.r),
-                                        CoolDropdown(
-                                          dropdownList: playerDropdownList,
-                                          onChange: (dropdownItem) async {
-                                            if (dropdownItem['value'] == 0) {
-                                              playerAvatarSet = '默认';
-                                              playerNowAvater = 0;
-                                              isChange = true;
-                                              setState(() {
-                                                setting_config_save();
-                                                playerAvater();
-                                              });
-                                            }
-                                            if (dropdownItem['value'] == 1) {
-                                              final ImagePicker picker =
-                                                  ImagePicker();
-                                              final XFile? image =
-                                                  await picker.pickImage(
-                                                      source:
-                                                          ImageSource.gallery);
-                                              try {
-                                                playerAvatarSet = image!.path;
-                                                playerNowAvater = 1;
+                                    ),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                            child: Column(children: [
+                                          Text('玩家头像更换',
+                                              style: TextStyle(
+                                                  fontSize: 25.sp,
+                                                  color: Colors.white)),
+                                          Container(
+                                              padding:
+                                                  EdgeInsets.only(top: 5.h),
+                                              child: Text('不要删除图片或移动位置',
+                                                  style: TextStyle(
+                                                      fontSize: 15.sp,
+                                                      color: Colors.grey))),
+                                        ])),
+                                        Row(children: [
+                                          Container(
+                                              child: CircleAvatar(
+                                                  radius: 30.r,
+                                                  backgroundColor:
+                                                      Color.fromRGBO(
+                                                          0, 0, 0, 1),
+                                                  child: playerAvater()),
+                                              width: 50.r,
+                                              height: 50.r),
+                                          CoolDropdown(
+                                            dropdownList: playerDropdownList,
+                                            onChange: (dropdownItem) async {
+                                              if (dropdownItem['value'] == 0) {
+                                                playerAvatarSet = '默认';
+                                                playerNowAvater = 0;
                                                 isChange = true;
-                                              } catch (error) {}
-                                              setState(() {
-                                                isChange = true;
-                                                setting_config_save();
-                                                playerAvater();
-                                              });
-                                            }
-                                          },
-                                          defaultValue: playerDropdownList[
-                                              playerNowAvater],
-                                        ),
-                                      ]),
-                                    ],
-                                  ),
-                                ]))),
+                                                setState(() {
+                                                  setting_config_save();
+                                                  playerAvater();
+                                                });
+                                              }
+                                              if (dropdownItem['value'] == 1) {
+                                                final ImagePicker picker =
+                                                    ImagePicker();
+                                                final XFile? image =
+                                                    await picker.pickImage(
+                                                        source: ImageSource
+                                                            .gallery);
+                                                try {
+                                                  playerAvatarSet = image!.path;
+                                                  playerNowAvater = 1;
+                                                  isChange = true;
+                                                } catch (error) {}
+                                                setState(() {
+                                                  isChange = true;
+                                                  setting_config_save();
+                                                  playerAvater();
+                                                });
+                                              }
+                                            },
+                                            defaultValue: playerDropdownList[
+                                                playerNowAvater],
+                                          ),
+                                        ]),
+                                      ],
+                                    ),
+                                  ]))),
+                    ),
                     GestureDetector(
                       onTap: () async {
                         Get.to(MyAppInfo());
@@ -315,7 +298,7 @@ class SettingPageState extends State<SettingPage> {
                         padding: EdgeInsets.only(top: 10.h),
                         child: Text('设置',
                             style: TextStyle(
-                                color: Colors.white, fontSize: 25.sp)))),
+                                color: Colors.white, fontSize: 30.sp)))),
                 GestureDetector(
                     onTap: () {
                       if (isChange == true && where == 'chat') {
@@ -330,13 +313,15 @@ class SettingPageState extends State<SettingPage> {
                         Get.offAll(MenuPage());
                       } else if (isChange && where == '词典') {
                         isChange = false;
-                        Get.offAll(DictionaryPage());
+                        Get.offAll(MenuPage());
                       } else {
                         Get.back();
                       }
                     },
-                    child: Icon(Icons.chevron_left,
-                        color: Colors.white, size: 50.r)),
+                    child: Container(
+                        padding: EdgeInsets.only(left: 5.w, top: 3.h),
+                        child: Icon(Icons.chevron_left,
+                            color: Colors.white, size: 60.r))),
               ])),
         ]));
   }
